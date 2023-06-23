@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <title>Athena Login</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Anton&family=Pacifico&display=swap" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/login_style.css' %}"/>
+        <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
+    </head>
+    <body style="background-image: url('{% static "Athena/media/login-bg.svg" %}'); background-size: cover;">
+        <div class="login-container">
+            <div class="brand">
+                <img src="{% static 'Athena/media/athena-50.png' %}" alt="User Icon" width="50" height="50">
+                <h1>Athena</h1>
+            </div>
+            <div class="login-card">
+                <form>
+                  <label>
+                    <img src="{% static 'Athena/media/email.png' %}" alt="User Icon" width="20" height="20">
+                    <input type="email" name="email" placeholder="Email Address" required>
+                  </label>
+                  <label>
+                    <img src="{% static 'Athena/media/password.png' %}" alt="Password Icon" width="24" height="24">
+                    <input type="password" name="password" placeholder="Password" required>
+                  </label>
+                  <div class="center-btn">
+                    <input type="submit" value="Log in" class="submit-button">
+                  </div>
+                </form>
+            </div>
+            <a href="#">Forgot password?</a>
+        </div>
+    </body>
+</html>

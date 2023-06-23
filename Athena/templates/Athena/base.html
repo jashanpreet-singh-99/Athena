@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta name="viewport" content=""width=device-width, initial-scale="1.0">
     <meta charset="UTF-8">
     <title>Athena</title>
-    {% load static %} <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/dash_style.css' %}"/>
-    {% load static %} <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/dash_style.css' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
     <!-- #ffffff light semi-light #f1f5fb Dark #070708 -->
 </head>
 <body>
@@ -13,44 +14,45 @@
     <div class="nav-bar">
         <div class="logo-head">
 
-            {% load static %}<img width="40" height="40" src="{% static "Athena/media/Athena-logo.png" %}" alt="Logo"/>
+            <img width="40" height="40" src="{% static "Athena/media/Athena-logo.png" %}" alt="Logo"/>
         </div>
         <ul class="nav-links">
             <li>
                 <div class="nav-border sel">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/070708/sf-regular/48/home.png" alt="home"/></a>
+                    <a href="dash"><img width="40" height="40" src="https://img.icons8.com/070708/sf-regular/48/home.png" alt="home"/></a>
                 </div>
             </li>    
             <li>
                 <div class="nav-border">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
+                    <a href="course"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
                 </div>
             </li>
             <li>
                 <div class="nav-border">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/eeeeee/material-outlined/48/speech-bubble-with-dots.png" alt="message"/></a>
+                    <a href="chat"><img width="40" height="40" src="https://img.icons8.com/eeeeee/material-outlined/48/speech-bubble-with-dots.png" alt="message"/></a>
                 </div>
             </li>
             <li>
                 <div class="nav-border">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/eeeeee/pulsar-line/48/thursday.png" alt="calender"/></a>
+                    <a href="schedule"><img width="40" height="40" src="https://img.icons8.com/eeeeee/pulsar-line/48/thursday.png" alt="calender"/></a>
                 </div>
             </li>
             <li>
                 <div class="nav-border">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/clock--v3.png" alt="clock--v3"/></a>
+                    <a href="deadlines"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/clock--v3.png" alt="clock--v3"/></a>
                 </div>
             </li>
             <li>
                 <div class="nav-border">
-                    <a href="#"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/settings.png" alt="settings"/></a>
+                    <a href="settings"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/settings.png" alt="settings"/></a>
                 </div>
             </li>
         </ul>
     </div>
+    <script src="{% static 'Athena/js/nav_bar.js' %}"></script>
     <div class="section">
         <div class="title-bar">
-            <h1 class="page-title">Dashboard</h1>
+            <h1 class="page-title">{{ title }}</h1>
             <div class="search-box">
                 <img width="30" height="30" src="https://img.icons8.com/070708/ios/50/search--v1.png" alt="search"/>
                 <input class="search-f" type="text" name="search-box" placeholder="Search">
@@ -59,8 +61,13 @@
                 <img width="48" height="48" src="https://img.icons8.com/070708/external-creatype-outline-colourcreatype/64/external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2.png" alt="external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2"/>
             </div>
             <div class="nav-border">
-                {% load static %}<a href="#"><img class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/></a>
+                <a href="#"><img class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/></a>
             </div>
+        </div>
+        {% block page %}
+
+        {% endblock %}
+        <div>
         </div>
     </div>
 </div>

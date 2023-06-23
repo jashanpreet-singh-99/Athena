@@ -23,11 +23,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-!je$43hb72($an4a0seok=p(z3i+tnz*(zw@u_637ckcxrofz0'
 
+# Authentication User model
+AUTH_USER_MODEL = "Athena.User"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 

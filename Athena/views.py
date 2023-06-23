@@ -6,5 +6,47 @@ from django.views import View
 class Dash(View):
 
     def get(self, request):
-        context = {'text': 'name'}
-        return render(request, 'dash.html', context)
+        context = {'title': 'Dashboard'}
+        return render(request, 'Athena/dash_page.html', context)
+
+
+class Courses(View):
+
+    def get(self, request):
+        context = {'title': 'Courses'}
+        return render(request, 'Athena/course_page.html', context)
+
+
+class Chat(View):
+    def get(self, request):
+        context = {'title': 'Messages'}
+        return render(request, 'Athena/chat_page.html', context)
+
+
+class Schedule(View):
+
+    def get(self, request):
+        context = {'title': 'Schedule'}
+        return render(request, 'Athena/schedule_page.html', context)
+
+
+class Deadlines(View):
+
+    def get(self, request):
+        context = {'title': 'Deadlines'}
+        return render(request, 'Athena/deadlines_page.html', context)
+
+
+class Settings(View):
+
+    def get(self, request):
+        context = {'title': 'Settings'}
+        return render(request, 'Athena/settings_page.html', context)
+
+
+class Login(View):
+
+    def get(self, request):
+        context = {'title': 'Login'}
+        return render(request, 'Athena/login.html', context)
+
