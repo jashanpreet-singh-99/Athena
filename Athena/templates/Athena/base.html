@@ -20,42 +20,42 @@
             <li>
                 {% block nav_item_home %}
                 <div class="nav-border ">
-                    <a href="/dash"><img width="40" height="40" src="https://img.icons8.com/eeeeee/sf-regular/48/home.png" alt="home"/></a>
+                    <a href="{% url 'dash_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/sf-regular/48/home.png" alt="home"/></a>
                 </div>
                 {% endblock nav_item_home %}
             </li>    
             <li>
                 {% block nav_item_course %}
                 <div class="nav-border ">
-                    <a href="/course"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
+                    <a href="{% url 'course_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
                 </div>
                 {% endblock nav_item_course %}
             </li>
             <li>
                 {% block nav_item_chat %}
                 <div class="nav-border ">
-                    <a href="/chat"><img width="40" height="40" src="https://img.icons8.com/eeeeee/material-outlined/48/speech-bubble-with-dots.png" alt="message"/></a>
+                    <a href="{% url 'chat_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/material-outlined/48/speech-bubble-with-dots.png" alt="message"/></a>
                 </div>
                 {% endblock nav_item_chat %}
             </li>
             <li>
                 {% block nav_item_schedule %}
                 <div class="nav-border ">
-                    <a href="/schedule"><img width="40" height="40" src="https://img.icons8.com/eeeeee/pulsar-line/48/thursday.png" alt="calender"/></a>
+                    <a href="{% url 'schedule_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/pulsar-line/48/thursday.png" alt="calender"/></a>
                 </div>
                 {% endblock nav_item_schedule %}
             </li>
             <li>
                 {% block nav_item_deadlines %}
                 <div class="nav-border">
-                    <a href="/deadlines"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/clock--v3.png" alt="clock--v3"/></a>
+                    <a href="{% url 'deadlines_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/clock--v3.png" alt="clock--v3"/></a>
                 </div>
                  {% endblock nav_item_deadlines %}
             </li>
             <li>
                 {% block nav_item_settings %}
                 <div class="nav-border ">
-                    <a href="/settings"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/settings.png" alt="settings"/></a>
+                    <a href="{% url 'settings_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/settings.png" alt="settings"/></a>
                 </div>
                 {% endblock nav_item_settings %}
             </li>
