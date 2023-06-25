@@ -10,7 +10,7 @@ urlpatterns = [
     path('schedule', views.Schedule.as_view(), name='schedule_page'),
     path('deadlines', views.Deadlines.as_view(), name='deadlines_page'),
     path('settings', views.Settings.as_view(), name='settings_page'),
-    path('login', views.Login.as_view(), name='login_page')
+    path('login', views.Login.as_view(), name='login_page'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

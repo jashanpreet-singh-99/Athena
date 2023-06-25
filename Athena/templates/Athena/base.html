@@ -7,7 +7,8 @@
     <title>Athena</title>
     <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/dash_style.css' %}"/>
     <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
-    <!-- #ffffff light semi-light #f1f5fb Dark #070708 -->
+    {% block stylesheets %} {% endblock stylesheets %}
+    <!-- #ffffff light semi-light #c9d9f0 Dark #070708 -->
 </head>
 <body>
 <div class="header">
@@ -72,9 +73,15 @@
             <div class="nav-border dark">
                 <img width="48" height="48" src="https://img.icons8.com/070708/external-creatype-outline-colourcreatype/64/external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2.png" alt="external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2"/>
             </div>
+            {% if user.is_authenticated %}
             <div class="nav-border">
                 <a href="#"><img class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/></a>
             </div>
+            {% else %}
+            <div class="nav-border">
+                <a href="#"><img class="rounded unk" width="60" height="60" src="https://img.icons8.com/222222/fluency-systems-regular/48/user.png" alt="user"/></a>
+            </div>
+            {% endif %}
         </div>
         {% block page %}
 

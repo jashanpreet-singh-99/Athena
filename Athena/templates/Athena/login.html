@@ -17,7 +17,8 @@
                 <h1>Athena</h1>
             </div>
             <div class="login-card">
-                <form>
+                <form action="/login" method="post">
+                    {% csrf_token %}
                   <label>
                     <img src="{% static 'Athena/media/email.png' %}" alt="User Icon" width="20" height="20">
                     <input type="email" name="email" placeholder="Email Address" required>

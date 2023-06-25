@@ -1,9 +1,55 @@
 {% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/cource_style.css' %}"/>
+{% endblock stylesheets %}
 {% block nav_item_course %}
     <div class="nav-border sel">
         <a href="/course"><img width="40" height="40" src="https://img.icons8.com/070708/fluency-systems-regular/48/user.png" alt="user"/></a>
     </div>
 {% endblock nav_item_course %}
 {% block page %}
-    <p> Course Page</p>
+    <!-- Add condition that only If the user is Lesser or above only show this -->
+    <div class="title_1_container">
+        <h2 class="title_h2">My Courses</h2>
+        <button class="primary-btn">
+            Create
+        </button>
+    </div>
+    <div class="course_box">
+        {% with ''|center:5 as range %}
+        {% for _ in range %}
+        <div class="course-card">
+            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">
+            <h3>Course Title {{ forloop.counter }}</h3>
+            <p>Course description</p>
+        </div>
+        {% empty %}
+            <p>No courses created yet. Click on the create button to build new course.</p>
+        {% endfor %}
+        {% endwith %}
+    </div>
+    <!-- Normal Courses visible to all -->
+    <div class="title_1_container">
+        <h2 class="title_h2">Trending Courses</h2>
+        <button class="secondary-btn">
+            View All
+        </button>
+    </div>
+    <div class="course_box">
+        {% with ''|center:4 as range %}
+        {% for _ in range %}
+        <div class="course-card">
+            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">
+            <h3>Course Title {{ forloop.counter }}</h3>
+            <p>Course description</p>
+        </div>
+        {% empty %}
+            <p>No courses created yet. Click on the create button to build new course.</p>
+        {% endfor %}
+        {% endwith %}
+    </div>
+    <div class="title_3_container">
+        <h2 class="title_h2">All Courses</h2>
+    </div>
 {% endblock %}

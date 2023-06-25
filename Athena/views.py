@@ -50,3 +50,9 @@ class Login(View):
         context = {'title': 'Login'}
         return render(request, 'Athena/login.html', context)
 
+    def post(self, request):
+        email = request.POST['email']
+        password = request.POST['password']
+        print("Login :", email, password)
+        return render(request, 'Athena/login.html')
+
