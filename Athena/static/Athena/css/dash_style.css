@@ -139,6 +139,8 @@ img.rounded {
     border-radius: 50%;
     top: 40px;
     position: absolute;
+     display: inline-block;
+    cursor: pointer;
     right: 40px;
     box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
 }
@@ -146,4 +148,45 @@ img.rounded {
 img.unk{
     padding: 10px;
 }
+  .menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background-color: white;
+    border-radius: 24px;
+    padding: 10px;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+
+  .menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu ul li {
+    display: flex;
+    align-items: start;
+    padding: 8px;
+    margin: 8px 4px;
+
+  }
+
+  .menu ul li a{
+      text-decoration: none;
+      color: inherit;
+      display: inline-block;
+      margin: 0;
+      padding: 0;
+  }
+
+  .menu ul li img {
+    margin-right: 16px;
+    vertical-align: middle;
+  }
+
+  .menu ul li:not(:last-child) {
+    border-bottom: 1px solid lightgray;
+  }
 

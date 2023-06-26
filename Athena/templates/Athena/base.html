@@ -62,7 +62,6 @@
             </li>
         </ul>
     </div>
-    <script src="{% static 'Athena/js/nav_bar.js' %}"></script>
     <div class="section">
         <div class="title-bar">
             <h1 class="page-title">{{ title }}</h1>
@@ -75,11 +74,22 @@
             </div>
             {% if user.is_authenticated %}
             <div class="nav-border">
-                <a href="#"><img class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/></a>
+                <img id="user_profile_btn" class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/>
+            </div>
+            <div class="menu" id="menu">
+                <ul>
+                    <li><a href="{% url 'settings_page' %}"><img width="20" height="20" src="https://img.icons8.com/070708/fluency-systems-regular/48/settings.png" alt="settings"/> Settings</a></li>
+                    <li><a href="{% url 'logout_page' %}"><img width="20" height="20" src="https://img.icons8.com/070708/ios/50/logout-rounded--v1.png" alt="exit--v1"/>Logout</a></li>
+                </ul>
             </div>
             {% else %}
             <div class="nav-border">
-                <a href="#"><img class="rounded unk" width="60" height="60" src="https://img.icons8.com/222222/fluency-systems-regular/48/user.png" alt="user"/></a>
+                <img id="user_profile_btn" class="rounded unk" width="60" height="60" src="https://img.icons8.com/222222/fluency-systems-regular/48/user.png" alt="user"/>
+            </div>
+            <div class="menu" id="menu">
+                <ul>
+                    <li><a href="{% url 'login_page' %}"><img width="20" height="20" src="https://img.icons8.com/070708/ios/50/login-rounded-right--v1.png" alt="exit--v1"/>Login</a></li>
+                </ul>
             </div>
             {% endif %}
         </div>
@@ -90,5 +100,9 @@
         </div>
     </div>
 </div>
+<script src="{% static 'Athena/js/nav_bar.js' %}"></script>
+{% block extrascripts %}
+
+{% endblock %}
 </body>
 </html>
