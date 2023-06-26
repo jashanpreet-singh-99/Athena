@@ -14,10 +14,13 @@
 {% block page %}
     
     <div class="profile_card">
-        <img id='profile_view' src="{%  static 'Athena/media/user.jpg' %}" alt="User-profile">
-        <button id="update-photo-button">
-            <img width="18" height="18" src="https://img.icons8.com/eeeeee/ios/50/edit--v1.png" alt="edit--v1"/>
-        </button>
+        <form method="post" action="{% url 'upload_profile_page' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <img id='profile_view' src="{%  static 'Athena/media/user.jpg' %}" alt="User-profile">
+            <button id="update-photo-button">
+                <img width="18" height="18" src="https://img.icons8.com/eeeeee/ios/50/edit--v1.png" alt="edit--v1"/>
+            </button>
+        </form>
         <div class="info_container">
             <h3>{{ user.username }}</h3>
             <p>{{ user.email }}</p>

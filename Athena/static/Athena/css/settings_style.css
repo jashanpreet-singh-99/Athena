@@ -3,6 +3,10 @@
     margin: 60px 200px;
 }
 
+.profile_card form {
+    display: flex;
+}
+
 #profile_view {
     object-fit: cover;
     width: 200px;
