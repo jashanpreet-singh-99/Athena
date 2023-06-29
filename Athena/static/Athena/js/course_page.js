@@ -110,6 +110,8 @@ document.addEventListener('click', (event) => {
 const pages = document.querySelectorAll('.details-page');
 const prevButtons = document.querySelectorAll('.prev-btn');
 const nextButtons = document.querySelectorAll('.next-button');
+const pageDivs = document.querySelectorAll('.divider')
+const pageIcons = document.querySelectorAll('.prog-icon')
 
 let currentIndex = 0;
 function showPage(index) {
@@ -119,11 +121,32 @@ function showPage(index) {
   pages[index].classList.add('active');
 }
 
+function colorDivider(index, val) {
+  if (val) {
+    pageDivs[index - 1].classList.add('comp');
+  } else {
+    pageDivs[index].classList.remove('comp');
+  }
+}
+
+function changeIcon(index, val) {
+  if (val) {
+    pageIcons[index].src = 'https://img.icons8.com/4CAF50/pastel-glyph/64/checked--v3.png';
+  } else {
+    pageIcons[index].src = 'https://img.icons8.com/999999/dotty/80/circled.png';
+  }
+
+}
+
 function navigateLeft() {
   currentIndex--;
   if (currentIndex < 0) {
     currentIndex = 0;
   }
+  if (currentIndex >= 0) {
+    colorDivider(currentIndex, false)
+  }
+  changeIcon(currentIndex, false);
   showPage(currentIndex);
 }
 
@@ -132,6 +155,10 @@ function navigateRight() {
   if (currentIndex >= pages.length) {
     currentIndex = pages.length - 1;
   }
+  if (currentIndex <= pages.length-1) {
+    colorDivider(currentIndex, true)
+  }
+  changeIcon(currentIndex - 1, true);
   showPage(currentIndex);
 }
 
