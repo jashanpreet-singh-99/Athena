@@ -38,8 +38,13 @@
 }
 
 
-.details-container {
+.details-page {
+    display: none;
     margin: 60px 200px;
+}
+
+.details-page.active {
+    display: block;
 }
 
 .details-names {

@@ -103,3 +103,44 @@ document.addEventListener('click', (event) => {
     dateDialog.style.display = 'none';
   }
 });
+
+//
+// Logic for page navigation
+//
+const pages = document.querySelectorAll('.details-page');
+const prevButtons = document.querySelectorAll('.prev-btn');
+const nextButtons = document.querySelectorAll('.next-button');
+
+let currentIndex = 0;
+function showPage(index) {
+  pages.forEach((page) => {
+    page.classList.remove('active');
+  });
+  pages[index].classList.add('active');
+}
+
+function navigateLeft() {
+  currentIndex--;
+  if (currentIndex < 0) {
+    currentIndex = 0;
+  }
+  showPage(currentIndex);
+}
+
+function navigateRight() {
+  currentIndex++;
+  if (currentIndex >= pages.length) {
+    currentIndex = pages.length - 1;
+  }
+  showPage(currentIndex);
+}
+
+prevButtons.forEach((button) => {
+  button.addEventListener('click', navigateLeft);
+});
+
+nextButtons.forEach((button) => {
+  button.addEventListener('click', navigateRight);
+});
+
+showPage(currentIndex);
