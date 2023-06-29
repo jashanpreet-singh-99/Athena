@@ -13,7 +13,8 @@ urlpatterns = [
     path('login', views.Login.as_view(), name='login_page'),
     path('logout', views.Logout.as_view(), name='logout_page'),
     path('signup', views.Signup.as_view(), name='signup_page'),
-    path('upload_profile', views.UploadProfile.as_view(), name='upload_profile_page')
+    path('upload_profile', views.UploadProfile.as_view(), name='upload_profile_page'),
+    path('course_builder', views.CourseBuilder.as_view(), name='course_builder_page')
 ]
 
 urlpatterns += staticfiles_urlpatterns()

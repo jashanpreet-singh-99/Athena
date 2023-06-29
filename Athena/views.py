@@ -46,6 +46,13 @@ class Settings(View):
         return render(request, 'Athena/settings_page.html', context)
 
 
+class CourseBuilder(View):
+
+    def get(self, request):
+        context = {'title': 'Course Builder'}
+        return render(request, 'Athena/course_builder_page.html', context)
+
+
 class Login(View):
 
     def get(self, request):

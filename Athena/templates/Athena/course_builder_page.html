@@ -1,0 +1,88 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_builder_style.css' %}"/>
+{% endblock stylesheets %}
+{% block nav_item_course %}
+    <div class="nav-border">
+        <a href="/course"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
+    </div>
+{% endblock nav_item_course %}
+{% block page %}
+    <div class="progress_block">
+        <div class="progress_icons">
+            <img width="48" height="48" src="https://img.icons8.com/4CAF50/pastel-glyph/64/checked--v3.png" alt="checked--v3"/>
+            <div class="divider comp"></div>
+            <img width="48" height="48" src="https://img.icons8.com/4CAF50/pastel-glyph/64/checked--v3.png" alt="checked--v3"/>
+            <div class="divider"></div>
+            <img width="50" height="50" src="https://img.icons8.com/999999/dotty/80/circled.png" alt="circled"/>
+            <div class="divider"></div>
+            <img width="50" height="50" src="https://img.icons8.com/999999/dotty/80/circled.png" alt="circled"/>
+        </div>
+        <div class="progress_labels">
+            <p>Step: 1</p>
+            <p>Step: 2</p>
+            <p>Step: 3</p>
+            <p>Step: 4</p>
+        </div>
+        <div class="progress_labels">
+            <p class="titles"> Details </p>
+            <p class="titles">   Content</p>
+            <p class="titles">Enrollment</p>
+            <p class="titles">  Review  </p>
+        </div>
+    </div>
+    <div class="details-container">
+        <h2 class="title_h2">Course Details</h2>
+        <div class="details-names-l">
+            <label class="labels" for="courseTitle">Project Title</label>
+            <input type="text" id="courseTitle" class="input_text">
+        </div>
+        <div class="details-names-l">
+            <label class="labels"  for="courseDesc">Course Description</label>
+            <textarea id="courseDesc" class="input_text  courseDec"></textarea>
+        </div>
+
+        <div class="details-names-l">
+            <label class="labels" for="startDate">Course Start Date</label>
+            <div class="details-names not">
+                <input type="text" id="startDate" class="input_text" readonly>
+                <button id="open-start-dialog" class="date-button">
+                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
+                </button>
+            </div>
+        </div>
+
+        <div class="details-names-l">
+            <label class="labels" for="endDate">Course End Date</label>
+            <div class="details-names not">
+                <input type="text" id="endDate" class="input_text" readonly>
+                <button id="open-end-dialog" class="date-button">
+                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
+                </button>
+            </div>
+        </div>
+
+
+        <div id="date-dialog" style="display: none;">
+          <div id="header">
+            <button id="prev-month" class="date-b rotate">
+                <img width="24" height="24" src="https://img.icons8.com/ios/50/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+            </button>
+            <p id="current-month" class="date-t"></p>
+            <button id="next-month" class="date-b">
+                <img width="24" height="24" src="https://img.icons8.com/ios/50/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+            </button>
+          </div>
+          <div id="dates"></div>
+        </div>
+        <div class="button_control">
+            <button id="previous-button" class="prev-btn hide">Back</button>
+            <div></div>
+            <button id="next-button" class="next-button">Next</button>
+        </div>
+  </div>
+{% endblock %}
+{% block extrascripts %}
+      <script src="{% static 'Athena/js/course_page.js' %}"></script>
+{% endblock %}
