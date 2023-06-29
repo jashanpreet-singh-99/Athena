@@ -1,0 +1,98 @@
+.date-button {
+    margin: 8px;
+    background-color: #070708;
+    padding: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+    justify-content: center;
+    align-items: center;
+}
+
+ #date-dialog {
+  position: absolute;
+  top: 250px;
+  left: 250px;
+  width: 70%;
+  background-color: white;
+  border-radius: 24px;
+  padding: 10px;
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 40px 0;
+  padding: 40px;
+}
+
+#header p {
+    font-size: x-large;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+}
+
+#dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.date-b {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: none;
+    color: #ffffff;
+    background-color: transparent;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+.date-b:hover {
+    background-color: #dddddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#dates button {
+  height: 72px;
+  width: 72px;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 16px;
+  font-size: large;
+  margin: 8px;
+}
+
+#dates button.selected {
+  background-color: lightblue;
+  border: 0 solid #c9d9f0;
+  border-radius: 50%;
+}
+
+#dates button:hover {
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+#dates button.selected {
+  background-color: lightblue;
+}
+
+.title_1_container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.title_h2 {
+    margin: 8px 60px;
+}

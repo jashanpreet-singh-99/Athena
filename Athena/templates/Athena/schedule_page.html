@@ -1,9 +1,27 @@
 {% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/schedule_style.css' %}"/>
+{% endblock stylesheets %}
 {% block nav_item_schedule %}
     <div class="nav-border sel">
         <a href="/schedule"><img width="40" height="40" src="https://img.icons8.com/070708/pulsar-line/48/thursday.png" alt="calender"/></a>
     </div>
 {% endblock nav_item_schedule %}
 {% block page %}
-    <p> Schedule Page</p>
+    <div id="date-dialog">
+          <div id="header">
+            <button id="prev-month" class="date-b rotate">
+                <img width="68" height="68" src="https://img.icons8.com/ios/68/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+            </button>
+            <p id="current-month" class="date-t"></p>
+            <button id="next-month" class="date-b">
+                <img width="68" height="68" src="https://img.icons8.com/ios/68/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+            </button>
+          </div>
+          <div id="dates"></div>
+    </div>
+{% endblock %}
+{% block extrascripts %}
+      <script src="{% static 'Athena/js/schedule_page.js' %}"></script>
 {% endblock %}
