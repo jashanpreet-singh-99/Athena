@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.http import HttpResponse
+from .forms import *
 
 
 # Create your views here.
@@ -42,7 +43,8 @@ class Deadlines(View):
 class Settings(View):
 
     def get(self, request):
-        context = {'title': 'Settings'}
+        form = UserProfileForm()
+        context = {'title': 'Settings', 'from': form}
         return render(request, 'Athena/settings_page.html', context)
 
 
@@ -119,4 +121,5 @@ class Signup(View):
 class UploadProfile(View):
 
     def post(self, request):
+        print(request.POST)
         return redirect('settings_page')

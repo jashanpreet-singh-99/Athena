@@ -1,6 +1,6 @@
 .profile_card {
     display: flex;
-    margin: 60px 200px;
+    margin: 20px 200px;
 }
 
 .profile_card form {
@@ -60,6 +60,12 @@
     margin: 20px 200px;
 }
 
+.title_h2 {
+    margin: 32px 0;
+    font-family: 'Roboto', sans-serif;
+    color: #666666;
+}
+
 .details-names {
     display: flex;
     margin-bottom: 20px;
@@ -93,11 +99,19 @@
     font-family: 'Roboto', sans-serif;
 }
 
+.details-buttons {
+    width: 680px;
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
 .edit-button {
-    width: 160px;
+    width: 240px;
     color: #ffffff;
     background-color: #070708;
     padding: 16px 32px;
+    margin: 8px 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     border-radius: 24px;
     border-width: 0;
@@ -119,9 +133,10 @@
 }
 
 .secondary-btn {
+    width: 240px;
     color: #070708;
     background-color: #ffffff;
-    margin: 8px 60px;
+    margin: 8px 0;
     padding: 16px 32px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     border-radius: 24px;
@@ -141,6 +156,28 @@
     background-color: #c9d9f0;
     box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
 }
+
+.details-member {
+    width: 680px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.details-member .labels {
+    width: 370px;
+    font-size: large;
+}
+.green {
+    background-color: #4CAF50;
+}
+
+.red {
+    background-color: red;
+    color: #ffffff;
+}
+
 
 /*.edit-mode .read-only {*/
 /*    display: none;*/
