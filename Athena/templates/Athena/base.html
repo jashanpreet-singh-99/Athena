@@ -74,7 +74,11 @@
             </div>
             {% if user.is_authenticated %}
             <div class="nav-border">
-                <img id="user_profile_btn" class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/>
+                {% if profile_img %}
+                    <img id="user_profile_btn" class="rounded" width="60" height="60" src="{{ profile_img.url }}" alt="user"/>
+                {% else %}
+                    <img id="user_profile_btn" class="rounded" width="60" height="60" src="{% static "Athena/media/user.jpg" %}" alt="user"/>
+                {% endif %}
             </div>
             <div class="menu" id="menu">
                 <ul>

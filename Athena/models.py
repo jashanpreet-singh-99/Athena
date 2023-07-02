@@ -3,6 +3,11 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
+# Define custom path form files for each user
+def user_directory_path(instance, filename):
+    return f'user_{instance.user.username}/{filename}'
+
+
 class Membership(models.Model):
     CHOICES = [
         ('Greater', 'Greater'),
@@ -24,8 +29,11 @@ class User(AbstractUser):
 
 
 class UserProfiles(models.Model):
-    username = models.ForeignKey(User, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='profiles/')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    img = models.ImageField(upload_to=user_directory_path)
+
+    def __str__(self):
+        return self.user.username
 
 
 # class CourseCategories(models.Model):

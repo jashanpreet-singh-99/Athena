@@ -50,25 +50,8 @@ function handleImageSelection(event) {
   if (file) {
     // Perform operations with the selected file (e.g., display preview, upload, etc.)
     console.log('Selected image file:', file);
-    const formData = new FormData();
-    formData.append('username', usernameInput.textContent);
-    formData.append('img', file);
     const form = document.getElementById('profile_form');
     form.submit();
-    // fetch('/upload_profile', {
-    //     method: 'POST',
-    //     body: formData,
-    //     headers: {
-    //         'X-CSRFToken': getCSRFToken()
-    //     }
-    // })
-    //     .then(response => response.json())
-    //     .then(data => {
-    //         console.log(data)
-    //     })
-    //     .catch(error => {
-    //         console.log(error)
-    //     });
 
   }
 }

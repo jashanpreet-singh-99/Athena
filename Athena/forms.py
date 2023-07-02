@@ -8,8 +8,9 @@ from .models import *
 #         fields = '__all__'
 
 
-class UserProfileForm(forms.Form):
+class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfiles
-        fields = '__all__'
+        fields = ['user', 'img']
+        labels = {'user': '', 'img': ''}
