@@ -39,16 +39,21 @@
     <div class="title_1_container">
         <h2 class="title_h2">Personal Details</h2>
     </div>
-    <div class="details-names">
-        <div class="details-names-l">
-            <label class="labels" for="firstName">First Name</label>
-            <input type="text" id="firstName" class="read-only" readonly value="{{ user.first_name }}">
+    <form id="user_names_form" method="post" action="{%  url 'update_user_name' %}">
+        {% csrf_token %}
+        <div class="details-names">
+            <div class="details-names-l">
+                <label class="labels" for="firstName">First Name</label>
+                {{ u_form.first_name }}
+    {#            <input type="text" id="firstName" class="read-only" readonly value="{{ user.first_name }}">#}
+            </div>
+            <div class="details-names-l">
+                <label class="labels"  for="lastName">Last Name</label>
+                {{ u_form.last_name }}
+    {#            <input type="text" id="lastName" class="read-only" readonly value="{{ user.last_name }}">#}
+            </div>
         </div>
-        <div class="details-names-l">
-            <label class="labels"  for="lastName">Last Name</label>
-            <input type="text" id="lastName" class="read-only" readonly value="{{ user.last_name }}">
-        </div>
-    </div>
+    </form>
     <div class="details-buttons">
         <button id="edit-button" class="edit-button edit-button">Edit Details</button>
         <button id="reset-password" class="secondary-btn">Change Password</button>

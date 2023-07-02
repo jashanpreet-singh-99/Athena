@@ -8,6 +8,17 @@ from .models import *
 #         fields = '__all__'
 
 
+class UserInfoSettingsForm(forms.ModelForm):
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name']
+        labels = {
+            'first_name': 'First Name',
+            'last_name': 'Last Name',
+        }
+
+
 class UserProfileForm(forms.ModelForm):
 
     class Meta:

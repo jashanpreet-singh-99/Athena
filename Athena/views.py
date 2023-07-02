@@ -61,6 +61,11 @@ class Settings(View):
     def get(self, request):
         user = request.user
         initial_data = {'user': user}
+        initial_data_u = {
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }
+        # USer Profile Form
         form = UserProfileForm(initial=initial_data)
 
         # to manage image selection using custom button
@@ -71,6 +76,20 @@ class Settings(View):
         context = {'title': 'Settings', 'form': form}
         # load profile image if present
         load_profile(context, request)
+
+        # User info Form
+        u_form = UserInfoSettingsForm(initial=initial_data_u)
+
+        u_form.fields['first_name'].widget.attrs['id'] = 'firstname'
+        u_form.fields['first_name'].widget.attrs['class'] = 'read-only'
+        u_form.fields['first_name'].widget.attrs['readonly'] = 'readonly'
+
+        u_form.fields['last_name'].widget.attrs['id'] = 'lastname'
+        u_form.fields['last_name'].widget.attrs['class'] = 'read-only'
+        u_form.fields['last_name'].widget.attrs['readonly'] = 'readonly'
+
+        context['u_form'] = u_form
+
         return render(request, 'Athena/settings_page.html', context)
 
 
@@ -157,6 +176,20 @@ class UploadProfile(View):
         if form.is_valid():
             print('Valid form : ', request.FILES)
             form.save()
-        else :
+        else:
             print('Invalid Form Data:', request.POST)
+        return redirect('settings_page')
+
+
+class UpdateUserName(View):
+
+    def post(self, request):
+        user = request.user
+        old_user_data = User.objects.get(username=user.username)
+        form = UserInfoSettingsForm(request.POST, instance=old_user_data)
+        if form.is_valid():
+            print('Valid form : ', request.POST)
+            form.save()
+        else:
+            print('InValid form : ', request.POST)
         return redirect('settings_page')

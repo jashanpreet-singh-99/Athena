@@ -11,6 +11,8 @@ editButton.addEventListener('click', function() {
     } else {
         editButton.innerHTML = 'Edit Details';
         disableFields();
+        const form = document.getElementById('user_names_form');
+        form.submit();
     }
 });
 
