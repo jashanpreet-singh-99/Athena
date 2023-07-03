@@ -25,3 +25,11 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfiles
         fields = ['user', 'img']
         labels = {'user': '', 'img': ''}
+
+
+class UserMembershipForm(forms.ModelForm):
+    membership = forms.ModelChoiceField(queryset=Membership.objects.all(), widget=forms.TextInput())
+
+    class Meta:
+        model = User
+        fields = ['membership']

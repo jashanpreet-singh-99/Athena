@@ -65,7 +65,9 @@ class Settings(View):
             'first_name': user.first_name,
             'last_name': user.last_name,
         }
-        # USer Profile Form
+        initial_data_m = {'membership': user.membership}
+
+        # User Profile Form
         form = UserProfileForm(initial=initial_data)
 
         # to manage image selection using custom button
@@ -89,6 +91,33 @@ class Settings(View):
         u_form.fields['last_name'].widget.attrs['readonly'] = 'readonly'
 
         context['u_form'] = u_form
+
+        # Membership Form
+        m_form = UserMembershipForm(initial=initial_data_m)
+
+        m_form.fields['membership'].widget.attrs['id'] = 'membership'
+        m_form.fields['membership'].widget.attrs['class'] = 'read-only'
+        m_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
+        m_form.fields['membership'].widget.attrs['style'] = 'display: none;'
+
+        context['m_form'] = m_form
+
+        # Pass list of all Memberships available
+        memberships_list = Membership.objects.all()
+        context['membership_list'] = memberships_list
+
+        # Pass Membership Features
+        feature_list = MemberFeatures.objects.all()
+        context['features_list'] = feature_list
+
+        mm_form = UserMembershipForm(initial=initial_data_m)
+
+        mm_form.fields['membership'].widget.attrs['id'] = 'membership-buy-selection'
+        mm_form.fields['membership'].widget.attrs['class'] = 'read-only'
+        mm_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
+        mm_form.fields['membership'].widget.attrs['style'] = 'display: none;'
+
+        context['mm_form'] = mm_form
 
         return render(request, 'Athena/settings_page.html', context)
 
@@ -192,4 +221,37 @@ class UpdateUserName(View):
             form.save()
         else:
             print('InValid form : ', request.POST)
+        return redirect('settings_page')
+
+
+class UpdateMembership(View):
+
+    def post(self, request):
+        user = request.user
+        old_user_data = User.objects.get(username=user.username)
+        membership = Membership.objects.get(pk=request.POST['membership'])
+        form = UserMembershipForm(request.POST, instance=old_user_data)
+        form.fields['membership'].initial = membership
+        if form.is_valid():
+            print('Valid form: ', request.POST)
+            form.save()
+        else:
+            print('Invalid User membership')
+        return redirect('settings_page')
+
+
+class CancelMembership(View):
+
+    def post(self, request):
+        user = request.user
+        old_user_data = User.objects.get(username=user.username)
+        membership = Membership.objects.get(pk=1)
+        form = UserMembershipForm(request.POST, instance=old_user_data)
+        form.fields['membership'].initial = membership
+        if form.is_valid():
+            old_user_data.membership = membership
+            old_user_data.save()
+            print('Valid form: ', request.POST)
+        else:
+            print('Invalid User membership')
         return redirect('settings_page')

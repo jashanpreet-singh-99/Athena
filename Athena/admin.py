@@ -7,3 +7,4 @@ from .models import *
 admin.site.register(User)
 admin.site.register(UserProfiles)
 admin.site.register(Membership)
+admin.site.register(MemberFeatures)

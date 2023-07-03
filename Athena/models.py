@@ -8,6 +8,12 @@ def user_directory_path(instance, filename):
     return f'user_{instance.user.username}/{filename}'
 
 
+class MemberFeatures(models.Model):
+    name = models.CharField(max_length=255)
+    details = models.TextField(max_length=1024)
+    min = models.PositiveIntegerField()
+
+
 class Membership(models.Model):
     CHOICES = [
         ('Greater', 'Greater'),

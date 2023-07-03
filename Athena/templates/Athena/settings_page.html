@@ -64,15 +64,96 @@
         </div>
         <div class="details-member">
             <label class="labels"  for="membership">Current Account Type</label>
-            <input type="text" id="membership" class="read-only" readonly value="{{ user.membership }}">
+            <form id="membership_form" action="{% url 'cancel_membership' %}" method="post">
+                {% csrf_token %}
+                <input type="text" id="membership" class="read-only" readonly value="{{ user.membership }}">
+                {{ m_form.membership }}
+            </form>
         </div>
         <div class="details-buttons">
             <button id="upgrade-button" class="edit-button green">Upgrade </button>
-            <button id="cancel-membership" class="secondary-btn red">Cancel Account</button>
+            {% if user.membership.id > 1 %}
+                <button id="cancel-membership" class="secondary-btn red">Cancel Account</button>
+            {% endif %}
         </div>
     </div>
   </div>
+  <div id="dialog-overlay"></div>
+  <div id="dialog-box">
+      <h2>Cancel Membership</h2>
+      <p>Are you sure you want to cancel your membership? By clicking Cancel membership, your account will be demoted to "Demi" status. You will lose the privileges given to you for the upgraded account.</p>
+      <button id="cancel-membership-button" class="secondary-btn red extended-w">Cancel Membership</button>
+      <button id="continue-membership-button" class="edit-button green extended-w">Continue Membership</button>
+  </div>
+    <div id="upgrade-dialog" class="dialog-b">
+      <h1> Simple, transparent pricing</h1>
+      <p>No contracts. No surprise fees.</p>
+
+      <div class="dialog-b-content">
+        <div class="features-section">
+
+
+            <div class="toggle-div">
+                <button id="monthly-button" class="toggle-btn sel">Monthly</button>
+                <button id="yearly-button" class="toggle-btn ">Yearly</button>
+            </div>
+            {% for feature in features_list %}
+            <div class="feature-item">
+                <p>{{ feature.name }}</p>
+                {% if feature.min <= user.membership.id %}
+                    <img height="16" width="16" src="https://img.icons8.com/070708/material-rounded/24/checked--v1.png" alt="feature-status">
+                {% else %}
+                    <img height="16" width="16" src="https://img.icons8.com/070708/ios/50/cancel.png" alt="feature-status">
+                {% endif %}
+            </div>
+            {% endfor %}
+
+        </div>
+        <div class="sep-section"></div>
+        <div class="pricing-section">
+            {% for mship in membership_list %}
+                {% if mship.type == user.membership.type %}
+                    <div class="membership-price-item sel">
+                        <img width="20" height="20" src="https://img.icons8.com/ffffff/material-rounded/24/checked--v1.png" alt="checked--v1"/>
+                        <p class="membership_number" style="display: none;">{{ mship.id }}</p>
+                        <p class="p-t-label">{{ mship.type }}</p>
+                        <span></span>
+                        <h2>${{ mship.price }}</h2>
+                        <p class="p-label">/Month</p>
+                    </div>
+                {% else %}
+                    <div class="membership-price-item">
+                        <img width="20" height="20" src="https://img.icons8.com/aaaaaa/ios-filled/50/circled.png" alt="checked--v1"/>
+                        <p class="membership_number" style="display: none;">{{ mship.id }}</p>
+                        <p class="p-t-label">{{ mship.type }}</p>
+                        <span></span>
+                        <h2>${{ mship.price }}</h2>
+                        <p class="p-label">/Month</p>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+      </div>
+      <div>
+          <form id="membership-upgrade-form" action="{%  url 'update_user_membership' %}" method="post">
+              {% csrf_token %}
+              {{ mm_form.membership }}
+          </form>
+      </div>
+      <div class="buy-divider"></div>
+      <div class="plan-buy-container">
+        <button id="exit-dialog-button" class="secondary-btn">Exit</button>
+        <button id="buy-selected-btn" class="edit-button">Buy Selected</button>
+      </div>
+    </div>
 {% endblock %}
 {% block extrascripts %}
-      <script src="{% static 'Athena/js/settings_page.js' %}"></script>
+    <script>
+        var currentMinFeature = '{{ user.membership.id|escapejs }}';
+        var features = {};
+        {% for item in features_list %}
+            features["{{ item.name|escapejs }}"] = '{{ item.min|escapejs }}';
+        {% endfor %}
+    </script>
+    <script src="{% static 'Athena/js/settings_page.js' %}"></script>
 {% endblock %}
