@@ -8,11 +8,13 @@ from .models import *
 
 def load_profile(context, request):
     user = request.user
-    try:
-        old_profile = UserProfiles.objects.get(user=user)
-        context['profile_img'] = old_profile.img
-    except UserProfiles.DoesNotExist:
-        print('No User profile_img present')
+    if user.is_authenticated:
+        try:
+            old_profile = UserProfiles.objects.get(user=user)
+            context['profile_img'] = old_profile.img
+        except UserProfiles.DoesNotExist:
+            print('No User profile_img present')
+        return context
     return context
 
 
