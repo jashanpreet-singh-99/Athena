@@ -1,0 +1,18 @@
+# In python console
+from Athena.models import *
+Membership.objects.create(type='Demi',price=0)
+
+# In manage.py
+createsuperuser
+username: root
+email: root@root.com
+password: root
+Note: press y for password confirmation
+
+# In admin page
+Add membership objects:
+- Lesser 	Prices: 50
+- Inter 	Prices: 100
+- Greater 	Prices: 200
+
+Note: settings page won't work if you are not logged in
