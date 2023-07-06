@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.views import View
+from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.http import HttpResponse
 from .forms import *
@@ -19,7 +19,7 @@ def load_profile(context, request):
 
 
 # Create your views here.
-class Dash(View):
+class Dash(views.View):
 
     def get(self, request):
         context = {'title': 'Dashboard'}
@@ -27,7 +27,7 @@ class Dash(View):
         return render(request, 'Athena/dash_page.html', context)
 
 
-class Courses(View):
+class Courses(views.View):
 
     def get(self, request):
         context = {'title': 'Courses'}
@@ -35,14 +35,14 @@ class Courses(View):
         return render(request, 'Athena/course_page.html', context)
 
 
-class Chat(View):
+class Chat(views.View):
     def get(self, request):
         context = {'title': 'Messages'}
         load_profile(context, request)
         return render(request, 'Athena/chat_page.html', context)
 
 
-class Schedule(View):
+class Schedule(views.View):
 
     def get(self, request):
         context = {'title': 'Schedule'}
@@ -50,7 +50,7 @@ class Schedule(View):
         return render(request, 'Athena/schedule_page.html', context)
 
 
-class Deadlines(View):
+class Deadlines(views.View):
 
     def get(self, request):
         context = {'title': 'Deadlines'}
@@ -58,7 +58,7 @@ class Deadlines(View):
         return render(request, 'Athena/deadlines_page.html', context)
 
 
-class Settings(View):
+class Settings(views.View):
 
     def get(self, request):
         user = request.user
@@ -124,7 +124,7 @@ class Settings(View):
         return render(request, 'Athena/settings_page.html', context)
 
 
-class CourseBuilder(View):
+class CourseBuilder(views.View):
 
     def get(self, request):
         context = {'title': 'Course Builder'}
@@ -132,7 +132,7 @@ class CourseBuilder(View):
         return render(request, 'Athena/course_builder_page.html', context)
 
 
-class Login(View):
+class Login(views.View):
 
     def get(self, request):
         context = {'title': 'Login'}
@@ -160,14 +160,14 @@ class Login(View):
                 return redirect('login_page')
 
 
-class Logout(View):
+class Logout(views.View):
 
     def get(self, request):
         logout(request)
         return redirect('login_page')
 
 
-class Signup(View):
+class Signup(views.View):
     def get(self, request):
         return render(request, 'Athena/signup.html')
 
@@ -195,7 +195,7 @@ class Signup(View):
             return render(request, 'Athena/signup.html')
 
 
-class UploadProfile(View):
+class UploadProfile(views.View):
 
     def post(self, request):
         user = request.user
@@ -212,7 +212,7 @@ class UploadProfile(View):
         return redirect('settings_page')
 
 
-class UpdateUserName(View):
+class UpdateUserName(views.View):
 
     def post(self, request):
         user = request.user
@@ -226,7 +226,7 @@ class UpdateUserName(View):
         return redirect('settings_page')
 
 
-class UpdateMembership(View):
+class UpdateMembership(views.View):
 
     def post(self, request):
         user = request.user
@@ -242,7 +242,7 @@ class UpdateMembership(View):
         return redirect('settings_page')
 
 
-class CancelMembership(View):
+class CancelMembership(views.View):
 
     def post(self, request):
         user = request.user
