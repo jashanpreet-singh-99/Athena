@@ -228,3 +228,97 @@
 #dates button.selected {
   background-color: lightblue;
 }
+
+.user-hints {
+    margin: 16px 0;
+    padding-top: 8px;
+}
+
+.input_item {
+    width: 360px;
+    color: #070708;
+    padding: 8px 32px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    margin-right: 32px;
+    border-radius: 16px;
+    border: 1px solid #c9d9f0;
+    background-color: #eeeeee;
+    font-size: medium;
+}
+
+.primary-btn {
+    width: 160px;
+    color: #ffffff;
+    background-color: #070708;
+    padding: 16px 32px;
+    margin: 8px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 24px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+}
+
+
+.primary-btn:hover {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.primary-btn:active {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.combo-add-container {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 24px;
+}
+
+.selected-categories {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.category-item {
+  height: 48px;
+  display: flex;
+  background-color: #c9d9f0;
+  padding: 14px 16px;
+  border-radius: 24px;
+  margin: 4px;
+  justify-content: center;
+    align-items: center;
+}
+
+.category-item:hover {
+    background-color: #F88379;
+}
+
+.category-item:active {
+    background-color: #DC143C;
+    color: #eeeeee;
+}
+
+
+.category-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.remove-button {
+    border: none;
+    background-color: transparent;
+    justify-content: center;
+}
+
+.remove-button img {
+    margin-left: 8px;
+}

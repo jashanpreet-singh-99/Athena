@@ -36,17 +36,20 @@
         <h2 class="title_h2">Course Details</h2>
         <div class="details-names-l">
             <label class="labels" for="courseTitle">Course Title</label>
-            <input type="text" id="courseTitle" class="input_text">
+            {{ form.course_title }}
+{#            <input type="text" id="courseTitle" class="input_text">#}
         </div>
         <div class="details-names-l">
             <label class="labels"  for="courseDesc">Course Description</label>
-            <textarea id="courseDesc" class="input_text  courseDec"></textarea>
+            {{ form.course_desc }}
+{#            <textarea id="courseDesc" class="input_text  courseDec"></textarea>#}
         </div>
 
         <div class="details-names-l">
             <label class="labels" for="startDate">Course Start Date</label>
             <div class="details-names not">
-                <input type="text" id="startDate" class="input_text" readonly>
+{#                <input type="text" id="startDate" class="input_text" readonly>#}
+                {{ form.course_start_date }}
                 <button id="open-start-dialog" class="date-button">
                     <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
                 </button>
@@ -56,7 +59,8 @@
         <div class="details-names-l">
             <label class="labels" for="endDate">Course End Date</label>
             <div class="details-names not">
-                <input type="text" id="endDate" class="input_text" readonly>
+                {{ form.course_end_date }}
+{#                <input type="text" id="endDate" class="input_text" readonly>#}
                 <button id="open-end-dialog" class="date-button">
                     <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
                 </button>
@@ -84,9 +88,18 @@
   </div>
   <div id="page-2" class="details-page">
     <h2 class="title_h2">Content Details</h2>
+      <p class="user-hints">Select categories most related to the course:</p>
+      <div id="selected-categories" class="selected-categories">
+
+      </div>
+      <div class="combo-add-container">
+          {{ form.categories }}
+          <button type="button" id="add-button" class="primary-btn">Add</button>
+      </div>
     <div class="button_control">
             <button id="previous-button" class="prev-btn">Back</button>
-            <div></div>
+            <div>
+            </div>
             <button id="next-button" class="next-button">Next</button>
     </div>
   </div>

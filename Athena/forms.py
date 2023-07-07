@@ -33,3 +33,11 @@ class UserMembershipForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['membership']
+
+
+class CourseCreationForm(forms.ModelForm):
+    course_desc = forms.Textarea()
+
+    class Meta:
+        model = Course
+        fields = '__all__'

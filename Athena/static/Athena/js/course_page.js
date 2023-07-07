@@ -171,3 +171,95 @@ nextButtons.forEach((button) => {
 });
 
 showPage(currentIndex);
+
+
+const selectedCategoriesContainer = document.getElementById('selected-categories');
+const selectElement = document.getElementById('categories');
+const selectedCategories = new Set();
+document.getElementById('add-button').addEventListener('click', function() {
+  const selectedCategory = selectElement.value;
+  const categoryName = selectElement.options[selectElement.selectedIndex].text.trim();
+
+  if (!selectedCategory || selectedCategories.has(categoryName)) {
+      return;
+  }
+  // Create a new div for the selected category
+  const categoryDiv = document.createElement('div');
+  categoryDiv.classList.add('category-item');
+
+    // Add the category name and remove button to the div
+  const categoryNameSpan = document.createElement('span');
+  categoryNameSpan.textContent = categoryName;
+  categoryDiv.appendChild(categoryNameSpan);
+
+  const removeButton = document.createElement('button');
+  removeButton.classList.add('remove-button');
+
+  const icon = document.createElement('img');
+  icon.width = 20;
+  icon.height = 20;
+  icon.src = "https://img.icons8.com/070708/ios-filled/50/delete-sign--v1.png"
+  removeButton.appendChild(icon);
+
+  categoryDiv.appendChild(removeButton);
+
+    // Add the div to the selected-categories container
+  selectedCategoriesContainer.appendChild(categoryDiv);
+
+  // Clear the selected option in the ModelChoiceField
+  selectedCategories.add(categoryName);
+  selectElement.value = '';
+
+  rearrangeCategories();
+});
+
+  // Remove button click event
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-button') || event.target.parentNode.classList.contains('remove-button')) {
+      const categoryDiv = event.target.closest('.category-item');
+      const categoryName = categoryDiv.querySelector('span').textContent.trim();
+      console.log('index : '+categoryName);
+      selectedCategories.delete(categoryName);
+      console.log(selectedCategories)
+      categoryDiv.remove();
+
+      rearrangeCategories();
+    }
+});
+
+window.addEventListener('resize', function() {
+    rearrangeCategories();
+});
+
+function rearrangeCategories() {
+  const categoryDivs = selectedCategoriesContainer.getElementsByClassName('category-item');
+  const containerWidth = selectedCategoriesContainer.clientWidth;
+  let totalWidth = 0;
+  let currentRowDiv = null;
+
+  for (let i = 0; i < categoryDivs.length; i++) {
+    const categoryDiv = categoryDivs[i];
+    categoryDiv.style.width = '';
+    totalWidth += categoryDiv.offsetWidth;
+    console.log('totalWidth : '+ totalWidth);
+    console.log('containerWidth : '+ containerWidth);
+      if (totalWidth <= containerWidth) {
+        if (currentRowDiv) {
+          currentRowDiv.appendChild(categoryDiv);
+        } else {
+          currentRowDiv = document.createElement('div');
+          currentRowDiv.classList.add('category-row');
+          currentRowDiv.appendChild(categoryDiv);
+          selectedCategoriesContainer.appendChild(currentRowDiv);
+        }
+      } else {
+        totalWidth = categoryDiv.offsetWidth;
+        currentRowDiv = document.createElement('div');
+        currentRowDiv.classList.add('category-row');
+        currentRowDiv.appendChild(categoryDiv);
+        selectedCategoriesContainer.appendChild(currentRowDiv);
+      }
+    }
+}
+
+rearrangeCategories();

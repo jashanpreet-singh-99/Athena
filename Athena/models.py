@@ -42,18 +42,29 @@ class UserProfiles(models.Model):
         return self.user.username
 
 
-# class CourseCategories(models.Model):
-#     category = models.CharField(max_length=72)
-#
-#
-# class Course(models.Model):
-#     course_title = models.CharField(max_length=255, blank=False, null=False)
-#     course_desc = models.TextField(max_length=1024, blank=False, null=False)
-#     course_start_date = models.DateField()
-#     course_end_date = models.DateField()
-#     course_day = models.DateField()
-#     course_created = models.DateField()
-#     course_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, validators=[MinValueValidator(0.0),
-#                                                                                                MaxValueValidator(5.0)])
-#     last_update = models.DateField(auto_now=True)
-#     categories = models.ForeignKey(CourseCategories, on_delete=models.CASCADE)
+class CourseCategories(models.Model):
+    category = models.CharField(max_length=72)
+
+    def __str__(self):
+        return self.category
+
+    class Meta:
+        ordering = ['category']
+
+
+class Course(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    course_title = models.CharField(max_length=255, blank=False, null=False)
+    course_desc = models.TextField(max_length=1024, blank=False, null=False)
+    course_start_date = models.DateField()
+    course_end_date = models.DateField()
+    course_day = models.DateField()
+    course_created = models.DateField()
+    course_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, validators=[MinValueValidator(0.0),
+                                                                                               MaxValueValidator(5.0)])
+    last_update = models.DateField(auto_now=True)
+    categories = models.ForeignKey(CourseCategories, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.course_title + '_' + str(self.author.username)
+
