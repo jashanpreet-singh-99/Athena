@@ -322,3 +322,80 @@
 .remove-button img {
     margin-left: 8px;
 }
+
+.labels {
+    margin-left: 10px;
+    color: #444444;
+    font-size: small;
+    font-family: 'Roboto', sans-serif;
+}
+
+.days-info-container {
+  display: flex;
+  align-items: center;
+}
+
+.days-container {
+  display: flex;
+  gap: 10px;
+  margin-left: 40px;
+}
+
+.day {
+    height: 40px;
+    width: 50px;
+    margin: 4px;
+    background-color: #c9d9f0;
+    color: #070708;
+    padding: 12px 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.day.selected {
+  background-color: #070708;
+  color: #ffffff;
+}
+
+.upload_course_banner {
+    display: flex;
+    flex-direction: row;
+    margin: 24px 0;
+}
+
+.course-banner-img {
+    width: 400px;
+    height: 200px;
+    margin-right: 60px;
+    border-radius: 24px;
+}
+
+.up-btn {
+    color: #070708;
+    background-color: #ffffff;
+    margin: 8px 0;
+    padding: 16px 32px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 24px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+}
+
+.up-btn:hover {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.up-btn:active {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}

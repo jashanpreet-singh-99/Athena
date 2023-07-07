@@ -263,3 +263,46 @@ function rearrangeCategories() {
 }
 
 rearrangeCategories();
+
+const daysContainer = document.querySelector('.days-container');
+const selectedDayInput = document.getElementById('courseDay');
+const days = daysContainer.getElementsByClassName('day');
+
+// Add click event listeners to each day div
+for (let day of days) {
+  day.addEventListener('click', function() {
+    // Reset the background color of all days
+    for (let day of days) {
+      day.classList.remove('selected');
+    }
+
+    // Set the background color of the clicked day
+    this.classList.add('selected');
+
+    // Update the selected day value in the input label
+    selectedDayInput.value = this.getAttribute('data-day');
+  });
+}
+
+function openImageBrowser(event) {
+    event.preventDefault();
+    const inputImgElement = document.getElementById('image-input');
+    console.log("Open Image browser");
+    inputImgElement.click();
+}
+
+document.getElementById('image-input').addEventListener('change', handleImageSelection);
+
+function handleImageSelection(event) {
+  const file = event.target.files[0];
+  const course_banner_img = document.getElementById('course-banner-img')
+  if (file) {
+    // Perform operations with the selected file (e.g., display preview, upload, etc.)
+    console.log('Selected image file:', file);
+    const reader = new FileReader();
+    reader.onload = function() {
+      course_banner_img.src = reader.result;
+    }
+    reader.readAsDataURL(file);
+  }
+}

@@ -58,12 +58,29 @@ class Course(models.Model):
     course_desc = models.TextField(max_length=1024, blank=False, null=False)
     course_start_date = models.DateField()
     course_end_date = models.DateField()
-    course_day = models.DateField()
+    course_day = models.CharField(max_length=10, blank=True, null=True)
     course_created = models.DateField()
     course_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, validators=[MinValueValidator(0.0),
                                                                                                MaxValueValidator(5.0)])
     last_update = models.DateField(auto_now=True)
     categories = models.ForeignKey(CourseCategories, on_delete=models.CASCADE)
+
+    TYPE_CHOICES = [
+        ('V', 'Virtual'),
+        ('I', 'In-Person')
+    ]
+
+    course_type = models.CharField(max_length=1, choices=TYPE_CHOICES, default='I', null=True)
+
+    DIF_CHOICES = [
+        ('A', 'Advanced'),
+        ('I', 'Intermediate'),
+        ('B', 'Beginner')
+    ]
+
+    course_difficulty = models.CharField(max_length=1, choices=DIF_CHOICES, default='B', null=False)
+
+    course_banner = models.ImageField(upload_to=user_directory_path)
 
     def __str__(self):
         return self.course_title + '_' + str(self.author.username)

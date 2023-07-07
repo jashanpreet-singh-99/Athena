@@ -147,6 +147,17 @@ class CourseBuilder(views.View):
         form.fields['categories'].widget.attrs['id'] = 'categories'
         form.fields['categories'].widget.attrs['class'] = 'input_item'
 
+        form.fields['course_type'].widget.attrs['class'] = 'input_text'
+
+        form.fields['course_difficulty'].widget.attrs['class'] = 'input_text'
+
+        form.fields['course_day'].widget.attrs['id'] = 'courseDay'
+        form.fields['course_day'].widget.attrs['class'] = 'input_text'
+        form.fields['course_day'].widget.attrs['readonly'] = 'readonly'
+
+        form.fields['course_banner'].widget.attrs['id'] = 'image-input'
+        form.fields['course_banner'].widget.attrs['style'] = 'display: none;'
+
         context['form'] = form
 
         load_profile(context, request)

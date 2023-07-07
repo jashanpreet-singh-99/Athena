@@ -51,7 +51,7 @@
 {#                <input type="text" id="startDate" class="input_text" readonly>#}
                 {{ form.course_start_date }}
                 <button id="open-start-dialog" class="date-button">
-                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
+                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
                 </button>
             </div>
         </div>
@@ -62,7 +62,7 @@
                 {{ form.course_end_date }}
 {#                <input type="text" id="endDate" class="input_text" readonly>#}
                 <button id="open-end-dialog" class="date-button">
-                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="thursday"/>
+                    <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
                 </button>
             </div>
         </div>
@@ -104,7 +104,41 @@
     </div>
   </div>
   <div id="page-3" class="details-page">
-    <h2 class="title_h2">Student Enrollment Details</h2>
+    <h2 class="title_h2">Enrollment Details</h2>
+      <div class="details-names">
+            <div class="details-names-l">
+                <label class="labels" for="courseDiff">Course Difficulty</label>
+                {{ form.course_difficulty }}
+            </div>
+            <div class="details-names-l">
+                <label class="labels"  for="courseType">Course Type</label>
+                {{ form.course_type }}
+            </div>
+        </div>
+      <div class="details-names-l">
+          <label class="labels"  for="courseDay">If the class is repeating each week, please select a specific day:</label>
+          <div class="days-info-container">
+            {{ form.course_day }}
+            <div class="days-container">
+                <div class="day" data-day="Not Repeating">No</div>
+                <div class="day" data-day="Monday">Mon</div>
+                <div class="day" data-day="Tuesday">Tue</div>
+                <div class="day" data-day="Wednesday">Wed</div>
+                <div class="day" data-day="Thursday">Thu</div>
+                <div class="day" data-day="Friday">Fri</div>
+                <div class="day" data-day="Saturday">Sat</div>
+                <div class="day" data-day="Sunday">Sun</div>
+            </div>
+          </div>
+      </div>
+      <div class="upload_course_banner">
+          {{ form.course_banner }}
+          <img id="course-banner-img" class="course-banner-img" src="{% static 'Athena/media/course_banner.jpg' %}" alt="">
+          <div class="details-names-l">
+              <button id="previous-button" class="up-btn" onclick="openImageBrowser(event)">Upload Banner</button>
+          </div>
+      </div>
+
     <div class="button_control">
             <button id="previous-button" class="prev-btn">Back</button>
             <div></div>
