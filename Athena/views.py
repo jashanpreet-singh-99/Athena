@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
-from django.http import HttpResponse
 from .forms import *
 from .models import *
 
@@ -248,10 +247,8 @@ class CancelMembership(views.View):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
         membership = Membership.objects.get(pk=1)
-        form = UserMembershipForm(request.POST, instance=old_user_data)
-        form.fields['membership'].initial = membership
+        form = UserMembershipForm({'membership': membership}, instance=old_user_data)
         if form.is_valid():
-            old_user_data.membership = membership
             old_user_data.save()
             print('Valid form: ', request.POST)
         else:
