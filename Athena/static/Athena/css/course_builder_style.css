@@ -405,10 +405,6 @@
     margin-top: 12px;
 }
 
-#page-4 {
-    height: 520px;
-}
-
 #rev-c-title {
     margin-bottom: 12px;
     padding: 4px;
@@ -419,6 +415,9 @@
     margin: 4px 0;
     padding: 4px;
     font-size: medium;
+    height: 160px;
+    overflow: auto;
+    text-align: justify;
 }
 
 .read-fields {

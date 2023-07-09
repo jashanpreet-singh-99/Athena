@@ -5,7 +5,7 @@
     <meta name="viewport" content=""width=device-width, initial-scale="1.0">
     <meta charset="UTF-8">
     <title>Athena</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/dash_style.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/base_style.css' %}"/>
     <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
     {% block stylesheets %} {% endblock stylesheets %}
     <!-- #ffffff light semi-light #c9d9f0 Dark #070708 -->
@@ -97,9 +97,11 @@
             </div>
             {% endif %}
         </div>
-        {% block page %}
+        <div class="page-container">
+            {% block page %}
 
-        {% endblock %}
+            {% endblock %}
+        </div>
         <div>
         </div>
     </div>

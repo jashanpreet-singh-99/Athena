@@ -148,7 +148,8 @@ img.rounded {
 img.unk{
     padding: 10px;
 }
-  .menu {
+
+.menu {
     position: absolute;
     top: calc(100% + 5px);
     left: 0;
@@ -157,36 +158,56 @@ img.unk{
     padding: 10px;
     display: none;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  }
+    z-index: 200;
+}
 
-  .menu ul {
+.menu ul {
     list-style-type: none;
     padding: 0;
     margin: 0;
-  }
+}
 
-  .menu ul li {
+.menu ul li {
     display: flex;
     align-items: start;
     padding: 8px;
     margin: 8px 4px;
 
-  }
+}
 
-  .menu ul li a{
+.menu ul li a{
       text-decoration: none;
       color: inherit;
       display: inline-block;
       margin: 0;
       padding: 0;
-  }
+}
 
-  .menu ul li img {
+.menu ul li img {
     margin-right: 16px;
     vertical-align: middle;
-  }
+}
 
-  .menu ul li:not(:last-child) {
+.menu ul li:not(:last-child) {
     border-bottom: 1px solid lightgray;
-  }
+}
 
+.page-container {
+    overflow-y: auto;
+    height: calc(100% - 120px);
+}
+
+
+.page-container::-webkit-scrollbar {
+    width: 4px;
+    border-radius: 4px;
+}
+
+.page-container::-webkit-scrollbar-thumb {
+    background-color: transparent;
+}
+
+.page-container:hover::-webkit-scrollbar-thumb {
+    background-color: #6f94c6;
+    border-radius: 4px;
+}

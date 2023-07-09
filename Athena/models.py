@@ -62,7 +62,7 @@ class Course(models.Model):
     course_desc = models.TextField(max_length=1024, blank=False, null=False)
     course_start_date = models.DateField()
     course_end_date = models.DateField()
-    course_day = models.CharField(max_length=10, blank=True, null=True)
+    course_day = models.CharField(max_length=14, blank=True, null=True)
     course_created = models.DateField()
     course_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, validators=[MinValueValidator(0.0),
                                                                                                MaxValueValidator(5.0)])

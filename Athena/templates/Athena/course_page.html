@@ -45,10 +45,12 @@
 
     <div class="course_box">
         {% for course in my_courses %}
-        <div class="course-card">
-            <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+        <div class="course-view">
+            <div class="course-card">
+                <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+            </div>
             <h3>{{ course.course_title }}</h3>
-            <p>{{ course.course_desc }}</p>
+            <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
         </div>
         {% empty %}
             <p>No courses created yet. Click on the create button to build new course.</p>
