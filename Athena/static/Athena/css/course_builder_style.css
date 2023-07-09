@@ -42,6 +42,7 @@
 .details-page {
     display: none;
     margin: 30px 200px;
+    overflow: auto;
 }
 
 .details-page.active {
@@ -398,4 +399,39 @@
     color: #070708;
     background-color: #c9d9f0;
     box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}
+
+.final-banner-review {
+    margin-top: 12px;
+}
+
+#page-4 {
+    height: 520px;
+}
+
+#rev-c-title {
+    margin-bottom: 12px;
+    padding: 4px;
+    font-size: xx-large;
+}
+
+#rev-c-desc {
+    margin: 4px 0;
+    padding: 4px;
+    font-size: medium;
+}
+
+.read-fields {
+    padding: 8px 32px;
+    margin: 8px;
+    font-size: medium;
+    border-radius: 12px;
+    border: 1px solid #c9d9f0;
+}
+
+#rev-c-cat {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 16px 0;
 }

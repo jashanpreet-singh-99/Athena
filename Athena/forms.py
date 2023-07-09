@@ -37,7 +37,12 @@ class UserMembershipForm(forms.ModelForm):
 
 class CourseCreationForm(forms.ModelForm):
     course_desc = forms.Textarea()
+    course_banner = forms.ImageField(required=False)
 
     class Meta:
         model = Course
         fields = '__all__'
+
+
+class CourseCategoriesForm(forms.Form):
+    categories_c = forms.ModelChoiceField(queryset=CourseCategories.objects.all(), required=False)

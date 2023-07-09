@@ -1,0 +1,26 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_build_completed.css' %}"/>
+{% endblock stylesheets %}
+{%  block page %}
+    <div class="animation-container">
+        <h1>{{ msg|linebreaksbr }}</h1>
+        {% if not error %}
+            <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+            <lottie-player src="https://assets7.lottiefiles.com/packages/lf20_eiyorylp.json" class="lottie-animation" mode="bounce" background="transparent"  speed="1"  style="width: 400px; height: 400px;"  loop autoplay></lottie-player>
+            <div class="button-container">
+                <button class="primary-btn" onclick="window.location.href = '{% url 'course_page' %}'">Go to My Courses</button>
+            </div>
+        {% else %}
+            <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+            <lottie-player src="https://assets10.lottiefiles.com/packages/lf20_e1pmabgl.json" class="lottie-animation" background="transparent"  speed="1"  style="width: 400px; height: 400px;"  loop  autoplay></lottie-player>
+            <div class="button-container">
+                <button class="primary-btn" onclick="window.location.href = '{% url 'course_page' %}'">Go to My Courses</button>
+            </div>
+        {% endif %}
+        {% if error_msg %}
+            {{ form.errors }}
+        {% endif %}
+    </div>
+{% endblock %}

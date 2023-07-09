@@ -1,0 +1,47 @@
+.animation-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.lottie-animation {
+    margin: 20px 0;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+.primary-btn {
+    width: 260px;
+    color: #ffffff;
+    background-color: #070708;
+    padding: 16px 32px;
+    margin: 8px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-radius: 24px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+}
+
+.primary-btn:hover {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.primary-btn:active {
+    color: #070708;
+    background-color: #c9d9f0;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
+}

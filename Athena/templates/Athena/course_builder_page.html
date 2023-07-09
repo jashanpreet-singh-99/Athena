@@ -32,6 +32,8 @@
 {#            <p class="titles">  Review  </p>#}
 {#        </div>#}
     </div>
+    <form method="post" id="form-course-details">
+    {% csrf_token %}
     <div id="page-1" class="details-page">
         <h2 class="title_h2">Course Details</h2>
         <div class="details-names-l">
@@ -93,6 +95,7 @@
 
       </div>
       <div class="combo-add-container">
+          {{ c_form.categories_c }}
           {{ form.categories }}
           <button type="button" id="add-button" class="primary-btn">Add</button>
       </div>
@@ -120,7 +123,7 @@
           <div class="days-info-container">
             {{ form.course_day }}
             <div class="days-container">
-                <div class="day" data-day="Not Repeating">No</div>
+                <div class="day" data-day="Non-Repeating">No</div>
                 <div class="day" data-day="Monday">Mon</div>
                 <div class="day" data-day="Tuesday">Tue</div>
                 <div class="day" data-day="Wednesday">Wed</div>
@@ -132,8 +135,8 @@
           </div>
       </div>
       <div class="upload_course_banner">
-          {{ form.course_banner }}
           <img id="course-banner-img" class="course-banner-img" src="{% static 'Athena/media/course_banner.jpg' %}" alt="">
+          {{ form.course_banner }}
           <div class="details-names-l">
               <button id="previous-button" class="up-btn" onclick="openImageBrowser(event)">Upload Banner</button>
           </div>
@@ -147,13 +150,50 @@
   </div>
   <div id="page-4" class="details-page">
     <h2 class="title_h2">Review</h2>
+    <div class="details-names">
+        <div class="final-banner-review">
+            <img id="course-banner-img-f" class="course-banner-img" src="{% static 'Athena/media/course_banner.jpg' %}" alt="">
+        </div>
+        <div >
+            <h2 id="rev-c-title">Course Title</h2>
+            <p id="rev-c-desc">Course descriptions</p>
+        </div>
+    </div>
+    <div class="details-names">
+        <div class="details-names-l">
+            <label class="labels">Course Start Date</label>
+            <p id="rev-c-start-date" class="read-fields">12/23/23</p>
+        </div>
+        <div class="details-names-l">
+            <label class="labels">Course End Date</label>
+            <p id="rev-c-end-date" class="read-fields">12/23/24</p>
+        </div>
+        <div class="details-names-l">
+            <label class="labels">Weekly Schedule</label>
+            <p id="rev-c-day" class="read-fields">Non-Repeating</p>
+        </div>
+    </div>
+    <div class="details-names">
+        <div class="details-names-l">
+            <label class="labels">Course Difficulty</label>
+            <p id="rev-c-diff" class="read-fields">Advanced</p>
+        </div>
+        <div class="details-names-l">
+            <label class="labels">Course Availability Medium</label>
+            <p id="rev-c-type" class="read-fields">Virtual</p>
+        </div>
+    </div>
+    <div class="details-names-l" id="rev-c-selected-categories">
+        <label class="labels">Course Categories</label>
+        <div id="rev-c-cat"></div>
+    </div>
     <div class="button_control">
             <button id="previous-button" class="prev-btn">Back</button>
             <div></div>
             <button id="next-button" class="next-button">Submit</button>
     </div>
   </div>
-
+  </form>
 {% endblock %}
 {% block extrascripts %}
       <script src="{% static 'Athena/js/course_page.js' %}"></script>

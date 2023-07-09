@@ -5,8 +5,35 @@ const currentMonthSpan = document.getElementById('current-month');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const datesDiv = document.getElementById('dates');
+// P1
+const inputFieldTitle = document.getElementById('courseTitle');
+const inputFieldDesc = document.getElementById('courseDesc');
 const inputFieldStart = document.getElementById('startDate');
 const inputFieldEnd = document.getElementById('endDate');
+
+// P2
+const selectedCategoriesContainer = document.getElementById('selected-categories');
+const selectElement = document.getElementById('categories-c');
+const inputFieldCat = document.getElementById('categories');
+const selectedCategories = new Set();
+
+// P3
+const inputFieldType = document.getElementById('courseType');
+const inputFieldDiff = document.getElementById('courseDiff');
+const inputFieldDay = document.getElementById('courseDay');
+
+// P4
+const reviewTitle = document.getElementById('rev-c-title');
+const reviewDesc = document.getElementById('rev-c-desc');
+const reviewStart = document.getElementById('rev-c-start-date');
+const reviewEnd = document.getElementById('rev-c-end-date');
+const reviewDay = document.getElementById('rev-c-day');
+const reviewType = document.getElementById('rev-c-type');
+const reviewDiff = document.getElementById('rev-c-diff');
+const reviewCat = document.getElementById('rev-c-cat');
+
+// Form
+const courseForm = document.getElementById('form-course-details');
 
 let selectField = inputFieldEnd;
 
@@ -68,6 +95,7 @@ nextMonthBtn.addEventListener('click', () => {
 
 openStartDialogBtn.addEventListener('click', (event) => {
   event.stopPropagation();
+  event.preventDefault();
   dateDialog.style.display = 'block';
 
   const btnRect = openStartDialogBtn.getBoundingClientRect();
@@ -82,6 +110,7 @@ openStartDialogBtn.addEventListener('click', (event) => {
 
 openEndDialogBtn.addEventListener('click', (event) => {
   event.stopPropagation();
+  event.preventDefault();
   dateDialog.style.display = 'block';
 
   const btnRect = openEndDialogBtn.getBoundingClientRect();
@@ -96,6 +125,7 @@ openEndDialogBtn.addEventListener('click', (event) => {
 
 dateDialog.addEventListener('click', (event) => {
   event.stopPropagation();
+  event.preventDefault();
 });
 
 document.addEventListener('click', (event) => {
@@ -152,6 +182,11 @@ function navigateLeft() {
 
 function navigateRight() {
   currentIndex++;
+  if (currentIndex === pages.length) {
+    console.log("4th page");
+    inputFieldCat.value = [...selectedCategories].join(',');
+    courseForm.submit();
+  }
   if (currentIndex >= pages.length) {
     currentIndex = pages.length - 1;
   }
@@ -160,22 +195,66 @@ function navigateRight() {
   }
   changeIcon(currentIndex - 1, true);
   showPage(currentIndex);
+  switch (currentIndex) {
+    case 1:
+      reviewTitle.textContent = inputFieldTitle.value;
+      reviewDesc.textContent = inputFieldDesc.value;
+      reviewStart.textContent = inputFieldStart.value;
+      reviewEnd.textContent = inputFieldEnd.value;
+      break;
+    case 2:
+      // reviewCat.textContent = [...selectedCategories].join(',');
+      createCategoryDivs(selectedCategories);
+      break;
+    case 3:
+      const selectedOption = inputFieldDiff.options[inputFieldDiff.selectedIndex];
+      reviewDiff.textContent = selectedOption.textContent;
+
+      const selectedOptionT = inputFieldType.options[inputFieldType.selectedIndex];
+      reviewType.textContent = selectedOptionT.textContent;
+
+      reviewDay.textContent = inputFieldDay.value;
+      break;
+  }
 }
 
 prevButtons.forEach((button) => {
-  button.addEventListener('click', navigateLeft);
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    navigateLeft();
+  });
 });
 
 nextButtons.forEach((button) => {
-  button.addEventListener('click', navigateRight);
+  button.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    navigateRight();
+  });
 });
 
 showPage(currentIndex);
 
+function createCategoryDivs(items) {
+  // Clear the container
+  reviewCat.innerHTML = '';
 
-const selectedCategoriesContainer = document.getElementById('selected-categories');
-const selectElement = document.getElementById('categories');
-const selectedCategories = new Set();
+  // Loop through the items in the Set
+  for (const item of items) {
+    // Create a new div for the category
+    const categoryDiv = document.createElement('div');
+    categoryDiv.classList.add('category-item');
+
+    const categoryNameSpan = document.createElement('span');
+    categoryNameSpan.textContent = item;
+    categoryDiv.appendChild(categoryNameSpan);
+
+    // Add the category div to the container
+    reviewCat.appendChild(categoryDiv);
+  }
+}
+
 document.getElementById('add-button').addEventListener('click', function() {
   const selectedCategory = selectElement.value;
   const categoryName = selectElement.options[selectElement.selectedIndex].text.trim();
@@ -241,8 +320,8 @@ function rearrangeCategories() {
     const categoryDiv = categoryDivs[i];
     categoryDiv.style.width = '';
     totalWidth += categoryDiv.offsetWidth;
-    console.log('totalWidth : '+ totalWidth);
-    console.log('containerWidth : '+ containerWidth);
+    // console.log('totalWidth : '+ totalWidth);
+    // console.log('containerWidth : '+ containerWidth);
       if (totalWidth <= containerWidth) {
         if (currentRowDiv) {
           currentRowDiv.appendChild(categoryDiv);
@@ -296,12 +375,14 @@ document.getElementById('image-input').addEventListener('change', handleImageSel
 function handleImageSelection(event) {
   const file = event.target.files[0];
   const course_banner_img = document.getElementById('course-banner-img')
+  const course_banner_img_f = document.getElementById('course-banner-img-f')
   if (file) {
     // Perform operations with the selected file (e.g., display preview, upload, etc.)
     console.log('Selected image file:', file);
     const reader = new FileReader();
     reader.onload = function() {
       course_banner_img.src = reader.result;
+      course_banner_img_f.src = reader.result;
     }
     reader.readAsDataURL(file);
   }

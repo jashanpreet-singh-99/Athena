@@ -63,7 +63,7 @@ class Course(models.Model):
     course_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, validators=[MinValueValidator(0.0),
                                                                                                MaxValueValidator(5.0)])
     last_update = models.DateField(auto_now=True)
-    categories = models.ForeignKey(CourseCategories, on_delete=models.CASCADE)
+    categories = models.CharField(max_length=512, blank=False, null=False, default='')
 
     TYPE_CHOICES = [
         ('V', 'Virtual'),
@@ -80,7 +80,7 @@ class Course(models.Model):
 
     course_difficulty = models.CharField(max_length=1, choices=DIF_CHOICES, default='B', null=False)
 
-    course_banner = models.ImageField(upload_to=user_directory_path)
+    course_banner = models.ImageField(upload_to=user_directory_path, default='Athena/media/course_banner.jpg')
 
     def __str__(self):
         return self.course_title + '_' + str(self.author.username)

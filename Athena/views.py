@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
 from .models import *
 
+from datetime import datetime
+
 
 def load_profile(context, request):
     user = request.user
@@ -146,9 +148,12 @@ class CourseBuilder(views.View):
 
         form.fields['categories'].widget.attrs['id'] = 'categories'
         form.fields['categories'].widget.attrs['class'] = 'input_item'
+        form.fields['categories'].widget.attrs['style'] = 'display: none;'
 
+        form.fields['course_type'].widget.attrs['id'] = 'courseType'
         form.fields['course_type'].widget.attrs['class'] = 'input_text'
 
+        form.fields['course_difficulty'].widget.attrs['id'] = 'courseDiff'
         form.fields['course_difficulty'].widget.attrs['class'] = 'input_text'
 
         form.fields['course_day'].widget.attrs['id'] = 'courseDay'
@@ -160,9 +165,36 @@ class CourseBuilder(views.View):
 
         context['form'] = form
 
+        c_form = CourseCategoriesForm()
+        c_form.fields['categories_c'].widget.attrs['id'] = 'categories-c'
+        c_form.fields['categories_c'].widget.attrs['class'] = 'input_item'
+
+        context['c_form'] = c_form
+
         load_profile(context, request)
         return render(request, 'Athena/course_builder_page.html', context)
 
+    def post(self, request):
+        context = {'title': 'Course Builder'}
+        print(request.POST)
+        request.POST = request.POST.copy()
+        request.POST['author'] = request.user
+        request.POST['course_created'] = datetime.now().strftime("%m/%d/%Y")
+        request.POST['course_rating'] = 0
+        print(request.POST)
+        form = CourseCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            msg = '%s \n Course creation has been successfully' % (form.cleaned_data['course_title'])
+            error = False
+        else:
+            msg = 'Error while validating Course Information.'
+            error = True
+            context['error_msg'] = form.errors.as_data()
+        context['msg'] = msg
+        context['error'] = error
+        context['form'] = form
+        return render(request, 'Athena/course_build_completed.html', context)
 
 class Login(views.View):
 
