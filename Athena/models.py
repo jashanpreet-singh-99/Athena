@@ -8,6 +8,10 @@ def user_directory_path(instance, filename):
     return f'user_{instance.user.username}/{filename}'
 
 
+def user_directory_path_course(instance, filename):
+    return f'user_{instance.author.username}/{filename}'
+
+
 class MemberFeatures(models.Model):
     name = models.CharField(max_length=255)
     details = models.TextField(max_length=1024)
@@ -80,7 +84,7 @@ class Course(models.Model):
 
     course_difficulty = models.CharField(max_length=1, choices=DIF_CHOICES, default='B', null=False)
 
-    course_banner = models.ImageField(upload_to=user_directory_path, default='Athena/media/course_banner.jpg')
+    course_banner = models.ImageField(upload_to=user_directory_path_course)
 
     def __str__(self):
         return self.course_title + '_' + str(self.author.username)

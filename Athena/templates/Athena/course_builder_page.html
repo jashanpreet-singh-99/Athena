@@ -32,7 +32,7 @@
 {#            <p class="titles">  Review  </p>#}
 {#        </div>#}
     </div>
-    <form method="post" id="form-course-details">
+    <form method="post" id="form-course-details" enctype="multipart/form-data">
     {% csrf_token %}
     <div id="page-1" class="details-page">
         <h2 class="title_h2">Course Details</h2>
@@ -196,5 +196,5 @@
   </form>
 {% endblock %}
 {% block extrascripts %}
-      <script src="{% static 'Athena/js/course_page.js' %}"></script>
+      <script src="{% static 'Athena/js/course_builder_page.js' %}"></script>
 {% endblock %}

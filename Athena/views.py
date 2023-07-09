@@ -182,7 +182,7 @@ class CourseBuilder(views.View):
         request.POST['course_created'] = datetime.now().strftime("%m/%d/%Y")
         request.POST['course_rating'] = 0
         print(request.POST)
-        form = CourseCreationForm(request.POST)
+        form = CourseCreationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             msg = '%s \n Course creation has been successfully' % (form.cleaned_data['course_title'])
@@ -195,6 +195,7 @@ class CourseBuilder(views.View):
         context['error'] = error
         context['form'] = form
         return render(request, 'Athena/course_build_completed.html', context)
+
 
 class Login(views.View):
 
