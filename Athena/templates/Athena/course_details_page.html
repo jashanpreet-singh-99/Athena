@@ -1,0 +1,11 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+            <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_detials_style.css' %}"/>
+{% endblock %}
+{% block page %}
+    <h2 class="course-title">{{ course.course_title }}</h2>
+{% endblock %}
+{% block extrascripts %}
+    <script src="{% static 'Athena/js/course_details_page.js' %}"></script>
+{% endblock %}

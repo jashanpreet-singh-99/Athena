@@ -19,7 +19,8 @@ urlpatterns = [
     path('update_user_name', views.UpdateUserName.as_view(), name='update_user_name'),
     path('update_user_membership', views.UpdateMembership.as_view(), name='update_user_membership'),
     path('cancel_membership', views.CancelMembership.as_view(), name='cancel_membership'),
-    path('course_builder', views.CourseBuilder.as_view(), name='course_builder_page')
+    path('course_builder', views.CourseBuilder.as_view(), name='course_builder_page'),
+    path('course/<int:course_id>', views.CourseDetails.as_view(), name='course_details_page')
 ]
 
 urlpatterns += staticfiles_urlpatterns()

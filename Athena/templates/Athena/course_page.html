@@ -11,7 +11,8 @@
 {% block page %}
     <!-- Auto course animation on the top -->
     <div class="banner-widget">
-        <div class="banner-container">
+
+        <div class="banner-container" id="banner-container">
           <div class="banner-image">
             <img id="course-image" src="" alt="Course Image">
           </div>
@@ -47,7 +48,9 @@
         {% for course in my_courses %}
         <div class="course-view">
             <div class="course-card">
-                <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                <a href="{% url 'course_details_page' course.id %}">
+                    <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                </a>
             </div>
             <h3>{{ course.course_title }}</h3>
             <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
@@ -63,19 +66,19 @@
             View All
         </button>
     </div>
-    <div class="course_box">
-        {% with ''|center:4 as range %}
-        {% for _ in range %}
-        <div class="course-card">
-            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">
-            <h3>Course Title {{ forloop.counter }}</h3>
-            <p>Course description</p>
-        </div>
-        {% empty %}
-            <p>No courses created yet. Click on the create button to build new course.</p>
-        {% endfor %}
-        {% endwith %}
-    </div>
+{#    <div class="course_box">#}
+{#        {% with ''|center:4 as range %}#}
+{#        {% for _ in range %}#}
+{#        <div class="course-card">#}
+{#            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">#}
+{#            <h3>Course Title {{ forloop.counter }}</h3>#}
+{#            <p>Course description</p>#}
+{#        </div>#}
+{#        {% empty %}#}
+{#            <p>No courses created yet. Click on the create button to build new course.</p>#}
+{#        {% endfor %}#}
+{#        {% endwith %}#}
+{#    </div>#}
     <div class="title_3_container">
         <h2 class="title_h2">All Courses</h2>
     </div>
@@ -83,9 +86,11 @@
 {% block extrascripts %}
     <script>
         var courses = [];
+        var course_link = '{% url 'course_details_page' 0 %}';
         {% for course in my_courses %}
             cos = {}
-            cos['course_banner'] = "{{ course.course_banner.url|escapejs }}"
+            cos['course_id'] = "{{ course.id|escapejs }}";
+            cos['course_banner'] = "{{ course.course_banner.url|escapejs }}";
             cos['course_title'] = "{{ course.course_title|escapejs }}";
             cos['course_desc'] = "{{ course.course_desc|escapejs }}";
             cos['course_author'] = "{{ course.author.first_name|escapejs }} {{ course.author.last_name|escapejs }}";

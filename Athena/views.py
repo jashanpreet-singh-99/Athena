@@ -323,3 +323,13 @@ class CancelMembership(views.View):
         else:
             print('Invalid User membership')
         return redirect('settings_page')
+
+
+class CourseDetails(views.View):
+
+    def get(self, request, course_id):
+        context = {'title': 'Course Details'}
+        load_profile(context, request)
+        course = Course.objects.get(id=course_id)
+        context['course'] = course
+        return render(request, 'Athena/course_details_page.html', context)

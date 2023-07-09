@@ -1,4 +1,5 @@
 let currentCourseIndex = 0;
+const bannerContainer = document.getElementById('banner-container');
 const courseImage = document.getElementById('course-image');
 const courseImageOverlay = document.getElementById('course-image-overlay');
 const courseTitle = document.getElementById('course-title');
@@ -7,6 +8,12 @@ const courseAuthor = document.getElementById('course-author');
 const prevButton = document.getElementById('prev-button');
 const nextButton = document.getElementById('next-button');
 const circleContainer = document.getElementById('circle-container');
+
+
+bannerContainer.addEventListener('click', () => {
+  console.log(course_link);
+  window.location.href = course_link.slice(0, -1) + courses[currentCourseIndex]['course_id'];
+});
 
 function matchBannerOverlaySize() {
   courseImageOverlay.style.width = courseImage.offsetWidth + 5 + 'px';
