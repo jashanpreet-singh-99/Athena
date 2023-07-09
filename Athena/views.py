@@ -33,6 +33,9 @@ class Courses(views.View):
     def get(self, request):
         context = {'title': 'Courses'}
         load_profile(context, request)
+
+        my_courses = Course.objects.filter(author=request.user)
+        context['my_courses'] = my_courses
         return render(request, 'Athena/course_page.html', context)
 
 

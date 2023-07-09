@@ -9,6 +9,32 @@
     </div>
 {% endblock nav_item_course %}
 {% block page %}
+    <!-- Auto course animation on the top -->
+    <div class="banner-widget">
+        <div class="banner-container">
+          <div class="banner-image">
+            <img id="course-image" src="" alt="Course Image">
+          </div>
+          <div id="course-image-overlay" class="banner_overlay"></div>
+
+          <div class="banner-content">
+            <h2 id="course-title"></h2>
+            <p id="course-description"></p>
+            <p id="course-author"></p>
+          </div>
+        </div>
+        <div class="banner-navigation">
+            <span></span>
+            <button id="prev-button">
+                <img width="36" height="36" class="rotate" src="https://img.icons8.com/pastel-glyph/64/circled-chevron-right.png" alt="circled-chevron-right--v1"/>
+            </button>
+            <div id="circle-container"></div>
+            <button id="next-button">
+                <img width="36" height="36" src="https://img.icons8.com/pastel-glyph/64/circled-chevron-right.png" alt="circled-chevron-right--v1"/>
+            </button>
+            <span></span>
+        </div>
+    </div>
     <!-- Add condition that only If the user is Lesser or above only show this -->
     <div class="title_1_container">
         <h2 class="title_h2">My Courses</h2>
@@ -16,18 +42,17 @@
             Create
         </button>
     </div>
+
     <div class="course_box">
-        {% with ''|center:5 as range %}
-        {% for _ in range %}
+        {% for course in my_courses %}
         <div class="course-card">
-            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">
-            <h3>Course Title {{ forloop.counter }}</h3>
-            <p>Course description</p>
+            <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+            <h3>{{ course.course_title }}</h3>
+            <p>{{ course.course_desc }}</p>
         </div>
         {% empty %}
             <p>No courses created yet. Click on the create button to build new course.</p>
         {% endfor %}
-        {% endwith %}
     </div>
     <!-- Normal Courses visible to all -->
     <div class="title_1_container">
@@ -52,4 +77,18 @@
     <div class="title_3_container">
         <h2 class="title_h2">All Courses</h2>
     </div>
+{% endblock %}
+{% block extrascripts %}
+    <script>
+        var courses = [];
+        {% for course in my_courses %}
+            cos = {}
+            cos['course_banner'] = "{{ course.course_banner.url|escapejs }}"
+            cos['course_title'] = "{{ course.course_title|escapejs }}";
+            cos['course_desc'] = "{{ course.course_desc|escapejs }}";
+            cos['course_author'] = "{{ course.author.first_name|escapejs }} {{ course.author.last_name|escapejs }}";
+            courses.push(cos);
+        {% endfor %}
+    </script>
+    <script src="{% static 'Athena/js/course_page.js' %}"></script>
 {% endblock %}
