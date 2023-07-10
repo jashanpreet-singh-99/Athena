@@ -343,6 +343,10 @@ class CourseDetails(views.View):
         context = {'title': 'Course Details'}
         load_profile(context, request)
         course = Course.objects.get(id=course_id)
+
+        if course.author == request.user:
+            return redirect(reverse('course_author_page', args=[course_id]))
+
         author_profile = UserProfiles.objects.get(user=course.author)
         context['course'] = course
         context['author_profile'] = author_profile.img
@@ -395,3 +399,19 @@ class CourseSearchPage(views.View):
         context = {'title': 'Find Course'}
         load_profile(context, request)
         return render(request, 'Athena/course_search_page.html', context)
+
+
+class CourseAuthor(views.View):
+
+    def get(self, request, course_id):
+        context = {'title': 'Course Details'}
+        load_profile(context, request)
+        course = Course.objects.get(id=course_id)
+        author_profile = UserProfiles.objects.get(user=course.author)
+        context['course'] = course
+        context['author_profile'] = author_profile.img
+
+        enrollment_info = Enrollment.objects.filter(course=course)
+        context['e_info'] = enrollment_info
+
+        return render(request, 'Athena/course_author_page.html', context)
