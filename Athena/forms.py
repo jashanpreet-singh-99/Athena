@@ -46,3 +46,10 @@ class CourseCreationForm(forms.ModelForm):
 
 class CourseCategoriesForm(forms.Form):
     categories_c = forms.ModelChoiceField(queryset=CourseCategories.objects.all(), required=False)
+
+
+class EnrollmentForm(forms.ModelForm):
+
+    class Meta:
+        model = Enrollment
+        fields = '__all__'

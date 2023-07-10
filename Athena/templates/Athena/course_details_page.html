@@ -24,7 +24,16 @@
                     <img class="author-profile-image" src="{{ author_profile.url }}" alt="author_profile">
                     <p class="course-author"> {{ course.author.first_name }} {{ course.author.last_name }}</p>
                 </div>
-                <button class="enroll-button">Enroll Now</button>
+                {% if not e_obj %}
+                    <form method="post" action="{% url 'course_enrollment' %}">
+                        {% csrf_token %}
+                        {{ e_form.course }}
+                        {{ e_form.user }}
+                        <button class="enroll-button">Enroll Now</button>
+                    </form>
+                {% else %}
+                    <button class="enroll-button">Start Now</button>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -67,6 +76,11 @@
                 <p class="secondary-info"> Weekly: {{ course.course_day }}
             </div>
             <h3 class="cat-title">Class Enrollments: </h3>
+            {% if e_info|length < 2 %}
+                <p>{{ e_info|length }} Student</p>
+            {% else %}
+                <p>{{ e_info|length }} Students</p>
+            {% endif %}
         </div>
         <div id="tab3" class="tab-content">
              <div class="course-content-dates">

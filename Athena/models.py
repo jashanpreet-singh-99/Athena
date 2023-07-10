@@ -89,3 +89,14 @@ class Course(models.Model):
     def __str__(self):
         return self.course_title + '_' + str(self.author.username)
 
+
+class Enrollment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    date = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return self.user.username + '_' + str(self.course.id)
+
+    class Meta:
+        unique_together = ['user', 'course']
