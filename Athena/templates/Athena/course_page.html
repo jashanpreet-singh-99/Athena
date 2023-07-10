@@ -56,7 +56,9 @@
             <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
         </div>
         {% empty %}
-            <p>No courses created yet. Click on the create button to build new course.</p>
+            <div class="center-box">
+                <p>No courses created yet. Click on the create button to build new course.</p>
+            </div>
         {% endfor %}
     </div>
     <!-- Normal Courses visible to all -->
@@ -87,7 +89,7 @@
     <script>
         var courses = [];
         var course_link = '{% url 'course_details_page' 0 %}';
-        {% for course in my_courses %}
+        {% for course in t_courses %}
             cos = {}
             cos['course_id'] = "{{ course.id|escapejs }}";
             cos['course_banner'] = "{{ course.course_banner.url|escapejs }}";

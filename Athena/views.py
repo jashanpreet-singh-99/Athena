@@ -34,6 +34,10 @@ class Courses(views.View):
         context = {'title': 'Courses'}
         load_profile(context, request)
 
+        trending_courses = Course.objects.order_by('-course_rating')[:5]
+        context['t_courses'] = trending_courses
+        # print(trending_courses)
+        # [print(x.course_title, x.course_rating) for x in trending_courses]
         my_courses = Course.objects.filter(author=request.user)
         context['my_courses'] = my_courses
         return render(request, 'Athena/course_page.html', context)
