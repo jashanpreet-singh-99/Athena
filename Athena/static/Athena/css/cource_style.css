@@ -228,3 +228,14 @@
     align-items: center;
 }
 
+.course-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 16px 60px;
+}
+
+.course-view.t-b-margin {
+    margin: 16px 0;
+}
+

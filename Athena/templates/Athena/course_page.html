@@ -61,12 +61,52 @@
             </div>
         {% endfor %}
     </div>
+    {% if e_courses|length > 0 %}
+        <div class="title_1_container">
+            <h2 class="title_h2">Enrolled Courses</h2>
+            {% if e_courses|length > 3 %}
+                <button class="secondary-btn">
+                    View All
+                </button>
+            {% endif %}
+        </div>
+        <div class="course_box">
+            {% for enroll in e_courses %}
+            <div class="course-view">
+                <div class="course-card">
+                    <a href="{% url 'course_details_page' enroll.course.id %}">
+                        <img class="course_logo" src="{{ enroll.course.course_banner.url }}" alt="Course Logo">
+                    </a>
+                </div>
+                <h3>{{ enroll.course.course_title }}</h3>
+                <p>By: {{ enroll.course.author.first_name }} {{ enroll.course.author.last_name }}</p>
+            </div>
+            {% empty %}
+                <div class="center-box">
+                    <p>Not enrolled into any courses yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <!-- Normal Courses visible to all -->
     <div class="title_1_container">
-        <h2 class="title_h2">Trending Courses</h2>
+        <h2 class="title_h2">All Courses</h2>
         <button class="secondary-btn">
             View All
         </button>
+    </div>
+    <div id="course-container" class="course-container">
+        {% for course in v_courses %}
+            <div class="course-view t-b-margin">
+              <div class="course-card">
+                <a href="{% url 'course_details_page' course.id %}">
+                  <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                </a>
+              </div>
+              <h3>{{ course.course_title }}</h3>
+              <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
+            </div>
+        {% endfor %}
     </div>
 {#    <div class="course_box">#}
 {#        {% with ''|center:4 as range %}#}
@@ -81,9 +121,6 @@
 {#        {% endfor %}#}
 {#        {% endwith %}#}
 {#    </div>#}
-    <div class="title_3_container">
-        <h2 class="title_h2">All Courses</h2>
-    </div>
 {% endblock %}
 {% block extrascripts %}
     <script>

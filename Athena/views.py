@@ -41,6 +41,13 @@ class Courses(views.View):
         # [print(x.course_title, x.course_rating) for x in trending_courses]
         my_courses = Course.objects.filter(author=request.user)
         context['my_courses'] = my_courses
+
+        enrolled_courses = Enrollment.objects.filter(user=request.user)
+        context['e_courses'] = enrolled_courses
+
+        view_courses = Course.objects.order_by('-course_rating')[:9]
+        context['v_courses'] = view_courses
+
         return render(request, 'Athena/course_page.html', context)
 
 
