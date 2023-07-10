@@ -1,0 +1,20 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_search_page.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="title_1_container">
+        <h2 class="title_h2">Filter</h2>
+        <button class="secondary-btn">
+            Filter
+        </button>
+    </div>
+
+{% endblock %}
+
+{% block extrascripts %}
+    <script src="{% static 'AThena/js/course_search_page.js'%}"></script>
+{% endblock %}

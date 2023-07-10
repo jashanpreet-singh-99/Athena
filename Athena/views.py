@@ -382,3 +382,16 @@ class EnrollCourse(views.View):
             return redirect(reverse('course_details_page', args=[e_form.cleaned_data['course'].id]))
         else:
             return redirect('course_page')
+
+
+class CourseSearchPage(views.View):
+
+    def get(self, request):
+        context = {'title': 'Find Course'}
+        load_profile(context, request)
+        return render(request, 'Athena/course_search_page.html', context)
+
+    def post(self, request):
+        context = {'title': 'Find Course'}
+        load_profile(context, request)
+        return render(request, 'Athena/course_search_page.html', context)

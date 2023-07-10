@@ -91,7 +91,7 @@
     <!-- Normal Courses visible to all -->
     <div class="title_1_container">
         <h2 class="title_h2">All Courses</h2>
-        <button class="secondary-btn">
+        <button class="secondary-btn" onclick="location.href='{% url 'course_search_page' %}'">
             View All
         </button>
     </div>
@@ -108,19 +108,6 @@
             </div>
         {% endfor %}
     </div>
-{#    <div class="course_box">#}
-{#        {% with ''|center:4 as range %}#}
-{#        {% for _ in range %}#}
-{#        <div class="course-card">#}
-{#            <img class="course_logo" src="{% static 'Athena/media/athena-50.png' %}" alt="Course Logo">#}
-{#            <h3>Course Title {{ forloop.counter }}</h3>#}
-{#            <p>Course description</p>#}
-{#        </div>#}
-{#        {% empty %}#}
-{#            <p>No courses created yet. Click on the create button to build new course.</p>#}
-{#        {% endfor %}#}
-{#        {% endwith %}#}
-{#    </div>#}
 {% endblock %}
 {% block extrascripts %}
     <script>

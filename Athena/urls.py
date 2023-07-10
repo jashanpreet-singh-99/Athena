@@ -21,7 +21,8 @@ urlpatterns = [
     path('cancel_membership', views.CancelMembership.as_view(), name='cancel_membership'),
     path('course_builder', views.CourseBuilder.as_view(), name='course_builder_page'),
     path('course/<int:course_id>', views.CourseDetails.as_view(), name='course_details_page'),
-    path('course/enrollment', views.EnrollCourse.as_view(), name='course_enrollment')
+    path('course/enrollment', views.EnrollCourse.as_view(), name='course_enrollment'),
+    path('course/find', views.CourseSearchPage.as_view(), name='course_search_page')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
