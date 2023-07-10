@@ -1,11 +1,96 @@
 {% extends 'Athena/base.html' %}
 {% load static %}
+{% load humanize %}
 {% block stylesheets %}
             <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_detials_style.css' %}"/>
 {% endblock %}
 {% block page %}
-    <h2 class="course-title">{{ course.course_title }}</h2>
+    <div class="info-container">
+        <img class="course-banner" src="{{ course.course_banner.url }}" alt="course_banner">
+        <div class="course-content">
+            <h2 class="course-title">{{ course.course_title }}</h2>
+            <p class="course-desc">{{ course.course_desc }}</p>
+            <div class="rating-widget">
+                  <div class="star-container">
+                    <div class="star" data-rating="100"></div>
+                    <div class="star" data-rating="100"></div>
+                    <div class="star" data-rating="80"></div>
+                    <div class="star" data-rating="0"></div>
+                    <div class="star" data-rating="0"></div>
+                  </div>
+            </div>
+            <div class="content-footer">
+                <div class="author-card">
+                    <img class="author-profile-image" src="{{ author_profile.url }}" alt="author_profile">
+                    <p class="course-author"> {{ course.author.first_name }} {{ course.author.last_name }}</p>
+                </div>
+                <button class="enroll-button">Enroll Now</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tabbed-view">
+        <div class="tab-container">
+            <button class="tab" onclick="openTab(event, 'tab1')">Content Details</button>
+            <button class="tab" onclick="openTab(event, 'tab2')">Class Details</button>
+            <button class="tab" onclick="openTab(event, 'tab3')">Schedule</button>
+            <button class="tab" onclick="openTab(event, 'tab4')">Related Courses</button>
+        </div>
+        <div id="tab1" class="tab-content">
+            <div class="course-content-dates">
+                <div>
+                    <h3>Course Created on: </h3>
+                    <p>{{ course.course_created }}</p>
+                </div>
+                <div>
+                    <h3>Course Difficulty Level: </h3>
+                    <p>{{ course.get_course_difficulty_display }}</p>
+                </div>
+                <p class="secondary-info"> Last updated on {{ course.last_update }}
+            </div>
+            <h3 class="cat-title">Content Covered</h3>
+            <div id="cat-container"></div>
+        </div>
+        <div id="tab2" class="tab-content">
+             <div class="course-content-dates">
+                <div>
+                    <h3>Course Medium: </h3>
+                    <p>{{ course.get_course_type_display }}</p>
+                </div>
+                <div>
+                    <h3>Instructor: </h3>
+                    <div class="author-card">
+                        <img class="author-profile-image" src="{{ author_profile.url }}" alt="author_profile">
+                        <p class="course-author"> {{ course.author.first_name }} {{ course.author.last_name }}</p>
+                    </div>
+                </div>
+                <p class="secondary-info"> Weekly: {{ course.course_day }}
+            </div>
+            <h3 class="cat-title">Class Enrollments: </h3>
+        </div>
+        <div id="tab3" class="tab-content">
+             <div class="course-content-dates">
+                <div>
+                    <h3>Course Starts: </h3>
+                    <p>{{ course.course_start_date }}</p>
+                </div>
+                <div>
+                    <h3>Course Ends:</h3>
+                    <p>{{ course.course_end_date }}</p>
+                </div>
+                <p class="secondary-info"> Duration: {{ course.course_start_date|timesince:course.course_end_date }}
+            </div>
+            <h3 class="cat-title">Class Weekly Schedule: </h3>
+            <p>{{ course.course_day }}</p>
+        </div>
+        <div id="tab4" class="tab-content">No related courses found</div>
+    </div>
+
 {% endblock %}
 {% block extrascripts %}
+    <script>
+        const course_rating = '{{ course.course_rating }}';
+        const course_categories = '{{ course.categories }}';
+    </script>
     <script src="{% static 'Athena/js/course_details_page.js' %}"></script>
 {% endblock %}

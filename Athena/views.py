@@ -331,5 +331,7 @@ class CourseDetails(views.View):
         context = {'title': 'Course Details'}
         load_profile(context, request)
         course = Course.objects.get(id=course_id)
+        author_profile = UserProfiles.objects.get(user=course.author)
         context['course'] = course
+        context['author_profile'] = author_profile.img
         return render(request, 'Athena/course_details_page.html', context)
