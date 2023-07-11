@@ -160,3 +160,65 @@
 .cat:hover {
     background-color: #F88379;
 }
+
+.content-button-container {
+    display: flex;
+    flex-direction: row;
+    padding: 16px;
+}
+
+.content-buttons {
+    padding: 16px 32px;
+    border-radius: 24px;
+    margin: 8px;
+    border: none;
+    font-size: medium;
+    color: #ffffff;
+    background-color: #070708;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content-buttons:hover {
+    background-color: #aac3e7;
+    color: #070708;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.content-buttons:active {
+    color: #ffffff;
+    background-color: #070708;
+}
+
+.content-buttons.light {
+    color: #070708;
+    background-color: #ffffff;
+}
+
+.content-buttons.light:hover {
+    color: #070708;
+    background-color: #eeeeee;
+}
+
+.content-buttons-200 {
+    width: 200px;
+}
+
+.content-buttons-120 {
+    width: 120px;
+}
+
+.content-p-container {
+  border: none;
+}
+
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-container {
+  display: none;
+  margin-top: 10px;
+}
+

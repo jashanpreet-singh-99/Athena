@@ -50,3 +50,21 @@ function createButtons() {
 
 // Call the function to create the buttons
 createButtons();
+
+const expandButtons = document.querySelectorAll('.content-p-container .expand-button');
+const contentContainers = document.querySelectorAll('.content-p-container .content-container');
+
+expandButtons.forEach((expandButton, index) => {
+    contentContainers[index].style.display = 'none';
+    expandButton.textContent = 'Expand';
+    expandButton.addEventListener('click', function() {
+      const contentContainer = contentContainers[index];
+      if (contentContainer.style.display === 'none') {
+        contentContainer.style.display = 'block';
+        expandButton.textContent = 'Close';
+      } else {
+        contentContainer.style.display = 'none';
+        expandButton.textContent = 'Expand';
+      }
+    });
+});
