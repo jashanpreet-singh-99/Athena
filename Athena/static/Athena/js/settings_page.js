@@ -119,8 +119,8 @@ dialogOverlay.addEventListener('click', () => {
 let selectedPriceType = 0
 
 monthlyRateBtn.addEventListener('click', () => {
-    monthlyRateBtn.classList.add("sel")
-    yearlyRateBtn.classList.remove("sel")
+    monthlyRateBtn.classList.add("sel");
+    yearlyRateBtn.classList.remove("sel");
     if (selectedPriceType > 0) {
         const membershipItems = document.querySelectorAll('.membership-price-item');
         membershipItems.forEach(item => {
@@ -134,8 +134,8 @@ monthlyRateBtn.addEventListener('click', () => {
 });
 
 yearlyRateBtn.addEventListener('click', () => {
-    monthlyRateBtn.classList.remove("sel")
-    yearlyRateBtn.classList.add("sel")
+    monthlyRateBtn.classList.remove("sel");
+    yearlyRateBtn.classList.add("sel");
     if (selectedPriceType < 1) {
         const membershipItems = document.querySelectorAll('.membership-price-item');
         membershipItems.forEach(item => {

@@ -79,16 +79,43 @@
                 <div class="content-header">
                     <h2>Chapters:</h2>
                     <div>
-                        <button class="content-buttons content-buttons-200">
-                            Add Chapter
-                        </button>
                         <button class="expand-button content-buttons light content-buttons-120">
                             Expand
                         </button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">
-                    <p>This is the expanded content chapter.</p>
+                    {% for chapter in chapters %}
+                        <div class="chapter-view-container">
+                        <p>{{ chapter.title }}</p>
+                        <div class="chapter-info-container">
+                            <p>Visibility: {{ chapter.visibility }}</p>
+                            <p>Streamable: {{ chapter.is_streaming }}</p>
+                        </div>
+                        </div>
+                    {%  endfor %}
+                    <form method="post" enctype="multipart/form-data" action="{% url 'create_chapter' %}">
+                        {%  csrf_token %}
+                        <div>
+                            <h3>Chapter Title: </h3>
+                            {{ c_form.course }}
+                            {{ c_form.title }}
+                            {{ c_form.visibility }}
+                            <div class="toggle-div">
+                                <button id="visible-button" class="toggle-btn sel">Visible</button>
+                                <button id="hidden-button" class="toggle-btn ">Hidden</button>
+                            </div>
+                            {{ c_form.is_streaming }}
+                            <div class="toggle-div large">
+                                <button id="stream-button" class="toggle-btn large">Stream-Only</button>
+                                <button id="no-stream-button" class="toggle-btn large sel">No Stream</button>
+                            </div>
+                        </div>
+                        <div id="stream_video_file_div">
+                            {{ c_form.video_file }}
+                        </div>
+                        <button class="content-buttons" type="submit">Add Chapter</button>
+                    </form>
                 </div>
             </div>
             <div class="content-p-container">

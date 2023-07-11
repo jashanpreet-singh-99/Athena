@@ -12,6 +12,10 @@ def user_directory_path_course(instance, filename):
     return f'user_{instance.author.username}/{filename}'
 
 
+def course_directory_path(instance, filename):
+    return f'course_{instance.course.id}/{filename}'
+
+
 class MemberFeatures(models.Model):
     name = models.CharField(max_length=255)
     details = models.TextField(max_length=1024)
@@ -100,3 +104,17 @@ class Enrollment(models.Model):
 
     class Meta:
         unique_together = ['user', 'course']
+
+
+class CourseChapter(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    visibility = models.BooleanField(default=True)
+    files = models.ManyToManyField('File', blank=True)
+    is_streaming = models.BooleanField(default=False)
+    video_file = models.FileField(upload_to=course_directory_path, blank=True)
+
+
+class File(models.Model):
+    name = models.CharField(max_length=255)
+    file = models.FileField(upload_to=course_directory_path)

@@ -68,3 +68,48 @@ expandButtons.forEach((expandButton, index) => {
       }
     });
 });
+
+const visibleBtn = document.getElementById('visible-button');
+const hiddenBtn = document.getElementById('hidden-button');
+const visibilityCheckBox = document.getElementById('chapter-visibility');
+
+visibleBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    visibleBtn.classList.add("sel");
+    hiddenBtn.classList.remove("sel");
+    visibilityCheckBox.checked = true;
+});
+
+hiddenBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    hiddenBtn.classList.add("sel");
+    visibleBtn.classList.remove("sel");
+    visibilityCheckBox.checked = false;
+});
+
+
+const streamBtn = document.getElementById('stream-button');
+const noStreamBtn = document.getElementById('no-stream-button');
+const streamCheckBox = document.getElementById('is_streaming_check');
+const streamFileDiv = document.getElementById('stream_video_file_div');
+streamFileDiv.hidden = true;
+
+streamBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    streamBtn.classList.add("sel");
+    noStreamBtn.classList.remove("sel");
+    streamCheckBox.checked = true;
+    streamFileDiv.hidden = false;
+});
+
+noStreamBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    noStreamBtn.classList.add("sel");
+    streamBtn.classList.remove("sel");
+    streamCheckBox.checked = false;
+    streamFileDiv.hidden = true;
+});

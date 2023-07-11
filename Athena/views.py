@@ -414,4 +414,41 @@ class CourseAuthor(views.View):
         enrollment_info = Enrollment.objects.filter(course=course)
         context['e_info'] = enrollment_info
 
+        c_data = {'course': course}
+        chapter_form = CourseChapterForm(initial=c_data)
+
+        chapter_form.fields['course'].widget.attrs['style'] = 'display: none;'
+        chapter_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        chapter_form.fields['visibility'].widget.attrs['id'] = 'chapter-visibility'
+        chapter_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
+        chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
+
+        chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
+        chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
+
+        chapter_form.fields['video_file'].widget.attrs['id'] = 'video_file_block'
+        chapter_form.fields['video_file'].widget.attrs['class'] = 'video-file-block'
+
+        context['c_form'] = chapter_form
+
+        chapters = CourseChapter.objects.filter(course=course)
+        context['chapters'] = chapters
+
         return render(request, 'Athena/course_author_page.html', context)
+
+
+class CreateCourseChapter(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        chapter_form = CourseChapterForm(request.POST, request.FILES)
+        if chapter_form.is_valid():
+            print('All done')
+            chapter_form.save()
+            return redirect(reverse('course_author_page', args=[chapter_form.cleaned_data['course'].id]))
+        else:
+            print('Form not valid')
+            return redirect(reverse('course_author_page', args=[request.POST['course'].id]))

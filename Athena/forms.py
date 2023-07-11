@@ -53,3 +53,10 @@ class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = '__all__'
+
+
+class CourseChapterForm(forms.ModelForm):
+
+    class Meta:
+        model = CourseChapter
+        fields = ['course', 'title', 'visibility', 'files', 'is_streaming', 'video_file']

@@ -222,3 +222,122 @@
   margin-top: 10px;
 }
 
+
+.toggle-div {
+    width: 168px;
+    display: inline-flex;
+    background-color: #eeeeee;
+    border-radius: 24px;
+    align-items: center;
+    margin: 0 16px;
+}
+
+.toggle-div.large {
+    width: 248px;
+}
+
+.toggle-btn {
+    width: 80px;
+    margin: 2px;
+    padding: 12px 20px;
+    font-size: small;
+    color: #888888;
+    background-color: #eeeeee;
+    border-radius: 24px;
+    border: none;
+}
+
+.toggle-btn.large {
+    width: 120px;
+}
+
+.toggle-btn:hover {
+    background-color: #dddddd;
+}
+
+.toggle-btn.sel {
+    color: #070708;
+    background-color: #c9d9f0;
+}
+
+.input-fields {
+    width: 300px;
+    height: 30px;
+    padding: 20px 32px;
+    margin: 8px 0;
+    border-radius: 16px;
+    border: 1px solid #c9d9f0;
+    background-color: #eeeeee;
+    color: #070708;
+    font-size: medium;
+}
+
+.input-fields.large {
+    width: 400px;
+}
+
+.chapter-title-f  {
+    margin-right: 32px;
+}
+
+input[type="file"] {
+  display: flex;
+  /* Button styles */
+  background-color: #eeeeee;
+  color: #333333;
+  padding: 16px 32px;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+  /* Text styles */
+  font-size: medium;
+  margin: 10px 10px;
+}
+
+input[type="file"]::file-selector-button {
+    padding: 12px 24px;
+    border-radius: 24px;
+    margin: 8px;
+    border: none;
+    font-size: medium;
+    color: #ffffff;
+    background-color: #070708;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #aac3e7;
+    color: #070708;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+input[type="file"]::file-selector-button:active {
+    color: #ffffff;
+    background-color: #070708;
+}
+
+input[type="file"]::after {
+    color: #4CAF50;
+}
+
+.chapter-view-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 16px 32px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 12px;
+    background-color: #c9d9f0;
+}
+
+.chapter-info-container {
+    display: flex;
+    flex-direction: row;
+    gap: 32px;
+}
+
+
+
+

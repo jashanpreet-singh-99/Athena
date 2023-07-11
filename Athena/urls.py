@@ -23,7 +23,8 @@ urlpatterns = [
     path('course/<int:course_id>', views.CourseDetails.as_view(), name='course_details_page'),
     path('course/author/<int:course_id>', views.CourseAuthor.as_view(), name='course_author_page'),
     path('course/enrollment', views.EnrollCourse.as_view(), name='course_enrollment'),
-    path('course/find', views.CourseSearchPage.as_view(), name='course_search_page')
+    path('course/find', views.CourseSearchPage.as_view(), name='course_search_page'),
+    path('course/chapter', views.CreateCourseChapter.as_view(), name='create_chapter')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
