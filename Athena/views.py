@@ -452,3 +452,15 @@ class CreateCourseChapter(views.View):
         else:
             print('Form not valid')
             return redirect(reverse('course_author_page', args=[request.POST['course'].id]))
+
+
+class CourseContentView(views.View):
+
+    def get(self, request, course_id):
+        context = {'title': 'Course Content'}
+        load_profile(context, request)
+
+        chapters = CourseChapter.objects.filter(course__id=course_id, visibility=True)
+        context['chapters'] = chapters
+
+        return render(request, 'Athena/course_content_page.html', context)

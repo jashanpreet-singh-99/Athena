@@ -1,0 +1,38 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_content_page.css' %}"/>
+{% endblock %}
+
+{% block page %}
+    <div class="parent-content">
+        <div id="video-content" class="video-content">
+            <video id="video-box" controls>
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="chapter-content">
+            <h2>Chapters</h2>
+            {% for chapter in chapters %}
+                <div class="chapter-view-container" data-video="{{ chapter.video_file.url }}">
+                    <p>{{ chapter.title }}</p>
+                </div>
+            {%  endfor %}
+        </div>
+    </div>
+    <h1 id="chapter_title" class="chapter-title">Title</h1>
+
+{% endblock %}
+
+{% block extrascripts %}
+    <script>
+        let chapters = [];
+        {% for chapter in chapters %}
+            var chap = {};
+            chap['title'] = '{{ chapter.title|escapejs }}';
+            chapters.push(chap);
+        {% endfor %}
+    </script>
+    <script src="{% static 'Athena/js/course_content_page.js'%}"></script>
+{% endblock %}

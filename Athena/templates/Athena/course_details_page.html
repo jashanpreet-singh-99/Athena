@@ -32,7 +32,7 @@
                         <button class="enroll-button">Enroll Now</button>
                     </form>
                 {% else %}
-                    <button class="enroll-button">Start Now</button>
+                    <button class="enroll-button" onclick="location.href='{% url 'course_content' course.id %}'">Start Now</button>
                 {% endif %}
             </div>
         </div>
