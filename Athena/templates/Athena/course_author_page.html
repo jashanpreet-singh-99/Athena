@@ -68,11 +68,13 @@
             <h3 class="cat-title">Content Covered</h3>
             <div id="cat-container"></div>
             <h3 class="cat-title">Class Enrollments: </h3>
-            {% if e_info|length < 2 %}
-                <p>{{ e_info|length }} Student</p>
-            {% else %}
-                <p>{{ e_info|length }} Students</p>
-            {% endif %}
+            <p>{{ e_info|length }} Student{{ e_info|pluralize }}</p>
+{#            {% if e_info|length < 2 %}#}
+{#                <p>{{ e_info|length }} Student</p>#}
+{#            {% else %}#}
+{#                <p>{{ e_info|length }} Students</p>#}
+{#            {% endif %}#}
+            {%  url 'dash_page' %}
         </div>
         <div id="tab2" class="tab-content">
             <div class="content-p-container">
