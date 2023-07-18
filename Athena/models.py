@@ -132,3 +132,13 @@ class Quiz(models.Model):
     instructions = models.TextField(max_length=1024)
     files = models.FileField(upload_to=course_directory_path, blank=True)
 
+
+class QuizContent(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.CharField(max_length=512)
+    options_1 = models.CharField(max_length=256)
+    options_2 = models.CharField(max_length=256)
+    options_3 = models.CharField(max_length=256)
+    options_4 = models.CharField(max_length=256)
+    answers = models.PositiveIntegerField()

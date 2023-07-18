@@ -518,7 +518,7 @@ class CreateQuiz(views.View):
         if quiz_form.is_valid():
             quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
             print(len(quiz_info))
-            quiz = quiz_form.save(commit=False)
+            quiz = quiz_form.save()
 
             for line in quiz_info.split('XXX\n'):
                 if line == '':
@@ -539,6 +539,16 @@ class CreateQuiz(views.View):
                 index_o = t_answer.find('O')
                 answer = int(t_answer[index_o+1:index_o+2])
                 print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
+                QuizContent.objects.create(
+                    course=quiz_form.cleaned_data['course'],
+                    quiz=quiz,
+                    question=question,
+                    options_1=option_1,
+                    options_2=option_2,
+                    options_3=option_3,
+                    options_4=option_4,
+                    answers=answer
+                )
 
             return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
         else:
