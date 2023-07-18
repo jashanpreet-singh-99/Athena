@@ -118,3 +118,17 @@ class CourseChapter(models.Model):
 class File(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to=course_directory_path)
+
+
+class Quiz(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    visibility = models.BooleanField(default=True)
+    time = models.PositiveIntegerField()
+    each_mark = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
+    grade = models.DecimalField(max_digits=4, decimal_places=2)
+    negative_marking = models.BooleanField(default=False)
+    negative_grade = models.DecimalField(max_digits=4, decimal_places=2, default=0.5)
+    instructions = models.TextField(max_length=1024)
+    files = models.FileField(upload_to=course_directory_path, blank=True)
+

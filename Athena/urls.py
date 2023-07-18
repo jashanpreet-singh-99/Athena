@@ -25,7 +25,8 @@ urlpatterns = [
     path('course/enrollment', views.EnrollCourse.as_view(), name='course_enrollment'),
     path('course/find', views.CourseSearchPage.as_view(), name='course_search_page'),
     path('course/chapter', views.CreateCourseChapter.as_view(), name='create_chapter'),
-    path('course/content/<int:course_id>', views.CourseContentView.as_view(), name='course_content')
+    path('course/content/<int:course_id>', views.CourseContentView.as_view(), name='course_content'),
+    path('course/content/quiz', views.CreateQuiz.as_view(), name='create_quiz'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

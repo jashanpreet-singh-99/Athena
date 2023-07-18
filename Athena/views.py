@@ -437,6 +437,39 @@ class CourseAuthor(views.View):
         chapters = CourseChapter.objects.filter(course=course)
         context['chapters'] = chapters
 
+        #
+        # Quiz Info
+        #
+        q_data = {'course': course}
+        quiz_form = CourseQuizForm(initial=q_data)
+
+        quiz_form.fields['course'].widget.attrs['style'] = 'display: none;'
+        quiz_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        quiz_form.fields['visibility'].widget.attrs['id'] = 'quiz-visibility'
+        quiz_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        quiz_form.fields['negative_marking'].widget.attrs['id'] = 'quiz-negative-marking'
+        quiz_form.fields['negative_marking'].widget.attrs['style'] = 'display: none;'
+        quiz_form.fields['negative_grade'].widget.attrs['id'] = 'negative_grade'
+        quiz_form.fields['negative_grade'].widget.attrs['class'] = 'input-fields small chapter-title-f'
+        quiz_form.fields['negative_grade'].widget.attrs['hidden'] = 'hidden'
+
+        quiz_form.fields['time'].widget.attrs['id'] = 'quiz_time'
+        quiz_form.fields['time'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        quiz_form.fields['instructions'].widget.attrs['class'] = 'input-text'
+
+        quiz_form.fields['files'].widget.attrs['id'] = 'video_file_block'
+        quiz_form.fields['files'].widget.attrs['class'] = 'video-file-block'
+
+        quiz_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+        quiz_form.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        context['q_form'] = quiz_form
+        quizzes = Quiz.objects.filter(course=course)
+        context['quizzes'] = quizzes
+
         return render(request, 'Athena/course_author_page.html', context)
 
 
@@ -464,3 +497,50 @@ class CourseContentView(views.View):
         context['chapters'] = chapters
 
         return render(request, 'Athena/course_content_page.html', context)
+
+
+'''
+Quiz file Pattern
+Q: 
+O1:
+O2:
+O3:
+O4:
+A:
+XXX
+'''
+
+
+class CreateQuiz(views.View):
+
+    def post(self, request):
+        quiz_form = CourseQuizForm(request.POST, request.FILES)
+        if quiz_form.is_valid():
+            quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
+            print(len(quiz_info))
+            quiz = quiz_form.save(commit=False)
+
+            for line in quiz_info.split('XXX\n'):
+                if line == '':
+                    continue
+                if line.startswith('\n'):
+                    line = line[1:]
+                temp = line.split('\nO1:')
+                question = temp[0][2:].strip()
+                temp = temp[-1].split('\nO2:')
+                option_1 = temp[0].strip()
+                temp = temp[-1].split('\nO3:')
+                option_2 = temp[0].strip()
+                temp = temp[-1].split('\nO4:')
+                option_3 = temp[0].strip()
+                temp = temp[-1].split('\nA:')
+                option_4 = temp[0].strip()
+                t_answer = temp[-1].strip()
+                index_o = t_answer.find('O')
+                answer = int(t_answer[index_o+1:index_o+2])
+                print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
+
+            return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
+        else:
+            print('Form not valid:', quiz_form.errors)
+            return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
