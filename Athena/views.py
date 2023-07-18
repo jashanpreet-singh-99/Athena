@@ -6,7 +6,7 @@ from .forms import *
 from .models import *
 
 from datetime import datetime
-
+from django.http import JsonResponse
 
 def load_profile(context, request):
     user = request.user
@@ -496,6 +496,9 @@ class CourseContentView(views.View):
         chapters = CourseChapter.objects.filter(course__id=course_id, visibility=True)
         context['chapters'] = chapters
 
+        quizzes = Quiz.objects.filter(course_id=course_id, visibility=True)
+        context['quizzes'] = quizzes
+
         return render(request, 'Athena/course_content_page.html', context)
 
 
@@ -554,3 +557,35 @@ class CreateQuiz(views.View):
         else:
             print('Form not valid:', quiz_form.errors)
             return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
+
+
+class GetQuizQuestion(views.View):
+
+    def get(self, request):
+        print(request.GET)
+        q_no = int(request.GET['question_no'])
+        prev_selection = int(request.GET['prev_selection'])
+        quiz = Quiz.objects.get(pk=request.GET['quiz_id'])
+        # update previous_question submission
+        if q_no > 0 and prev_selection > 0:
+            print('Working')
+            p_questions = QuizContent.objects.filter(quiz__id=quiz.id)[q_no-1]
+
+
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz.id)
+        if len(quiz_questions) > q_no :
+            quiz_question = quiz_questions[q_no]
+            quiz_content_data = {
+                'question': quiz_question.question,
+                'options_1': quiz_question.options_1,
+                'options_2': quiz_question.options_2,
+                'options_3': quiz_question.options_3,
+                'options_4': quiz_question.options_4,
+                'answers': quiz_question.answers,
+            }
+            context = {'question': quiz_content_data, 'blank': not (len(quiz_questions) > q_no)}
+            return JsonResponse(context)
+        else:
+            context = {'blank': not(len(quiz_questions) > q_no)}
+
+            return JsonResponse(context)
