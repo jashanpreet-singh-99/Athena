@@ -142,3 +142,11 @@ class QuizContent(models.Model):
     options_3 = models.CharField(max_length=256)
     options_4 = models.CharField(max_length=256)
     answers = models.PositiveIntegerField()
+
+
+class StudentQuizSubmission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.ForeignKey(QuizContent, on_delete=models.CASCADE)
+    submission = models.PositiveIntegerField()
+    submitted_at = models.DateField(auto_now_add=True)

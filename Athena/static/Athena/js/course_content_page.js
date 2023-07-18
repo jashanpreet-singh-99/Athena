@@ -121,9 +121,9 @@ function sendQuizRequest(questionNo, prev_selection) {
             if (Boolean(response.blank)) {
                 quizQPage.style.display = 'none';
                 quizFinishPage.style.display = 'flex'
-                // quizTotal.textContent = response.total;
-                // quizCorrect.textContent = response.answered;
-                // quizScore.textContent = response.score + ' / ' + response.total_score;
+                quizTotal.textContent = response.total;
+                quizCorrect.textContent = response.answered;
+                quizScore.textContent = response.score + ' / ' + response.total_score;
             } else {
                 console.log('Q: ' + response.question.question);
                 qQuestion.textContent = 'Q ' + (current_question + 1) + '. ' + response.question.question;

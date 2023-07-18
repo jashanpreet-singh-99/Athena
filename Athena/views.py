@@ -4,9 +4,10 @@ from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
 from .models import *
+from django.http import JsonResponse
 
 from datetime import datetime
-from django.http import JsonResponse
+
 
 def load_profile(context, request):
     user = request.user
@@ -414,6 +415,10 @@ class CourseAuthor(views.View):
         enrollment_info = Enrollment.objects.filter(course=course)
         context['e_info'] = enrollment_info
 
+
+        #
+        # Chapter Info
+        #
         c_data = {'course': course}
         chapter_form = CourseChapterForm(initial=c_data)
 
@@ -552,7 +557,6 @@ class CreateQuiz(views.View):
                     options_4=option_4,
                     answers=answer
                 )
-
             return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
         else:
             print('Form not valid:', quiz_form.errors)
@@ -570,7 +574,18 @@ class GetQuizQuestion(views.View):
         if q_no > 0 and prev_selection > 0:
             print('Working')
             p_questions = QuizContent.objects.filter(quiz__id=quiz.id)[q_no-1]
-
+            try:
+                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
+                check.submission = prev_selection
+            except StudentQuizSubmission.DoesNotExist:
+                StudentQuizSubmission.objects.create(
+                    user=request.user,
+                    quiz=quiz,
+                    question=p_questions,
+                    submission=prev_selection
+                )
+            finally:
+                print(q_no, p_questions.question)
 
         quiz_questions = QuizContent.objects.filter(quiz__id=quiz.id)
         if len(quiz_questions) > q_no :
@@ -587,5 +602,19 @@ class GetQuizQuestion(views.View):
             return JsonResponse(context)
         else:
             context = {'blank': not(len(quiz_questions) > q_no)}
-
+            # calculate score
+            answered_q = StudentQuizSubmission.objects.filter(quiz__id=quiz.id, user__id=request.user.id)
+            total = QuizContent.objects.filter(quiz_id=quiz.id).count()
+            score = 0
+            for ans in answered_q:
+                if ans.question.answers == ans.submission:
+                    score += ans.quiz.each_mark
+                else:
+                    if ans.quiz.negative_marking:
+                        n_grade = ans.quiz.negative_grade
+                        score -= n_grade
+            context['total'] = total
+            context['answered'] = len(answered_q)
+            context['score'] = round(score, 2)
+            context['total_score'] = round(total * quiz.each_mark, 2)
             return JsonResponse(context)
