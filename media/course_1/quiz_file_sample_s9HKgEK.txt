@@ -1,0 +1,79 @@
+Q: What is Django?
+O1: A JavaScript framework
+O2: A Python web framework
+O3: An operating system
+O4: A database management system
+A: O2
+XXX
+
+Q: Which command is used to create a new Django project?
+O1: django createproject myproject
+O2: django startproject myproject
+O3: django newproject myproject
+O4: django initproject myproject
+A: O2
+XXX
+
+Q: What is the purpose of Django's ORM (Object-Relational Mapping)?
+O1: To create user interfaces
+O2: To manage databases
+O3: To handle client-side scripting
+O4: To render HTML templates
+A: O2
+XXX
+
+Q: What is the Django admin site used for?
+O1: Testing Django applications
+O2: Managing user authentication
+O3: Monitoring server logs
+O4: Creating database backups
+A: O2
+XXX
+
+Q: What does the term "migration" refer to in Django?
+O1: The process of moving a Django project to a different server
+O2: The process of updating Django to the latest version
+O3: The process of transferring data between different database systems
+O4: The process of synchronizing database schema changes with Django models
+A: O4
+XXX
+
+Q: Which file is used to define the URL patterns in a Django project?
+O1: urls.py
+O2: views.py
+O3: models.py
+O4: settings.py
+A: O1
+XXX
+
+Q: What is the purpose of Django's template language?
+O1: To define the structure and layout of web pages
+O2: To manage server-side logic and data processing
+O3: To handle user input and form validation
+O4: To interact with databases and perform CRUD operations
+A: O1
+XXX
+
+Q: What is the command to start the Django development server?
+O1: python manage.py run
+O2: python runserver
+O3: django start
+O4: django run
+A: O2
+XXX
+
+Q: How can you customize the default Django authentication views and templates?
+O1: By modifying the Django source code
+O2: By creating a custom authentication backend
+O3: By extending the built-in Django authentication views and templates
+O4: By using third-party authentication libraries with Django
+A: O3
+XXX
+
+Q: What is the purpose of Django's context processors?
+O1: To manage user sessions and cookies
+O2: To handle form submissions and data validation
+O3: To provide additional data to all templates
+O4: To cache database queries and improve performance
+A: O3
+XXX

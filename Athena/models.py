@@ -118,3 +118,35 @@ class CourseChapter(models.Model):
 class File(models.Model):
     name = models.CharField(max_length=255)
     file = models.FileField(upload_to=course_directory_path)
+
+
+class Quiz(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    visibility = models.BooleanField(default=True)
+    time = models.PositiveIntegerField()
+    each_mark = models.DecimalField(max_digits=4, decimal_places=2, default=1.0)
+    grade = models.DecimalField(max_digits=4, decimal_places=2)
+    negative_marking = models.BooleanField(default=False)
+    negative_grade = models.DecimalField(max_digits=4, decimal_places=2, default=0.5)
+    instructions = models.TextField(max_length=1024)
+    files = models.FileField(upload_to=course_directory_path, blank=True)
+
+
+class QuizContent(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.CharField(max_length=512)
+    options_1 = models.CharField(max_length=256)
+    options_2 = models.CharField(max_length=256)
+    options_3 = models.CharField(max_length=256)
+    options_4 = models.CharField(max_length=256)
+    answers = models.PositiveIntegerField()
+
+
+class StudentQuizSubmission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.ForeignKey(QuizContent, on_delete=models.CASCADE)
+    submission = models.PositiveIntegerField()
+    submitted_at = models.DateField(auto_now_add=True)

@@ -40,11 +40,76 @@
                 </div>
             </div>
         </div>
+        <div id="quiz-content" class="video-content quiz-content" hidden="hidden">
+            <div id="quiz-start-page" class="quiz-content">
+                <div class="content">
+                    <h1 class="quiz-title">Quiz:</h1>
+                    <h1 id="quiz_title" class="quiz-title"></h1>
+                </div>
+                <div class="content">
+                    <p>Duration: </p>
+                    <p id="quiz_time">10</p>
+                    <p> minutes</p>
+                </div>
+                <div class="content">
+                    <p>Negative Marking: </p>
+                    <p id="quiz_negative_marking">Applicable</p>
+                </div>
+                <h3>Instructions:</h3>
+                <p id="quiz-instructions"></p>
+                <button id="start-quiz" class="content-buttons" onclick="sendQuizRequest(0, 0)">
+                    Start
+                </button>
+            </div>
+            <div id="quiz-q-page" class="quiz-content hide">
+                <h2 id="quiz_question_v" class="quiz-question-v">What is the purpose of Django's context processors?</h2>
+                <button id="option_1" class="q-options">
+                    <span>1</span>
+                    To manage user sessions and cookies
+                </button>
+                <button id="option_2" class="q-options">
+                    <span>2</span>
+                    To handle form submissions and data validation
+                </button>
+                <button id="option_3" class="q-options">
+                    <span>3</span>
+                    To provide additional data to all templates
+                </button>
+                <button id="option_4" class="q-options">
+                    <span>4</span>
+                    To cache database queries and improve performance
+                </button>
+                <div class="quiz-buttons-cont">
+                    <button id="get_next_question" class="content-buttons large">
+                        NEXT
+                    </button>
+                </div>
+            </div>
+            <div id="quiz-f-page" class="quiz-content hide">
+                 <div class="content">
+                    <h1 class="quiz-title">You Scored: </h1>
+                    <h1 id="quiz_score" class="quiz-title">10/30</h1>
+                </div>
+                <div class="content">
+                    <p>You Answered: </p>
+                    <p id="quiz_correct_q"></p>
+                    <p> / </p>
+                    <p id="quiz_total_q"></p>
+                    <p> Questions</p>
+                </div>
+            </div>
+        </div>
         <div class="chapter-content">
             <h2>Chapters</h2>
             {% for chapter in chapters %}
                 <div class="chapter-view-container" data-video="{{ chapter.video_file.url }}">
                     <p>{{ chapter.title }}</p>
+                </div>
+            {%  endfor %}
+            <h2>Quiz</h2>
+            {% for quiz in quizzes %}
+                <div class="quiz-view-container">
+                    <p>{{ quiz.title }}</p>
                 </div>
             {%  endfor %}
         </div>
@@ -61,6 +126,18 @@
             chap['title'] = '{{ chapter.title|escapejs }}';
             chapters.push(chap);
         {% endfor %}
+        let quizzes = [];
+        {% for quiz_i in quizzes %}
+            var quiz = {};
+            quiz['id'] = '{{ quiz_i.id|escapejs }}'
+            quiz['course_id'] = {{ quiz_i.course.id|escapejs }}
+            quiz['title'] = '{{ quiz_i.title|escapejs }}';
+            quiz['time'] = '{{ quiz_i.time|escapejs }}';
+            quiz['negative_marking'] = '{{ quiz_i.negative_marking|escapejs }}'
+            quiz['instructions'] = '{{ quiz_i.instructions|escapejs }}'
+            quizzes.push(quiz);
+        {% endfor %}
+        const quiz_url = '{% url 'get_quiz_questions' %}';
     </script>
     <script src="{% static 'Athena/js/course_content_page.js'%}"></script>
 {% endblock %}

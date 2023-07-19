@@ -60,3 +60,14 @@ class CourseChapterForm(forms.ModelForm):
     class Meta:
         model = CourseChapter
         fields = ['course', 'title', 'visibility', 'files', 'is_streaming', 'video_file']
+
+
+class CourseQuizForm(forms.ModelForm):
+    negative_grade = forms.DecimalField(widget=forms.TextInput, initial=0.5)
+    grade = forms.DecimalField(widget=forms.TextInput)
+    each_mark = forms.DecimalField(widget=forms.TextInput)
+    time = forms.IntegerField(widget=forms.TextInput, initial=10)
+
+    class Meta:
+        model = Quiz
+        fields = '__all__'

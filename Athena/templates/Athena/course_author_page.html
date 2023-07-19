@@ -23,10 +23,10 @@
 
     <div class="tabbed-view">
         <div class="tab-container">
-            <button class="tab" onclick="openTab(event, 'tab1')">Course Details</button>
-            <button class="tab" onclick="openTab(event, 'tab2')">Content</button>
-            <button class="tab" onclick="openTab(event, 'tab3')">Students</button>
-            <button class="tab" onclick="openTab(event, 'tab4')">Grades</button>
+            <button class="tab" onclick="openTab(event, 'tab1', 0)">Course Details</button>
+            <button class="tab" onclick="openTab(event, 'tab2', 1)">Content</button>
+            <button class="tab" onclick="openTab(event, 'tab3', 2)">Students</button>
+            <button class="tab" onclick="openTab(event, 'tab4', 3)">Grades</button>
         </div>
         <div id="tab1" class="tab-content">
             <div class="course-content-dates">
@@ -122,6 +122,68 @@
             </div>
             <div class="content-p-container">
                 <div class="content-header">
+                    <h2>Quiz:</h2>
+                    <div>
+                        <button class="expand-button content-buttons light content-buttons-120">Expand</button>
+                    </div>
+                </div>
+                <div id="content-container" class="content-container">
+                    {% for quiz in quizzes %}
+                        <div class="chapter-view-container">
+                        <p>{{ quiz.title }}</p>
+                        <div class="chapter-info-container">
+                            <p>Visibility: {{ quiz.visibility }}</p>
+                        </div>
+                        </div>
+                    {%  endfor %}
+                    <form method="post" enctype="multipart/form-data" action="{%  url 'create_quiz' %}">
+                        {% csrf_token %}
+                        <div>
+                            <h3>Quiz Title: </h3>
+                            {{ q_form.course }}
+                            {{ q_form.title }}
+                            {{ q_form.visibility }}
+                            <div class="toggle-div">
+                                <button id="q-visible-button" class="toggle-btn sel">Visible</button>
+                                <button id="q-hidden-button" class="toggle-btn ">Hidden</button>
+                            </div>
+                            {{ q_form.negative_marking }}
+                            <div class="toggle-div x-large">
+                                <button id="n-allowed-button" class="toggle-btn x-large">Negative Marking</button>
+                                <button id="n-not-allowed-button" class="toggle-btn sel x-large">Normal Marking</button>
+                            </div>
+                            {{ q_form.negative_grade }}
+                        </div>
+                        <div class="quiz_i_t_info">
+                            <div class="instruction_container">
+                                <h4>Instructions for Students: </h4>
+                                {{ q_form.instructions }}
+                            </div>
+                            <div class="time_container">
+                                <h4>Time Limit Defined in Minutes: </h4>
+                                {{ q_form.time }}
+                                <h4>Quiz Questions stored in File: </h4>
+                                <div id="stream_video_file_div">
+                                    {{ q_form.files }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grade-area">
+                            <div class="instruction_container">
+                                    <h4>Mark per Question: </h4>
+                                    {{ q_form.each_mark }}
+                            </div>
+                            <div class="instruction_container">
+                                    <h4>Quiz Grading for Cumulative Score: </h4>
+                                    {{ q_form.grade }}
+                            </div>
+                        </div>
+                        <button class="content-buttons" type="submit">Add Quiz</button>
+                    </form>
+                </div>
+            </div>
+            <div class="content-p-container">
+                <div class="content-header">
                     <h2>Assignments:</h2>
                     <div>
                         <button class="content-buttons content-buttons-200">
@@ -130,20 +192,6 @@
                         <button class="expand-button content-buttons light content-buttons-120">
                             Expand
                         </button>
-                    </div>
-                </div>
-                <div id="content-container" class="content-container">
-                    <p>This is the expanded content Assignments.</p>
-                </div>
-            </div>
-            <div class="content-p-container">
-                <div class="content-header">
-                    <h2>Quiz:</h2>
-                    <div>
-                        <button class="content-buttons content-buttons-200">
-                            Add Quiz
-                        </button>
-                        <button class="expand-button content-buttons light content-buttons-120">Expand</button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">

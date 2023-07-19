@@ -4,6 +4,7 @@ from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
 from .models import *
+from django.http import JsonResponse
 
 from datetime import datetime
 
@@ -414,6 +415,10 @@ class CourseAuthor(views.View):
         enrollment_info = Enrollment.objects.filter(course=course)
         context['e_info'] = enrollment_info
 
+
+        #
+        # Chapter Info
+        #
         c_data = {'course': course}
         chapter_form = CourseChapterForm(initial=c_data)
 
@@ -436,6 +441,39 @@ class CourseAuthor(views.View):
 
         chapters = CourseChapter.objects.filter(course=course)
         context['chapters'] = chapters
+
+        #
+        # Quiz Info
+        #
+        q_data = {'course': course}
+        quiz_form = CourseQuizForm(initial=q_data)
+
+        quiz_form.fields['course'].widget.attrs['style'] = 'display: none;'
+        quiz_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        quiz_form.fields['visibility'].widget.attrs['id'] = 'quiz-visibility'
+        quiz_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        quiz_form.fields['negative_marking'].widget.attrs['id'] = 'quiz-negative-marking'
+        quiz_form.fields['negative_marking'].widget.attrs['style'] = 'display: none;'
+        quiz_form.fields['negative_grade'].widget.attrs['id'] = 'negative_grade'
+        quiz_form.fields['negative_grade'].widget.attrs['class'] = 'input-fields small chapter-title-f'
+        quiz_form.fields['negative_grade'].widget.attrs['hidden'] = 'hidden'
+
+        quiz_form.fields['time'].widget.attrs['id'] = 'quiz_time'
+        quiz_form.fields['time'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        quiz_form.fields['instructions'].widget.attrs['class'] = 'input-text'
+
+        quiz_form.fields['files'].widget.attrs['id'] = 'video_file_block'
+        quiz_form.fields['files'].widget.attrs['class'] = 'video-file-block'
+
+        quiz_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+        quiz_form.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        context['q_form'] = quiz_form
+        quizzes = Quiz.objects.filter(course=course)
+        context['quizzes'] = quizzes
 
         return render(request, 'Athena/course_author_page.html', context)
 
@@ -463,4 +501,120 @@ class CourseContentView(views.View):
         chapters = CourseChapter.objects.filter(course__id=course_id, visibility=True)
         context['chapters'] = chapters
 
+        quizzes = Quiz.objects.filter(course_id=course_id, visibility=True)
+        context['quizzes'] = quizzes
+
         return render(request, 'Athena/course_content_page.html', context)
+
+
+'''
+Quiz file Pattern
+Q: 
+O1:
+O2:
+O3:
+O4:
+A:
+XXX
+'''
+
+
+class CreateQuiz(views.View):
+
+    def post(self, request):
+        quiz_form = CourseQuizForm(request.POST, request.FILES)
+        if quiz_form.is_valid():
+            quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
+            print(len(quiz_info))
+            quiz = quiz_form.save()
+
+            for line in quiz_info.split('XXX\n'):
+                if line == '':
+                    continue
+                if line.startswith('\n'):
+                    line = line[1:]
+                temp = line.split('\nO1:')
+                question = temp[0][2:].strip()
+                temp = temp[-1].split('\nO2:')
+                option_1 = temp[0].strip()
+                temp = temp[-1].split('\nO3:')
+                option_2 = temp[0].strip()
+                temp = temp[-1].split('\nO4:')
+                option_3 = temp[0].strip()
+                temp = temp[-1].split('\nA:')
+                option_4 = temp[0].strip()
+                t_answer = temp[-1].strip()
+                index_o = t_answer.find('O')
+                answer = int(t_answer[index_o+1:index_o+2])
+                print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
+                QuizContent.objects.create(
+                    course=quiz_form.cleaned_data['course'],
+                    quiz=quiz,
+                    question=question,
+                    options_1=option_1,
+                    options_2=option_2,
+                    options_3=option_3,
+                    options_4=option_4,
+                    answers=answer
+                )
+            return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
+        else:
+            print('Form not valid:', quiz_form.errors)
+            return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
+
+
+class GetQuizQuestion(views.View):
+
+    def get(self, request):
+        print(request.GET)
+        q_no = int(request.GET['question_no'])
+        prev_selection = int(request.GET['prev_selection'])
+        quiz = Quiz.objects.get(pk=request.GET['quiz_id'])
+        # update previous_question submission
+        if q_no > 0 and prev_selection > 0:
+            print('Working')
+            p_questions = QuizContent.objects.filter(quiz__id=quiz.id)[q_no-1]
+            try:
+                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
+                check.submission = prev_selection
+            except StudentQuizSubmission.DoesNotExist:
+                StudentQuizSubmission.objects.create(
+                    user=request.user,
+                    quiz=quiz,
+                    question=p_questions,
+                    submission=prev_selection
+                )
+            finally:
+                print(q_no, p_questions.question)
+
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz.id)
+        if len(quiz_questions) > q_no :
+            quiz_question = quiz_questions[q_no]
+            quiz_content_data = {
+                'question': quiz_question.question,
+                'options_1': quiz_question.options_1,
+                'options_2': quiz_question.options_2,
+                'options_3': quiz_question.options_3,
+                'options_4': quiz_question.options_4,
+                'answers': quiz_question.answers,
+            }
+            context = {'question': quiz_content_data, 'blank': not (len(quiz_questions) > q_no)}
+            return JsonResponse(context)
+        else:
+            context = {'blank': not(len(quiz_questions) > q_no)}
+            # calculate score
+            answered_q = StudentQuizSubmission.objects.filter(quiz__id=quiz.id, user__id=request.user.id)
+            total = QuizContent.objects.filter(quiz_id=quiz.id).count()
+            score = 0
+            for ans in answered_q:
+                if ans.question.answers == ans.submission:
+                    score += ans.quiz.each_mark
+                else:
+                    if ans.quiz.negative_marking:
+                        n_grade = ans.quiz.negative_grade
+                        score -= n_grade
+            context['total'] = total
+            context['answered'] = len(answered_q)
+            context['score'] = round(score, 2)
+            context['total_score'] = round(total * quiz.each_mark, 2)
+            return JsonResponse(context)
