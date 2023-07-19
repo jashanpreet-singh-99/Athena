@@ -562,7 +562,7 @@ class CreateQuiz(views.View):
             print('Form not valid:', quiz_form.errors)
             return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
 
-
+# Get quiz
 class GetQuizQuestion(views.View):
 
     def get(self, request):
