@@ -127,6 +127,9 @@ class Quiz(models.Model):
     instructions = models.TextField(max_length=1024)
     files = models.FileField(upload_to=course_directory_path, blank=True)
 
+    def __str__(self):
+        return str(self.course.id) + '_' +self.title
+
 
 class QuizContent(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
@@ -138,6 +141,9 @@ class QuizContent(models.Model):
     options_4 = models.CharField(max_length=256)
     answers = models.PositiveIntegerField()
 
+    def __str__(self):
+        return self.quiz.title + str(self.id)
+
 
 class StudentQuizSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -145,3 +151,16 @@ class StudentQuizSubmission(models.Model):
     question = models.ForeignKey(QuizContent, on_delete=models.CASCADE)
     submission = models.PositiveIntegerField()
     submitted_at = models.DateField(auto_now_add=True)
+
+
+class CourseAssignment(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    file = models.FileField(upload_to=course_directory_path, blank=True)
+    instructions = models.TextField(max_length=1024)
+    grade = models.DecimalField(max_digits=4, decimal_places=2)
+    deadline = models.DateTimeField()
+    plagiarism_check = models.BooleanField(default=False)
+    visibility = models.BooleanField(default=True)
+    created_on = models.DateField(auto_now_add=True)
+

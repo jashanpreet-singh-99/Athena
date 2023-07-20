@@ -109,19 +109,25 @@
             <h2>Chapters</h2>
             {% for chapter in chapters %}
                 {% if chapter.is_streaming %}
-                    <div class="chapter-view-container" data-video="{{ chapter.video_file.url }}">
+                    <div class="view-container chapter-view-container" data-video="{{ chapter.video_file.url }}">
                         <p>{{ chapter.title }}</p>
                     </div>
                 {% else %}
-                    <div class="chapter-view-container" data-pdf-url="{{ chapter.files.url }}">
+                    <div class="view-container chapter-view-container" data-pdf-url="{{ chapter.files.url }}">
                         <p>{{ chapter.title }}</p>
                     </div>
                 {% endif %}
             {%  endfor %}
             <h2>Quiz</h2>
             {% for quiz in quizzes %}
-                <div class="quiz-view-container">
+                <div class="view-container quiz-view-container">
                     <p>{{ quiz.title }}</p>
+                </div>
+            {%  endfor %}
+            <h2>Assignments</h2>
+            {% for ass in assignments %}
+                <div class="view-container assignment-view-container" data-pdf-url="{{ ass.file.url }}">
+                    <p>{{ ass.title }}</p>
                 </div>
             {%  endfor %}
         </div>
@@ -155,6 +161,14 @@
             quiz['negative_marking'] = '{{ quiz_i.negative_marking|escapejs }}'
             quiz['instructions'] = '{{ quiz_i.instructions|escapejs }}'
             quizzes.push(quiz);
+        {% endfor %}
+        let assignments = [];
+        {% for assignment in assignments %}
+            var a = {};
+            a['id'] = '{{ assignment.id|escapejs }}';
+            a['title'] = '{{ assignment.title|escapejs }}';
+            a['visibility'] = '{{ assignment.visibility|escapejs }}';
+            assignments.push(a);
         {% endfor %}
         const quiz_url = '{% url 'get_quiz_questions' %}';
     </script>

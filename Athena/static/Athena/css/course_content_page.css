@@ -96,12 +96,14 @@ video {
 
 .chapter-content {
     width: 300px;
+    max-height: 70vh;;
     margin: 2px 32px;
     padding: 16px 16px;
     display: flex;
     flex-direction: column;
     background-color: #eeeeee;
     border-radius: 24px;
+    overflow-y: auto;
 }
 
 .chapter-content h2 {
@@ -110,7 +112,7 @@ video {
     margin: 8px;
 }
 
-.chapter-view-container {
+.view-container {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -121,28 +123,12 @@ video {
     background-color: #c9d9f0;
 }
 
-.chapter-view-container.sel {
+.view-container.sel {
     background-color: #070708;
     color: #ffffff;
 }
 .chapter-title {
     margin: 8px 60px;
-}
-
-.quiz-view-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding: 16px 32px;
-    margin: 8px 0;
-    border: none;
-    border-radius: 12px;
-    background-color: #c9d9f0;
-}
-
-.quiz-view-container.sel {
-    background-color: #070708;
-    color: #ffffff;
 }
 
 .quiz-content {

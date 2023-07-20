@@ -276,6 +276,7 @@
 
 .combo-add-container {
     display: flex;
+    display: flex;
     flex-direction: row;
     margin-bottom: 24px;
 }

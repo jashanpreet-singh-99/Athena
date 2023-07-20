@@ -25,7 +25,7 @@ def load_profile(context, request):
 class Students(views.View):
 
     def get(self, request):
-        context = {'title': 'Students'}
+        context = {'title': 'Student Mng'}
         load_profile(context, request)
         return render(request, 'Athena/students_page.html', context)
 
@@ -414,12 +414,16 @@ class CourseAuthor(views.View):
 
         chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
         chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
+        chapter_form.fields['files'].widget.attrs['type'] = 'file'
+        chapter_form.fields['files'].widget.attrs['accept'] = '.pdf'
 
         chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
         chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
 
         chapter_form.fields['video_file'].widget.attrs['id'] = 'video_file_block'
         chapter_form.fields['video_file'].widget.attrs['class'] = 'video-file-block'
+        chapter_form.fields['video_file'].widget.attrs['type'] = 'file'
+        chapter_form.fields['video_file'].widget.attrs['accept'] = '.mp4'
 
         context['c_form'] = chapter_form
 
@@ -451,6 +455,8 @@ class CourseAuthor(views.View):
 
         quiz_form.fields['files'].widget.attrs['id'] = 'video_file_block'
         quiz_form.fields['files'].widget.attrs['class'] = 'video-file-block'
+        quiz_form.fields['files'].widget.attrs['type'] = 'file'
+        quiz_form.fields['files'].widget.attrs['accept'] = '.txt'
 
         quiz_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
         quiz_form.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
@@ -458,6 +464,36 @@ class CourseAuthor(views.View):
         context['q_form'] = quiz_form
         quizzes = Quiz.objects.filter(course=course)
         context['quizzes'] = quizzes
+
+        #
+        # Assignment Ingo
+        #
+        a_data = {'course': course}
+        ass_form = CourseAssignmentForm(initial=a_data)
+
+        ass_form.fields['course'].widget.attrs['style'] = 'display: none;'
+        ass_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        ass_form.fields['deadline'].widget.attrs['id'] = 'deadline-input'
+        ass_form.fields['deadline'].widget.attrs['class'] = 'input-fields chapter-title-f'
+        ass_form.fields['deadline'].widget.attrs['readonly'] = 'readonly'
+
+        ass_form.fields['visibility'].widget.attrs['id'] = 'ass-visibility'
+        ass_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        ass_form.fields['plagiarism_check'].widget.attrs['id'] = 'plagiarism_check'
+        ass_form.fields['plagiarism_check'].widget.attrs['style'] = 'display: none;'
+
+        ass_form.fields['instructions'].widget.attrs['class'] = 'input-text'
+        ass_form.fields['file'].widget.attrs['class'] = 'video-file-block'
+        ass_form.fields['file'].widget.attrs['type'] = 'file'
+        ass_form.fields['file'].widget.attrs['accept'] = '.pdf'
+
+        ass_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        context['a_form'] = ass_form
+        assignments = CourseAssignment.objects.filter(course=course)
+        context['assignments'] = assignments
 
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
@@ -490,6 +526,9 @@ class CourseContentView(views.View):
 
         quizzes = Quiz.objects.filter(course_id=course_id, visibility=True)
         context['quizzes'] = quizzes
+
+        assignments = CourseAssignment.objects.filter(course_id=course_id, visibility=True)
+        context['assignments'] = assignments
 
         return render(request, 'Athena/course_content_page.html', context)
 
@@ -633,5 +672,24 @@ class ChangeCourseChapterVisibility(views.View):
             print(quiz, vis)
             quiz.visibility = vis
             quiz.save()
+        elif request.POST['mode'] == 'Assignment':
+            ass = CourseAssignment.objects.get(id=request.POST['id'])
+            vis = True if request.POST['visibility'] == 'True' else False
+            print(ass, vis)
+            ass.visibility = vis
+            ass.save()
         request.session['page_scroll'] = int(request.POST['page_scroll'])
         return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
+class CreateCourseAssignment(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        a_form = CourseAssignmentForm(request.POST, request.FILES)
+        if a_form.is_valid():
+            a_form.save()
+            return redirect(reverse('course_author_page', args=[request.POST['course']]))
+        else:
+            print('Invalid Assignment Form')
+            return redirect(reverse('course_author_page', args=[request.POST['course']]))

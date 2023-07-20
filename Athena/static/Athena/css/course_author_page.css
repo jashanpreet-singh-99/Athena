@@ -424,6 +424,90 @@ input[type="file"]::after {
     gap: 32px;
 }
 
+.date-button {
+    margin: 8px;
+    background-color: #070708;
+    padding: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border-width: 0;
+    font-size: medium;
+    text-transform: uppercase;
+    justify-content: center;
+    align-items: center;
+}
+
+.date-button:hover {
+    background-color: #474748;
+}
+
+#date-dialog {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  width: 200px;
+  background-color: white;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#dates {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.date-b {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    color: #ffffff;
+    background-color: transparent;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.rotate {
+    transform: rotate(180deg);
+}
+
+.date-b:hover {
+    background-color: #dddddd;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+#dates button {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+#dates button.selected {
+  background-color: lightblue;
+  border: 0 solid #c9d9f0;
+  border-radius: 50%;
+}
+
+#dates button:hover {
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+#dates button.selected {
+  background-color: lightblue;
+}
+
+
 
 
 

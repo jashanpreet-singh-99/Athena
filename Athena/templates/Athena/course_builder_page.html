@@ -25,12 +25,6 @@
             <p>Step: 3</p>
             <p>Step: 4</p>
         </div>
-{#        <div class="progress_labels">#}
-{#            <p class="titles"> Details </p>#}
-{#            <p class="titles">   Content</p>#}
-{#            <p class="titles">Enrollment</p>#}
-{#            <p class="titles">  Review  </p>#}
-{#        </div>#}
     </div>
     <form method="post" id="form-course-details" enctype="multipart/form-data">
     {% csrf_token %}
@@ -39,18 +33,15 @@
         <div class="details-names-l">
             <label class="labels" for="courseTitle">Course Title</label>
             {{ form.course_title }}
-{#            <input type="text" id="courseTitle" class="input_text">#}
         </div>
         <div class="details-names-l">
             <label class="labels"  for="courseDesc">Course Description</label>
             {{ form.course_desc }}
-{#            <textarea id="courseDesc" class="input_text  courseDec"></textarea>#}
         </div>
 
         <div class="details-names-l">
             <label class="labels" for="startDate">Course Start Date</label>
             <div class="details-names not">
-{#                <input type="text" id="startDate" class="input_text" readonly>#}
                 {{ form.course_start_date }}
                 <button id="open-start-dialog" class="date-button">
                     <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
@@ -62,7 +53,6 @@
             <label class="labels" for="endDate">Course End Date</label>
             <div class="details-names not">
                 {{ form.course_end_date }}
-{#                <input type="text" id="endDate" class="input_text" readonly>#}
                 <button id="open-end-dialog" class="date-button">
                     <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
                 </button>

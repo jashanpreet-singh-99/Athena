@@ -10,6 +10,9 @@ const chapterTitle = document.getElementById('chapter_title');
 const quizBottomBar = document.getElementById('quiz-time-container');
 const chapterExtra = document.getElementById('chapter-extra-container');
 
+const MODE_CH = 1;
+const MODE_Q = 2;
+const MODE_A = 3;
 
 function changePDF(newUrl, container) {
   var pdfPages = document.querySelectorAll("#content-frame canvas");
@@ -55,31 +58,58 @@ function renderPDF(url, container) {
   });
 }
 
-// Chapter Selection
-chapterButtons.forEach((button, index) => {
-  button.addEventListener('click', () => {
-    if (chapters[index]['is_streaming'] === 'True') {
-        videoContainer.style.display = "flex";
-        nonVideoContent.style.display = "none";
 
-        videoElement.src = button.dataset.video;
-    } else {
-        videoContainer.style.display = "none";
-        nonVideoContent.style.display = "flex";
-        changePDF(button.dataset.pdfUrl, contentElement);
-    }
-
+function switchContentModes(mode, index = -1) {
+    videoContainer.hidden = true;
+    videoContainer.style.display = "none";
+    nonVideoContent.style.display = "none";
     quizContainer.hidden = true;
-    chapterExtra.style.display = 'flex';
+    chapterExtra.style.display = 'none';
     quizContainer.style.display = "none";
     quizBottomBar.style.display = "none";
-
+    console.log(mode, index);
     chapterButtons.forEach(b => {
-      b.classList.remove("sel");
+    b.classList.remove("sel");
     });
     quizButtons.forEach(b => {
       b.classList.remove("sel");
     });
+    assignmentButtons.forEach(b => {
+        b.classList.remove("sel");
+    });
+    switch (mode) {
+        case MODE_CH: // Chapter Mode
+            if (chapters[index]['is_streaming'] === 'True') {
+                videoContainer.hidden = false;
+                videoContainer.style.display = "flex";
+                chapterExtra.style.display = 'flex';
+            } else {
+                nonVideoContent.style.display = "flex";
+                chapterExtra.style.display = 'flex';
+            }
+            break;
+        case MODE_Q: // Quiz Mode
+            quizContainer.hidden = false;
+            quizContainer.style.display = "flex";
+            quizBottomBar.style.display = "flex";
+            break;
+        case MODE_A:
+            nonVideoContent.style.display = "flex";
+            chapterExtra.style.display = 'flex';
+            break;
+    }
+}
+
+
+// Chapter Selection
+chapterButtons.forEach((button, index) => {
+  button.addEventListener('click', () => {
+    switchContentModes(MODE_CH, index);
+    if (chapters[index]['is_streaming'] === 'True') {
+        videoElement.src = button.dataset.video;
+    } else {
+        changePDF(button.dataset.pdfUrl, contentElement);
+    }
     button.classList.add("sel");
     chapterTitle.textContent = chapters[index]['title'];
     console.log(chapters[index]);
@@ -101,20 +131,8 @@ let selected_quiz_id = 0
 
 quizButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
-    videoContainer.hidden = true;
-    videoContainer.style.display = "none";
-    nonVideoContent.style.display = "none";
-    quizContainer.hidden = false;
+    switchContentModes(MODE_Q, index);
 
-    quizContainer.style.display = "flex";
-    quizBottomBar.style.display = "flex";
-    chapterExtra.style.display = "none";
-    chapterButtons.forEach(b => {
-      b.classList.remove("sel");
-    });
-    quizButtons.forEach(b => {
-      b.classList.remove("sel");
-    });
     button.classList.add("sel");
     quizTitle.textContent = quizzes[index]['title'];
     quizTime.textContent = quizzes[index]['time'];
@@ -126,6 +144,20 @@ quizButtons.forEach((button, index) => {
     quizInstructions.innerText  = quizzes[index]['instructions'];
     console.log(quizzes[index]);
     selected_quiz_id = index;
+  });
+});
+
+const assignmentButtons = document.querySelectorAll('.assignment-view-container');
+
+assignmentButtons.forEach((button, index) => {
+  button.addEventListener('click', () => {
+    switchContentModes(MODE_A, index);
+    console.log(button.dataset.pdfUrl);
+    changePDF(button.dataset.pdfUrl, contentElement);
+
+    button.classList.add("sel");
+    chapterTitle.textContent = assignments[index]['title'];
+    console.log(assignments[index]);
   });
 });
 

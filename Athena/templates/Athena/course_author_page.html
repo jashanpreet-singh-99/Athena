@@ -69,12 +69,6 @@
             <div id="cat-container"></div>
             <h3 class="cat-title">Class Enrollments: </h3>
             <p>{{ e_info|length }} Student{{ e_info|pluralize }}</p>
-{#            {% if e_info|length < 2 %}#}
-{#                <p>{{ e_info|length }} Student</p>#}
-{#            {% else %}#}
-{#                <p>{{ e_info|length }} Students</p>#}
-{#            {% endif %}#}
-            {%  url 'dash_page' %}
         </div>
         <div id="tab2" class="tab-content">
             <div class="content-p-container">
@@ -158,8 +152,8 @@
                             </div>
                             <div class="chapter-info-container">
                                 <div class="toggle-div">
-                                    <button id="q-visible-button" class="toggle-btn light sel">Visible</button>
-                                    <button id="q-hidden-button" class="toggle-btn light">Hidden</button>
+                                    <button id="qq-visible-button" class="toggle-btn light sel">Visible</button>
+                                    <button id="qq-hidden-button" class="toggle-btn light">Hidden</button>
                                 </div>
                             </div>
                         </div>
@@ -214,16 +208,82 @@
                 <div class="content-header">
                     <h2>Assignments:</h2>
                     <div>
-                        <button class="content-buttons content-buttons-200">
-                            Add Assignment
-                        </button>
                         <button class="expand-button content-buttons light content-buttons-120" id="assignment-expand-btn">
                             Expand
                         </button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">
-                    <p>This is the expanded content Assignments.</p>
+                    {% for assignment in assignments %}
+                        <div class="chapter-view-container ass-v-container">
+                            <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ assignment.title }}</p>
+                            </div>
+                            <div class="chapter-info-container">
+                                <div class="toggle-div">
+                                    <button id="aa-visible-button" class="toggle-btn light sel">Visible</button>
+                                    <button id="aa-hidden-button" class="toggle-btn light">Hidden</button>
+                                </div>
+                            </div>
+                        </div>
+                    {%  endfor %}
+                    <form method="post" enctype="multipart/form-data" action="{% url 'create_course_assignment' %}">
+                        {% csrf_token %}
+                        <div>
+                            <h3>Assignment Title: </h3>
+                            {{ a_form.course }}
+                            {{ a_form.title }}
+                            {{ a_form.visibility }}
+                            <div class="toggle-div">
+                                <button id="a-visible-button" class="toggle-btn sel">Visible</button>
+                                <button id="a-hidden-button" class="toggle-btn ">Hidden</button>
+                            </div>
+                            {{ a_form.plagiarism_check }}
+                            <div class="toggle-div x-large">
+                                <button id="p-check-button" class="toggle-btn x-large">Plagiarism Check</button>
+                                <button id="no-p-check-button" class="toggle-btn sel x-large">No Check</button>
+                            </div>
+                        </div>
+                        <div class="quiz_i_t_info">
+                            <div class="instruction_container">
+                                <h4>Instructions for Students: </h4>
+                                {{ a_form.instructions }}
+                            </div>
+                            <div class="time_container">
+                                <h4>Deadline for Submission: </h4>
+                                <div class="quiz_i_t_info">
+                                    {{ a_form.deadline }}
+                                    <button id="open-deadline-dialog" class="date-button">
+                                        <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
+                                    </button>
+                                </div>
+                                <div id="date-dialog" style="display: none;">
+                                    <div id="header">
+                                        <button id="prev-month" class="date-b rotate">
+                                            <img width="24" height="24" src="https://img.icons8.com/ios/50/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+                                        </button>
+                                        <p id="current-month" class="date-t"></p>
+                                        <button id="next-month" class="date-b">
+                                            <img width="24" height="24" src="https://img.icons8.com/ios/50/circled-chevron-right--v1.png" alt="circled-chevron-right--v1"/>
+                                        </button>
+                                    </div>
+                                    <div id="dates"></div>
+                                </div>
+                                <h4>Assignment File: (pdf)</h4>
+                                <div id="stream_video_file_div">
+                                    {{ a_form.file }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="grade-area">
+                            <div class="instruction_container">
+                                    <h4>Assignment Grading for Cumulative Score: </h4>
+                                    {{ a_form.grade }}
+                            </div>
+                        </div>
+                        <button class="content-buttons" type="submit">Add Assignment</button>
+                    </form>
                 </div>
             </div>
             <div class="content-p-container">
@@ -274,6 +334,14 @@
             q['title'] = '{{ quiz.title|escapejs }}';
             q['visibility'] = '{{ quiz.visibility|escapejs }}';
             quizzes.push(q);
+        {% endfor %}
+        let assignments = [];
+        {% for assignment in assignments %}
+            var a = {};
+            a['id'] = '{{ assignment.id|escapejs }}';
+            a['title'] = '{{ assignment.title|escapejs }}';
+            a['visibility'] = '{{ assignment.visibility|escapejs }}';
+            assignments.push(a);
         {% endfor %}
         let page_scroll_y = '{{ page_scroll }}';
     </script>

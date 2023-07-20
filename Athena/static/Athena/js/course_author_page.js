@@ -70,7 +70,7 @@ function applyCookies() {
     }
 
     // Scroll page to last known
-    console.log('PAge Scroll request:', page_scroll_y);
+    console.log('Page Scroll request:', page_scroll_y);
     basePageContainer.scrollTop = parseInt(page_scroll_y);
 
 }
@@ -291,8 +291,8 @@ chapterContainers.forEach((container, index) => {
 
 const quizContainers = document.querySelectorAll('.quiz-v-container');
 quizContainers.forEach((container, index) => {
-  const visibleButton = container.querySelector('#q-visible-button');
-  const hiddenButton = container.querySelector('#q-hidden-button');
+  const visibleButton = container.querySelector('#qq-visible-button');
+  const hiddenButton = container.querySelector('#qq-hidden-button');
   if (quizzes[index]['visibility'] === 'True') {
       visibleButton.classList.add('sel');
       hiddenButton.classList.remove('sel');
@@ -323,6 +323,183 @@ quizContainers.forEach((container, index) => {
     dummyFormVis.value = 'False';
     dummyFormID.value = quizzes[index]['id'];
     dummyFormMode.value = "Quiz";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+});
+
+//
+// Assignment Stuff
+//
+const aVisibleBtn = document.getElementById('a-visible-button');
+const aHiddenBtn = document.getElementById('a-hidden-button');
+const aVisibilityCheckBox = document.getElementById('ass-visibility');
+
+aVisibleBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    aVisibleBtn.classList.add("sel");
+    aHiddenBtn.classList.remove("sel");
+    aVisibilityCheckBox.checked = true;
+});
+
+aHiddenBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    aHiddenBtn.classList.add("sel");
+    aVisibleBtn.classList.remove("sel");
+    aVisibilityCheckBox.checked = false;
+});
+
+const pCheckBtn = document.getElementById('p-check-button');
+const noPCheckBtn = document.getElementById('no-p-check-button');
+const pCheckCheckBox = document.getElementById('plagiarism_check');
+
+pCheckBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    pCheckBtn.classList.add("sel");
+    noPCheckBtn.classList.remove("sel");
+    pCheckCheckBox.checked = true;
+});
+
+noPCheckBtn.addEventListener('click', (event) => {
+    event.stopPropagation();
+    event.preventDefault();
+    noPCheckBtn.classList.add("sel");
+    pCheckBtn.classList.remove("sel");
+    pCheckCheckBox.checked = false;
+});
+
+//
+// Date Dialog
+//
+const currentDate = new Date();
+let currentMonth = currentDate.getMonth();
+let currentYear = currentDate.getFullYear();
+let selectedDate = null;
+
+const openStartDialogBtn = document.getElementById('open-deadline-dialog');
+const dateDialog = document.getElementById('date-dialog');
+const currentMonthSpan = document.getElementById('current-month');
+const prevMonthBtn = document.getElementById('prev-month');
+const nextMonthBtn = document.getElementById('next-month');
+const datesDiv = document.getElementById('dates');
+const deadlineInput = document.getElementById('deadline-input');
+
+function updateCalendar() {
+  const firstDay = new Date(currentYear, currentMonth, 1);
+  const lastDay = new Date(currentYear, currentMonth + 1, 0);
+  const numDays = lastDay.getDate();
+
+  currentMonthSpan.textContent = `${firstDay.toLocaleString('default', { month: 'long' })} ${currentYear}`;
+
+  datesDiv.innerHTML = '';
+
+  for (let i = 1; i <= numDays; i++) {
+    const dateBtn = document.createElement('button');
+    dateBtn.textContent = i;
+    dateBtn.addEventListener('click', () => {
+      console.log(`Selected date: ${i}/${currentMonth + 1}/${currentYear}`);
+      selectDate(dateBtn);
+      dateDialog.style.display = 'none';
+      // Additional logic to set the date
+    });
+    datesDiv.appendChild(dateBtn);
+  }
+}
+
+function selectDate(dateBtn) {
+  if (selectedDate) {
+    selectedDate.classList.remove('selected');
+  }
+
+  dateBtn.classList.add('selected');
+  selectedDate = dateBtn;
+
+  deadlineInput.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
+}
+
+prevMonthBtn.addEventListener('click', () => {
+  currentMonth--;
+  if (currentMonth < 0) {
+    currentMonth = 11;
+    currentYear--;
+  }
+  updateCalendar();
+});
+
+nextMonthBtn.addEventListener('click', () => {
+  currentMonth++;
+  if (currentMonth > 11) {
+    currentMonth = 0;
+    currentYear++;
+  }
+  updateCalendar();
+});
+
+openStartDialogBtn.addEventListener('click', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+  updateCalendar();
+  dateDialog.style.display = 'block';
+
+  const btnRect = openStartDialogBtn.getBoundingClientRect();
+  const btnTop = btnRect.top + window.pageYOffset;
+  const btnLeft = btnRect.left + window.pageXOffset;
+
+  dateDialog.style.top = btnTop + 'px';
+  dateDialog.style.left = btnLeft + 'px';
+  selectField = inputFieldStart;
+  updateCalendar();
+});
+
+dateDialog.addEventListener('click', (event) => {
+  event.stopPropagation();
+  event.preventDefault();
+});
+
+document.addEventListener('click', (event) => {
+  if (!dateDialog.contains(event.target)) {
+    dateDialog.style.display = 'none';
+  }
+});
+
+const assContainers = document.querySelectorAll('.ass-v-container');
+assContainers.forEach((container, index) => {
+  const visibleButton = container.querySelector('#aa-visible-button');
+  const hiddenButton = container.querySelector('#aa-hidden-button');
+  if (assignments[index]['visibility'] === 'True') {
+      visibleButton.classList.add('sel');
+      hiddenButton.classList.remove('sel');
+  } else {
+      hiddenButton.classList.add('sel');
+      visibleButton.classList.remove('sel');
+  }
+  visibleButton.addEventListener('click', () => {
+    // Add the "sel" class to the visible button
+    visibleButton.classList.add('sel');
+    // Remove the "sel" class from the hidden button
+    hiddenButton.classList.remove('sel');
+    console.log('Vis: q-' + index);
+    dummyFormVis.value = 'True';
+    dummyFormID.value = assignments[index]['id'];
+    dummyFormMode.value = "Assignment";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  hiddenButton.addEventListener('click', () => {
+    // Add the "sel" class to the hidden button
+    hiddenButton.classList.add('sel');
+    // Remove the "sel" class from the visible button
+    visibleButton.classList.remove('sel');
+    console.log('Hid: q-' + index);
+    dummyFormVis.value = 'False';
+    dummyFormID.value = assignments[index]['id'];
+    dummyFormMode.value = "Assignment";
     dummyFormScroll.value = basePageContainer.scrollTop;
     console.log('Page Scroll:' + dummyFormScroll.value);
     visForm.submit();
