@@ -22,23 +22,16 @@
             <li>
                 {% block nav_item_home %}
                 <div class="nav-border ">
-                    <a href="{% url 'dash_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/sf-regular/48/home.png" alt="home"/></a>
+                    <a href="{% url 'course_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/sf-regular/48/home.png" alt="home"/></a>
                 </div>
                 {% endblock nav_item_home %}
             </li>    
             <li>
                 {% block nav_item_course %}
                 <div class="nav-border ">
-                    <a href="{% url 'course_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
+                    <a href="{% url 'students_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
                 </div>
                 {% endblock nav_item_course %}
-            </li>
-            <li>
-                {% block nav_item_chat %}
-                <div class="nav-border ">
-                    <a href="{% url 'chat_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/material-outlined/48/speech-bubble-with-dots.png" alt="message"/></a>
-                </div>
-                {% endblock nav_item_chat %}
             </li>
             <li>
                 {% block nav_item_schedule %}
@@ -48,11 +41,11 @@
                 {% endblock nav_item_schedule %}
             </li>
             <li>
-                {% block nav_item_deadlines %}
+                {% block nav_item_search %}
                 <div class="nav-border">
-                    <a href="{% url 'deadlines_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/external-anggara-basic-outline-anggara-putra/48/external-social-social-media-basic-others-anggara-putra-20.png" alt="search"/></a>
+                    <a href="{% url 'course_search_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/external-anggara-basic-outline-anggara-putra/48/external-social-social-media-basic-others-anggara-putra-20.png" alt="search"/></a>
                 </div>
-                 {% endblock nav_item_deadlines %}
+                 {% endblock nav_item_search %}
             </li>
             <li>
                 {% block nav_item_settings %}

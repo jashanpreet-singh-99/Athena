@@ -1,6 +1,10 @@
 {% extends 'Athena/base.html' %}
 {% load static %}
-
+{% block nav_item_search %}
+    <div class="nav-border sel">
+        <a href="{% url 'course_search_page' %}"><img width="40" height="40" src="https://img.icons8.com/070708/external-anggara-basic-outline-anggara-putra/48/external-social-social-media-basic-others-anggara-putra-20.png" alt="clock--v3"/></a>
+    </div>
+{% endblock nav_item_search %}
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_search_page.css' %}"/>
 {% endblock %}

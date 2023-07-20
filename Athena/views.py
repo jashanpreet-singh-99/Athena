@@ -22,12 +22,12 @@ def load_profile(context, request):
 
 
 # Create your views here.
-class Dash(views.View):
+class Students(views.View):
 
     def get(self, request):
-        context = {'title': 'Dashboard'}
+        context = {'title': 'Students'}
         load_profile(context, request)
-        return render(request, 'Athena/dash_page.html', context)
+        return render(request, 'Athena/students_page.html', context)
 
 
 class Courses(views.View):
@@ -52,27 +52,12 @@ class Courses(views.View):
         return render(request, 'Athena/course_page.html', context)
 
 
-class Chat(views.View):
-    def get(self, request):
-        context = {'title': 'Messages'}
-        load_profile(context, request)
-        return render(request, 'Athena/chat_page.html', context)
-
-
 class Schedule(views.View):
 
     def get(self, request):
         context = {'title': 'Schedule'}
         load_profile(context, request)
         return render(request, 'Athena/schedule_page.html', context)
-
-
-class Deadlines(views.View):
-
-    def get(self, request):
-        context = {'title': 'Deadlines'}
-        load_profile(context, request)
-        return render(request, 'Athena/deadlines_page.html', context)
 
 
 class Settings(views.View):

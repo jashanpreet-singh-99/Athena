@@ -3,11 +3,11 @@
 {% block stylesheets %}
         <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/cource_style.css' %}"/>
 {% endblock stylesheets %}
-{% block nav_item_course %}
+{% block nav_item_home %}
     <div class="nav-border sel">
-        <a href="/course"><img width="40" height="40" src="https://img.icons8.com/070708/fluency-systems-regular/48/user.png" alt="user"/></a>
+        <a href="{% url 'course_page' %}"><img width="40" height="40" src="https://img.icons8.com/070708/sf-regular/48/home.png" alt="home"/></a>
     </div>
-{% endblock nav_item_course %}
+{% endblock nav_item_home %}
 {% block page %}
     <!-- Auto course animation on the top -->
     <div class="banner-widget">
