@@ -1,5 +1,87 @@
 const COOKIES_author_tab_number = 'author-tab-number';
 const COOKIES_author_tab_name = 'author-tab-name';
+const COOKIES_chapter_expanded = 'author_chapter_expanded'
+const COOKIES_quiz_expanded = 'author_quiz_expanded'
+const COOKIES_assignment_expanded = 'author_assignment_expanded'
+const COOKIES_exam_expanded = 'author_exam_expanded'
+
+const COOKIES_auth_containers = [COOKIES_chapter_expanded, COOKIES_quiz_expanded, COOKIES_assignment_expanded, COOKIES_exam_expanded];
+
+const basePageContainer = document.getElementById('page-container');
+const chapterExpandBtn = document.getElementById('chapter-expand-btn');
+const quizExpandBtn = document.getElementById('quiz-expand-btn');
+const assignmentExpandBtn = document.getElementById('assignment-expand-btn');
+const examExpandBtn = document.getElementById('exam-expand-btn');
+
+function setCookie(name, value, days) {
+    let expires = "";
+    if (days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function getCookie(name) {
+    const nameEQ = name + "=";
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+      c = c.substring(1, c.length);
+    }
+    if (c.indexOf(nameEQ) === 0) {
+      return c.substring(nameEQ.length, c.length);
+    }
+  }
+  return null;
+}
+
+function applyCookies() {
+    // TAB Cookies
+    const selectedTab = getCookie(COOKIES_author_tab_name);
+    const selectedBtn = getCookie(COOKIES_author_tab_number);
+    if (selectedTab != null) {
+        document.getElementsByClassName("tab")[selectedBtn].classList.add("active");
+        document.getElementById(selectedTab).classList.add("show");
+    } else {
+        document.getElementsByClassName("tab")[0].classList.add("active");
+        document.getElementById('tab1').classList.add("show");
+    }
+
+    // Content Container Cookies
+    const chapterExp = getCookie(COOKIES_chapter_expanded);
+    const quizExp = getCookie(COOKIES_quiz_expanded);
+    const assignmentExp = getCookie(COOKIES_assignment_expanded);
+    const examExp = getCookie(COOKIES_exam_expanded);
+
+    if (chapterExp != null && chapterExp === 'expanded') {
+        chapterExpandBtn.click();
+    }
+    if (quizExp != null && quizExp === 'expanded') {
+        quizExpandBtn.click();
+    }
+    if (assignmentExp != null && assignmentExp === 'expanded') {
+        assignmentExpandBtn.click();
+    }
+    if (examExp != null && examExp === 'expanded') {
+        examExpandBtn.click();
+    }
+
+    // Scroll page to last known
+    console.log('PAge Scroll request:', page_scroll_y);
+    basePageContainer.scrollTop = parseInt(page_scroll_y);
+
+}
+
+window.addEventListener("load", applyCookies);
+
+/**
+ *
+ *  COOKIES STUFF ABOVE
+ *
+ */
 
 function openTab(evt, tabName, index) {
   let i;
@@ -64,9 +146,11 @@ expandButtons.forEach((expandButton, index) => {
       if (contentContainer.style.display === 'none') {
         contentContainer.style.display = 'block';
         expandButton.textContent = 'Close';
+        setCookie(COOKIES_auth_containers[index], 'expanded')
       } else {
         contentContainer.style.display = 'none';
         expandButton.textContent = 'Expand';
+        setCookie(COOKIES_auth_containers[index], 'closed')
       }
     });
 });
@@ -96,6 +180,7 @@ const streamBtn = document.getElementById('stream-button');
 const noStreamBtn = document.getElementById('no-stream-button');
 const streamCheckBox = document.getElementById('is_streaming_check');
 const streamFileDiv = document.getElementById('stream_video_file_div');
+const nonStreamFileDiv = document.getElementById('no_stream_video_file_div');
 streamFileDiv.hidden = true;
 
 streamBtn.addEventListener('click', (event) => {
@@ -105,6 +190,7 @@ streamBtn.addEventListener('click', (event) => {
     noStreamBtn.classList.remove("sel");
     streamCheckBox.checked = true;
     streamFileDiv.hidden = false;
+    nonStreamFileDiv.hidden = true;
 });
 
 noStreamBtn.addEventListener('click', (event) => {
@@ -114,47 +200,8 @@ noStreamBtn.addEventListener('click', (event) => {
     streamBtn.classList.remove("sel");
     streamCheckBox.checked = false;
     streamFileDiv.hidden = true;
+    nonStreamFileDiv.hidden = false;
 });
-
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + value + expires + "; path=/";
-}
-
-function getCookie(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) === ' ') {
-      c = c.substring(1, c.length);
-    }
-    if (c.indexOf(nameEQ) === 0) {
-      return c.substring(nameEQ.length, c.length);
-    }
-  }
-  return null;
-}
-
-function applyCookies() {
-    const selectedTab = getCookie(COOKIES_author_tab_name);
-    const selectedBtn = getCookie(COOKIES_author_tab_number);
-    if (selectedTab != null) {
-        document.getElementsByClassName("tab")[selectedBtn].classList.add("active");
-        document.getElementById(selectedTab).classList.add("show");
-    } else {
-        document.getElementsByClassName("tab")[0].classList.add("active");
-        document.getElementById('tab1').classList.add("show");
-    }
-}
-
-window.addEventListener("load", applyCookies);
-
 
 const qVisibleBtn = document.getElementById('q-visible-button');
 const qHiddenBtn = document.getElementById('q-hidden-button');
@@ -198,3 +245,88 @@ normalMBtn.addEventListener('click', (event) => {
     nGradeValue.hidden = true
 });
 
+const chapterContainers = document.querySelectorAll('.chapter-v-container');
+const visForm = document.getElementById('vis-form');
+const dummyFormVis = document.getElementById('visibility-f-input');
+const dummyFormID = document.getElementById('chapter_id-f');
+const dummyFormMode = document.getElementById('mode-f-input');
+const dummyFormScroll = document.getElementById('scroll-f-input');
+// Loop through each chapter container and add event listeners to the buttons
+chapterContainers.forEach((container, index) => {
+  const visibleButton = container.querySelector('#ch-visible-button');
+  const hiddenButton = container.querySelector('#ch-hidden-button');
+  if (chapters[index]['visibility'] === 'True') {
+      visibleButton.classList.add('sel');
+      hiddenButton.classList.remove('sel');
+  } else {
+      hiddenButton.classList.add('sel');
+      visibleButton.classList.remove('sel');
+  }
+  visibleButton.addEventListener('click', () => {
+    // Add the "sel" class to the visible button
+    visibleButton.classList.add('sel');
+    // Remove the "sel" class from the hidden button
+    hiddenButton.classList.remove('sel');
+    console.log('Vis: ch-' + index);
+    dummyFormVis.value = 'True';
+    dummyFormID.value = chapters[index]['id'];
+    dummyFormMode.value = "Chapter";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  hiddenButton.addEventListener('click', () => {
+    // Add the "sel" class to the hidden button
+    hiddenButton.classList.add('sel');
+    // Remove the "sel" class from the visible button
+    visibleButton.classList.remove('sel');
+    console.log('Hid: ch-' + index);
+    dummyFormVis.value = 'False';
+    dummyFormID.value = chapters[index]['id'];
+    dummyFormMode.value = "Chapter";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+});
+
+const quizContainers = document.querySelectorAll('.quiz-v-container');
+quizContainers.forEach((container, index) => {
+  const visibleButton = container.querySelector('#q-visible-button');
+  const hiddenButton = container.querySelector('#q-hidden-button');
+  if (quizzes[index]['visibility'] === 'True') {
+      visibleButton.classList.add('sel');
+      hiddenButton.classList.remove('sel');
+  } else {
+      hiddenButton.classList.add('sel');
+      visibleButton.classList.remove('sel');
+  }
+  visibleButton.addEventListener('click', () => {
+    // Add the "sel" class to the visible button
+    visibleButton.classList.add('sel');
+    // Remove the "sel" class from the hidden button
+    hiddenButton.classList.remove('sel');
+    console.log('Vis: q-' + index);
+    dummyFormVis.value = 'True';
+    dummyFormID.value = quizzes[index]['id'];
+    dummyFormMode.value = "Quiz";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  hiddenButton.addEventListener('click', () => {
+    // Add the "sel" class to the hidden button
+    hiddenButton.classList.add('sel');
+    // Remove the "sel" class from the visible button
+    visibleButton.classList.remove('sel');
+    console.log('Hid: q-' + index);
+    dummyFormVis.value = 'False';
+    dummyFormID.value = quizzes[index]['id'];
+    dummyFormMode.value = "Quiz";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+});

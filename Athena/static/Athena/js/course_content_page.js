@@ -1,19 +1,79 @@
 // Get all the chapter buttons
 const chapterButtons = document.querySelectorAll('.chapter-view-container');
 const videoContainer = document.getElementById('video-content');
+const nonVideoContent = document.getElementById('non-video-content');
 const quizContainer = document.getElementById('quiz-content');
 const videoElement = document.getElementById('video-box');
+const contentElement = document.getElementById('content-frame');
 const chapterTitle = document.getElementById('chapter_title');
+
+const quizBottomBar = document.getElementById('quiz-time-container');
+const chapterExtra = document.getElementById('chapter-extra-container');
+
+
+function changePDF(newUrl, container) {
+  var pdfPages = document.querySelectorAll("#content-frame canvas");
+
+  // Remove the existing pages from the container
+  for (var i = 0; i < pdfPages.length; i++) {
+    pdfPages[i].remove();
+  }
+
+  // Render the new PDF
+  renderPDF(newUrl, container);
+}
+
+function renderPDF(url, container) {
+  console.log('PDF: ' + url);
+    pdfjsLib.getDocument(url).promise.then(function(pdfDoc) {
+        let totalHeight = 0;
+        for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
+        pdfDoc.getPage(pageNum).then(function(page) {
+         const canvas = document.createElement("canvas");
+         const context = canvas.getContext("2d");
+
+         let viewport = page.getViewport({scale: 1});
+         let pdfPageHeight = viewport.height;
+         let pdfPageWidth = viewport.width;
+         let scale = container.clientWidth / pdfPageWidth;
+        console.log(pdfPageHeight, pdfPageWidth, scale);
+
+        canvas.height = pdfPageHeight * scale;
+        canvas.width = container.clientWidth;
+        totalHeight += canvas.height;
+
+        viewport = page.getViewport({ scale: scale });
+        page.render({ canvasContext: context, viewport: viewport });
+
+        container.appendChild(canvas);
+
+        if (pageNum === pdfDoc.numPages) {
+          container.style.height = totalHeight + "px";
+        }
+      });
+    }
+  });
+}
 
 // Chapter Selection
 chapterButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
-    videoContainer.hidden = false;
+    if (chapters[index]['is_streaming'] === 'True') {
+        videoContainer.style.display = "flex";
+        nonVideoContent.style.display = "none";
+
+        videoElement.src = button.dataset.video;
+    } else {
+        videoContainer.style.display = "none";
+        nonVideoContent.style.display = "flex";
+        changePDF(button.dataset.pdfUrl, contentElement);
+    }
+
     quizContainer.hidden = true;
+    chapterExtra.style.display = 'flex';
     quizContainer.style.display = "none";
-    // Get the video URL from the button's data attribute
-      // Create a video element and set the source to the video URL
-    videoElement.src = button.dataset.video;
+    quizBottomBar.style.display = "none";
+
     chapterButtons.forEach(b => {
       b.classList.remove("sel");
     });
@@ -42,8 +102,13 @@ let selected_quiz_id = 0
 quizButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
     videoContainer.hidden = true;
+    videoContainer.style.display = "none";
+    nonVideoContent.style.display = "none";
     quizContainer.hidden = false;
+
     quizContainer.style.display = "flex";
+    quizBottomBar.style.display = "flex";
+    chapterExtra.style.display = "none";
     chapterButtons.forEach(b => {
       b.classList.remove("sel");
     });
@@ -90,6 +155,7 @@ function reset_q_page() {
   optionButtons.forEach(b => {
       b.classList.remove("sel");
   });
+  current_selection = 0;
 }
 optionButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
@@ -100,23 +166,33 @@ optionButtons.forEach((button, index) => {
   });
 });
 nextQuestionButton.addEventListener('click', () => {
-  sendQuizRequest(current_question + 1, current_selection);
+  sendQuizRequest(current_question + 1, current_selection, 0);
 });
 
-function sendQuizRequest(questionNo, prev_selection) {
+var QuestionCount = 0;
+
+function sendQuizRequest(questionNo, prev_selection, submit) {
   var xhr = new XMLHttpRequest();
 
   var quiz = quizzes[selected_quiz_id]
   var data = '?quiz_id=' + encodeURIComponent(quiz['id']) +
                '&course_id=' + encodeURIComponent(quiz['course_id']) +
-               '&question_no=' + encodeURIComponent(questionNo)+
-                '&prev_selection=' + encodeURIComponent(prev_selection);
+               '&question_no=' + encodeURIComponent(questionNo) +
+                '&prev_selection=' + encodeURIComponent(prev_selection) +
+                '&submit_quiz=' + encodeURIComponent(submit);
   xhr.open('GET', quiz_url + data);
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
   xhr.onload = function() {
     console.log(xhr.status);
       if (xhr.status === 200) {
+            if (questionNo === 0) {
+                startTimer(quiz['time']);
+            }
             current_question = questionNo
+            console.log(submit, questionNo, QuestionCount)
+            if (submit > 0 || (QuestionCount === questionNo && QuestionCount > 0) ) {
+                stopTimer();
+            }
             var response = JSON.parse(xhr.responseText);
             if (Boolean(response.blank)) {
                 quizQPage.style.display = 'none';
@@ -124,6 +200,8 @@ function sendQuizRequest(questionNo, prev_selection) {
                 quizTotal.textContent = response.total;
                 quizCorrect.textContent = response.answered;
                 quizScore.textContent = response.score + ' / ' + response.total_score;
+                QuestionCount = response.questions_count;
+                renderQuestionProgress();
             } else {
                 console.log('Q: ' + response.question.question);
                 qQuestion.textContent = 'Q ' + (current_question + 1) + '. ' + response.question.question;
@@ -131,9 +209,11 @@ function sendQuizRequest(questionNo, prev_selection) {
                 qOption2.innerHTML = '<span>2</span>' + response.question.options_2;
                 qOption3.innerHTML = '<span>3</span>' + response.question.options_3;
                 qOption4.innerHTML = '<span>4</span>' + response.question.options_4;
+                QuestionCount = response.questions_count;
                 reset_q_page();
                 quizStartPage.style.display = 'none';
                 quizQPage.style.display = 'flex'
+                renderQuestionProgress();
             }
         } else {
             console.log('AJAX request failed');
@@ -231,4 +311,66 @@ function updateSoundBtn() {
   } else {
     sound_btn.innerHTML = '<img width="32" height="32" src="https://img.icons8.com/sf-regular/48/high-volume.png" alt="sound"/>';
   }
+}
+
+let timer;
+let countdown;
+const timerDisplay = document.getElementById("time-display");
+function startTimer(duration) {
+  // duration = duration * 60;
+  duration = duration - 20;
+
+  let minutes, seconds;
+
+  clearInterval(countdown); // Clear any existing countdown
+
+  countdown = setInterval(function() {
+    minutes = parseInt(duration / 60, 10);
+    seconds = parseInt(duration % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    timerDisplay.textContent = minutes + ":" + seconds;
+
+    if (--duration < 0) {
+      clearInterval(countdown);
+      timerDisplay.textContent = "00:00";
+      sendQuizRequest(current_question + 1, current_selection, 1);
+      //Submit the Quiz
+      alert("Timer Over! Auto Submitted.");
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  console.log("Stop timer");
+  clearInterval(countdown);
+  timerDisplay.textContent = "00:00";
+}
+
+function retakeQuiz() {
+    quizFinishPage.style.display = 'none'
+    quizStartPage.style.display = 'flex';
+    stopTimer();
+    sendQuizRequest(0, 0, 0);
+}
+
+const questionContainer = document.getElementById("question-container");
+
+function renderQuestionProgress() {
+    questionContainer.innerHTML = '';
+    for (let i = 1; i <= QuestionCount; i++) {
+      var questionDiv = document.createElement("div");
+      questionDiv.classList.add("question-box");
+      questionDiv.textContent = i;
+
+      if (i <= current_question) {
+        questionDiv.classList.add("dark-b");
+      } else {
+        questionDiv.classList.add("grey-b");
+      }
+
+      questionContainer.appendChild(questionDiv);
+    }
 }

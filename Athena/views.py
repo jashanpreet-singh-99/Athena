@@ -415,7 +415,6 @@ class CourseAuthor(views.View):
         enrollment_info = Enrollment.objects.filter(course=course)
         context['e_info'] = enrollment_info
 
-
         #
         # Chapter Info
         #
@@ -429,7 +428,7 @@ class CourseAuthor(views.View):
         chapter_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
 
         chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
-        chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
+        chapter_form.fields['files'].widget.attrs['class'] = 'video-file-block'
 
         chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
         chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
@@ -475,6 +474,9 @@ class CourseAuthor(views.View):
         quizzes = Quiz.objects.filter(course=course)
         context['quizzes'] = quizzes
 
+        page_scroll = request.session.get('page_scroll', 0)
+        context['page_scroll'] = page_scroll
+        print('Page Scroll:', page_scroll)
         return render(request, 'Athena/course_author_page.html', context)
 
 
@@ -569,11 +571,18 @@ class GetQuizQuestion(views.View):
         print(request.GET)
         q_no = int(request.GET['question_no'])
         prev_selection = int(request.GET['prev_selection'])
+        submit = int(request.GET['submit_quiz'])
         quiz = Quiz.objects.get(pk=request.GET['quiz_id'])
+        all_questions = QuizContent.objects.filter(quiz__id=quiz.id)
+        total_q = len(all_questions)
+        # Remove previous quiz record
+        if q_no == 0:
+            StudentQuizSubmission.objects.filter(quiz__id=quiz.id, user__id=request.user.id).delete()
+
         # update previous_question submission
         if q_no > 0 and prev_selection > 0:
-            print('Working')
-            p_questions = QuizContent.objects.filter(quiz__id=quiz.id)[q_no-1]
+            print('Submit Last answer')
+            p_questions = all_questions[q_no-1]
             try:
                 check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
                 check.submission = prev_selection
@@ -585,10 +594,12 @@ class GetQuizQuestion(views.View):
                     submission=prev_selection
                 )
             finally:
-                print(q_no, p_questions.question)
+                pass
+                # print(q_no, p_questions.question)
 
         quiz_questions = QuizContent.objects.filter(quiz__id=quiz.id)
-        if len(quiz_questions) > q_no :
+        if len(quiz_questions) > q_no and submit < 1:
+            print('Fetching next question.')
             quiz_question = quiz_questions[q_no]
             quiz_content_data = {
                 'question': quiz_question.question,
@@ -596,12 +607,12 @@ class GetQuizQuestion(views.View):
                 'options_2': quiz_question.options_2,
                 'options_3': quiz_question.options_3,
                 'options_4': quiz_question.options_4,
-                'answers': quiz_question.answers,
             }
-            context = {'question': quiz_content_data, 'blank': not (len(quiz_questions) > q_no)}
+            context = {'question': quiz_content_data, 'blank': False, 'questions_count': total_q}
             return JsonResponse(context)
         else:
-            context = {'blank': not(len(quiz_questions) > q_no)}
+            print('Quiz Submitted, Calculating Scores')
+            context = {'blank': True, 'questions_count': total_q}
             # calculate score
             answered_q = StudentQuizSubmission.objects.filter(quiz__id=quiz.id, user__id=request.user.id)
             total = QuizContent.objects.filter(quiz_id=quiz.id).count()
@@ -617,4 +628,25 @@ class GetQuizQuestion(views.View):
             context['answered'] = len(answered_q)
             context['score'] = round(score, 2)
             context['total_score'] = round(total * quiz.each_mark, 2)
+            print(context)
             return JsonResponse(context)
+
+
+class ChangeCourseChapterVisibility(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        if request.POST['mode'] == 'Chapter':
+            chapter = CourseChapter.objects.get(id=request.POST['id'])
+            vis = True if request.POST['visibility'] == 'True' else False
+            print(chapter, vis)
+            chapter.visibility = vis
+            chapter.save()
+        elif request.POST['mode'] == 'Quiz':
+            quiz = Quiz.objects.get(id=request.POST['id'])
+            vis = True if request.POST['visibility'] == 'True' else False
+            print(quiz, vis)
+            quiz.visibility = vis
+            quiz.save()
+        request.session['page_scroll'] = int(request.POST['page_scroll'])
+        return redirect(reverse('course_author_page', args=[request.POST['course']]))

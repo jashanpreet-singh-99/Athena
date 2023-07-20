@@ -199,6 +199,12 @@
     background-color: #eeeeee;
 }
 
+.content-buttons.light.no-mrg {
+    margin: 0;
+    font-size: small;
+    padding: 14px 32px;
+}
+
 .content-buttons-200 {
     width: 200px;
 }
@@ -248,6 +254,11 @@
     background-color: #eeeeee;
     border-radius: 24px;
     border: none;
+}
+
+.toggle-btn.light.sel {
+    color: #070708;
+    background-color: white;
 }
 
 .toggle-btn.large {
@@ -340,17 +351,37 @@ input[type="file"]::after {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     padding: 16px 32px;
-    margin: 8px 0;
+    margin: 16px 0;
     border: none;
-    border-radius: 12px;
+    border-radius: 16px;
     background-color: #c9d9f0;
+}
+
+.ch-title-info {
+    font-size: large;
+    font-weight: normal;
 }
 
 .chapter-info-container {
     display: flex;
     flex-direction: row;
     gap: 32px;
+}
+
+.chapter-info-container span {
+    border: 1px solid #070708;
+    color: #070708;
+    padding: 4px 8px;
+    border-radius: 25%;
+    margin-right: 8px;
+}
+
+.chapter-info-container img {
+    background-color: #fefefe;
+    padding: 4px;
+    border-radius: 25%;
 }
 
 .input-text {

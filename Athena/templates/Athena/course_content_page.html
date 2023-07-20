@@ -22,7 +22,7 @@
                     </button>
                     <button id="play-pause-button" class="c-button">
                         <img id="play-pause-btn-img" width="32" height="32" src="https://img.icons8.com/sf-regular/48/play.png" alt="pause"/>
-                        {# pause "https://img.icons8.com/sf-regular/48/pause.png" #}
+{#                         pause "https://img.icons8.com/sf-regular/48/pause.png"#}
                     </button>
                     <button id="next-button" class="c-button">
                         <img width="32" height="32" src="https://img.icons8.com/sf-regular/48/end.png" alt="Next"/>
@@ -31,14 +31,17 @@
                     <input class= "seek-bar" id="seek-bar" type="range" min="0" value="0" step="0.1">
                     <button id="mute_button" class="c-button">
                         <img width="32" height="32" src="https://img.icons8.com/sf-regular/48/sound-speaker.png" alt="sound"/>
-                        {# mute "https://img.icons8.com/sf-regular/48/sound-speaker.png"#}
-                        {# sound "https://img.icons8.com/sf-regular/48/high-volume.png" #}
+{#                         mute "https://img.icons8.com/sf-regular/48/sound-speaker.png"#}
+{#                         sound "https://img.icons8.com/sf-regular/48/high-volume.png"#}
                     </button>
                     <button id="full_screen_button" class="c-button">
                         <img width="32" height="32" src="https://img.icons8.com/sf-regular/48/full-screen.png" alt="full-screen"/>
                     </button>
                 </div>
             </div>
+        </div>
+        <div id="non-video-content" class="video-content quiz-content n-pad">
+            <div id="content-frame" class="content-frame" style="overflow-y: auto;"></div>
         </div>
         <div id="quiz-content" class="video-content quiz-content" hidden="hidden">
             <div id="quiz-start-page" class="quiz-content">
@@ -57,7 +60,7 @@
                 </div>
                 <h3>Instructions:</h3>
                 <p id="quiz-instructions"></p>
-                <button id="start-quiz" class="content-buttons" onclick="sendQuizRequest(0, 0)">
+                <button id="start-quiz" class="content-buttons" onclick="sendQuizRequest(0, 0, 0)">
                     Start
                 </button>
             </div>
@@ -97,14 +100,23 @@
                     <p id="quiz_total_q"></p>
                     <p> Questions</p>
                 </div>
+                <button id="retake-quiz" class="content-buttons" onclick="retakeQuiz()">
+                    Retake
+                </button>
             </div>
         </div>
         <div class="chapter-content">
             <h2>Chapters</h2>
             {% for chapter in chapters %}
-                <div class="chapter-view-container" data-video="{{ chapter.video_file.url }}">
-                    <p>{{ chapter.title }}</p>
-                </div>
+                {% if chapter.is_streaming %}
+                    <div class="chapter-view-container" data-video="{{ chapter.video_file.url }}">
+                        <p>{{ chapter.title }}</p>
+                    </div>
+                {% else %}
+                    <div class="chapter-view-container" data-pdf-url="{{ chapter.files.url }}">
+                        <p>{{ chapter.title }}</p>
+                    </div>
+                {% endif %}
             {%  endfor %}
             <h2>Quiz</h2>
             {% for quiz in quizzes %}
@@ -114,7 +126,13 @@
             {%  endfor %}
         </div>
     </div>
-    <h1 id="chapter_title" class="chapter-title">Title</h1>
+    <div id="quiz-time-container" class="quiz-time-container">
+        <div id="question-container" class="question-container-progress"></div>
+        <span id="time-display" class="time-display">00:00</span>
+    </div>
+    <div id="chapter-extra-container">
+        <h1 id="chapter_title" class="chapter-title">Title</h1>
+    </div>
 
 {% endblock %}
 
@@ -124,6 +142,7 @@
         {% for chapter in chapters %}
             var chap = {};
             chap['title'] = '{{ chapter.title|escapejs }}';
+            chap['is_streaming'] = '{{ chapter.is_streaming|escapejs }}';
             chapters.push(chap);
         {% endfor %}
         let quizzes = [];

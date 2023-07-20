@@ -81,19 +81,38 @@
                 <div class="content-header">
                     <h2>Chapters:</h2>
                     <div>
-                        <button class="expand-button content-buttons light content-buttons-120">
+                        <button class="expand-button content-buttons light content-buttons-120" id="chapter-expand-btn">
                             Expand
                         </button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">
+                    <form id="vis-form" method="post" action="{% url 'change_chapter_visibility' %}">
+                        {% csrf_token %}
+                        <input id="course_id-f" name="course" type="hidden" value="{{ course.id }}">
+                        <input id="chapter_id-f" name="id" type="hidden" value="">
+                        <input id="visibility-f-input" type="hidden" name="visibility" value="False">
+                        <input id="mode-f-input" type="hidden" name="mode" value="Chapter">
+                        <input id="scroll-f-input" type="hidden" name="page_scroll" value="0">
+                    </form>
                     {% for chapter in chapters %}
-                        <div class="chapter-view-container">
-                        <p>{{ chapter.title }}</p>
-                        <div class="chapter-info-container">
-                            <p>Visibility: {{ chapter.visibility }}</p>
-                            <p>Streamable: {{ chapter.is_streaming }}</p>
-                        </div>
+                        <div class="chapter-view-container chapter-v-container">
+                            <div class="chapter-info-container">
+                                <span>{{ forloop.counter }}</span>
+                                <p class="ch-title-info">{{ chapter.title }}</p>
+                            </div>
+                            <div class="chapter-info-container">
+                                <div class="toggle-div">
+                                    <button id="ch-visible-button" class="toggle-btn light sel">Visible</button>
+                                    <button id="ch-hidden-button" class="toggle-btn light">Hidden</button>
+                                </div>
+                                {% if chapter.is_streaming %}
+                                    <img width="36" height="36" src="https://img.icons8.com/ios/50/cinema---v1.png" alt="cinema---v1"/>
+                                {% else %}
+                                    <img width="36" height="36" src="https://img.icons8.com/ios/50/document--v1.png" alt="document--v1"/>
+                                {% endif %}
+                                <button class="content-buttons light no-mrg">Edit</button>
+                            </div>
                         </div>
                     {%  endfor %}
                     <form method="post" enctype="multipart/form-data" action="{% url 'create_chapter' %}">
@@ -116,6 +135,9 @@
                         <div id="stream_video_file_div">
                             {{ c_form.video_file }}
                         </div>
+                        <div id="no_stream_video_file_div">
+                            {{ c_form.files }}
+                        </div>
                         <button class="content-buttons" type="submit">Add Chapter</button>
                     </form>
                 </div>
@@ -124,16 +146,22 @@
                 <div class="content-header">
                     <h2>Quiz:</h2>
                     <div>
-                        <button class="expand-button content-buttons light content-buttons-120">Expand</button>
+                        <button class="expand-button content-buttons light content-buttons-120" id="quiz-expand-btn">Expand</button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">
                     {% for quiz in quizzes %}
-                        <div class="chapter-view-container">
-                        <p>{{ quiz.title }}</p>
-                        <div class="chapter-info-container">
-                            <p>Visibility: {{ quiz.visibility }}</p>
-                        </div>
+                        <div class="chapter-view-container quiz-v-container">
+                            <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ quiz.title }}</p>
+                            </div>
+                            <div class="chapter-info-container">
+                                <div class="toggle-div">
+                                    <button id="q-visible-button" class="toggle-btn light sel">Visible</button>
+                                    <button id="q-hidden-button" class="toggle-btn light">Hidden</button>
+                                </div>
+                            </div>
                         </div>
                     {%  endfor %}
                     <form method="post" enctype="multipart/form-data" action="{%  url 'create_quiz' %}">
@@ -189,7 +217,7 @@
                         <button class="content-buttons content-buttons-200">
                             Add Assignment
                         </button>
-                        <button class="expand-button content-buttons light content-buttons-120">
+                        <button class="expand-button content-buttons light content-buttons-120" id="assignment-expand-btn">
                             Expand
                         </button>
                     </div>
@@ -205,7 +233,7 @@
                         <button class="content-buttons content-buttons-200">
                             Add Exam
                         </button>
-                        <button class="expand-button content-buttons light content-buttons-120">
+                        <button class="expand-button content-buttons light content-buttons-120" id="exam-expand-btn">
                             Expand
                         </button>
                     </div>
@@ -230,6 +258,24 @@
 {% block extrascripts %}
     <script>
         const course_categories = '{{ course.categories }}';
+        let chapters = [];
+        {% for chapter in chapters %}
+            var chap = {};
+            chap['id'] = '{{ chapter.id|escapejs }}';
+            chap['title'] = '{{ chapter.title|escapejs }}';
+            chap['visibility'] = '{{ chapter.visibility|escapejs }}';
+            chap['is_streaming'] = '{{ chapter.is_streaming|escapejs }}';
+            chapters.push(chap);
+        {% endfor %}
+        let quizzes = [];
+        {% for quiz in quizzes %}
+            var q = {};
+            q['id'] = '{{ quiz.id|escapejs }}';
+            q['title'] = '{{ quiz.title|escapejs }}';
+            q['visibility'] = '{{ quiz.visibility|escapejs }}';
+            quizzes.push(q);
+        {% endfor %}
+        let page_scroll_y = '{{ page_scroll }}';
     </script>
     <script src="{% static 'Athena/js/course_author_page.js'%}"></script>
 {% endblock %}

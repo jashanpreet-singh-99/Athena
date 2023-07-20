@@ -110,14 +110,9 @@ class CourseChapter(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
     visibility = models.BooleanField(default=True)
-    files = models.ManyToManyField('File', blank=True)
+    files = models.FileField(upload_to=course_directory_path, blank=True)
     is_streaming = models.BooleanField(default=False)
     video_file = models.FileField(upload_to=course_directory_path, blank=True)
-
-
-class File(models.Model):
-    name = models.CharField(max_length=255)
-    file = models.FileField(upload_to=course_directory_path)
 
 
 class Quiz(models.Model):
