@@ -241,6 +241,7 @@
 .toggle-div.large {
     width: 248px;
 }
+
 .toggle-div.x-large {
     width: 308px;
 }
@@ -422,6 +423,7 @@ input[type="file"]::after {
     flex-direction: row;
     gap: 32px;
 }
+
 
 
 

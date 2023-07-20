@@ -428,7 +428,7 @@ class CourseAuthor(views.View):
         chapter_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
 
         chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
-        chapter_form.fields['files'].widget.attrs['class'] = 'video-file-block'
+        chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
 
         chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
         chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'

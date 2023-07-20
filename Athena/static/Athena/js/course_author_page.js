@@ -100,8 +100,6 @@ function openTab(evt, tabName, index) {
   // Show the selected tab content and mark the button as active
   document.getElementById(tabName).classList.add("show");
   evt.currentTarget.classList.add("active");
-  setCookie(COOKIES_author_tab_number, index, 7);
-  setCookie(COOKIES_author_tab_name, tabName, 7);
 }
 
 function createButtons() {
