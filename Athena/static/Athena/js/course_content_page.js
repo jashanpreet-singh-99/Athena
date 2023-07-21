@@ -406,3 +406,37 @@ function renderQuestionProgress() {
       questionContainer.appendChild(questionDiv);
     }
 }
+
+const ratingWidget = document.querySelector('.rating-widget');
+const stars = ratingWidget.querySelectorAll('.star');
+const ratingIntput = document.getElementById('rating_input');
+const ratingForm = document.getElementById('rating_form');
+
+stars.forEach((star, index) => {
+  const rating = (course_rating < (index + 1)) ? ((course_rating > index) ? ((course_rating - index) * 100) : '0') : '100';
+  const gradientPercentage = rating + '%, ' + rating + '%';
+  star.style.backgroundImage = 'linear-gradient(to right, #f7c927 0%, #f7c927 ' + gradientPercentage + ', #888 ' + gradientPercentage + ', #888 100%)';
+
+  star.addEventListener('click', () => {
+      ratingForm.submit();
+  });
+});
+
+ratingWidget.addEventListener('mouseover', (event) => {
+  const hoveredStar = event.target;
+  const indexH = parseInt(hoveredStar.dataset.index, 10);
+  if (isNaN(indexH)) {
+      return;
+  }
+  console.log('Called hover: ' + indexH);
+  stars.forEach((star, index) => {
+    if (index < indexH) {
+      star.dataset.rating = 100;
+    } else {
+        star.dataset.rating = 0;
+    }
+    const gradientPercentage = star.dataset.rating + '%, ' + star.dataset.rating + '%';
+    star.style.backgroundImage = 'linear-gradient(to right, #f7c927 0%, #f7c927 ' + gradientPercentage + ', #888 ' + gradientPercentage + ', #888 100%)';
+  });
+  ratingIntput.value = 5 * indexH /5;
+});

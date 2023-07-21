@@ -28,6 +28,12 @@
         <div class="event_section">
             <h2 class="title_h2">Scheduled Events</h2>
             <p>No events yet.</p>
+            <form method="post">
+                {% csrf_token %}
+                {{ form }}
+                <button type="submit">send</button>
+            </form>
+
         </div>
     </div>
 

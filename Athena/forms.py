@@ -87,3 +87,8 @@ class CourseInPersonExamForm(forms.ModelForm):
     class Meta:
         model = CourseInPersonExam
         fields = '__all__'
+
+
+class RatingForm(forms.Form):
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), label='')
+    rating = forms.DecimalField(label='')

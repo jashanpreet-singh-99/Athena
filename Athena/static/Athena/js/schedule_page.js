@@ -24,12 +24,14 @@ function updateCalendar() {
     dateBtn.addEventListener('click', () => {
       console.log(`Selected date: ${i}/${currentMonth + 1}/${currentYear}`);
       selectDate(dateBtn);
-      dateDialog.style.display = 'none';
+      //dateDialog.style.display = 'none';
       // Additional logic to set the date
     });
     datesDiv.appendChild(dateBtn);
   }
 }
+
+const inputDDate = document.getElementById('input-date');
 
 function selectDate(dateBtn) {
   if (selectedDate) {
@@ -39,7 +41,7 @@ function selectDate(dateBtn) {
   dateBtn.classList.add('selected');
   selectedDate = dateBtn;
 
-  selectField.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
+  inputDDate.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
 }
 
 prevMonthBtn.addEventListener('click', () => {
