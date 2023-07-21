@@ -89,10 +89,6 @@ class CourseInPersonExamForm(forms.ModelForm):
         fields = '__all__'
 
 
-class CourseSearchForm(forms.Form):
-    title = forms.CharField(required=False)
-    description = forms.CharField(required=False)
-    start_date = forms.DateField(required=False)
-    end_date = forms.DateField(required=False)
-    categories = forms.CharField(required=False)
-    rating = forms.DecimalField(required=False, max_digits=2, decimal_places=1)
+class RatingForm(forms.Form):
+    course = forms.ModelChoiceField(queryset=Course.objects.all(), label='')
+    rating = forms.DecimalField(label='')

@@ -601,6 +601,9 @@ class CourseContentView(views.View):
         context = {'title': 'Course Content'}
         load_profile(context, request)
 
+        course = Course.objects.get(id=course_id)
+        context['course'] = course
+
         chapters = CourseChapter.objects.filter(course__id=course_id, visibility=True)
         context['chapters'] = chapters
 
@@ -609,6 +612,16 @@ class CourseContentView(views.View):
 
         assignments = CourseAssignment.objects.filter(course_id=course_id, visibility=True)
         context['assignments'] = assignments
+
+        r_data = {'course': course}
+        rating_form = RatingForm(initial=r_data)
+
+        rating_form.fields['course'].widget.attrs['style'] = 'display: none;'
+
+        rating_form.fields['rating'].widget.attrs['id'] = 'rating_input'
+        rating_form.fields['rating'].widget.attrs['style'] = 'display: none;'
+
+        context['rating_form'] = rating_form
 
         return render(request, 'Athena/course_content_page.html', context)
 
@@ -811,3 +824,19 @@ class CreateInPersonExam(views.View):
         else:
             print('Invalid Assignment Form')
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
+class UpdateCourseRating(views.View):
+
+    def post(self, request):
+        course = Course.objects.get(id=request.POST['course'])
+        add_rating = request.POST['rating']
+        enrollment_info = Enrollment.objects.filter(course=course)
+        if len(enrollment_info) > 0:
+            avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating))/len(enrollment_info)
+            if avg > 5:
+                avg = 5
+            course.course_rating = avg
+            course.save()
+
+        return redirect(reverse('course_content', args=[request.POST['course']]))

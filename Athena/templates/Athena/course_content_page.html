@@ -130,6 +130,20 @@
                     <p>{{ ass.title }}</p>
                 </div>
             {%  endfor %}
+            <h2>Course Rating</h2>
+            <div class="rating-widget">
+                  <div class="star-container">
+                    <div class="star gold" data-rating="100" data-index="1"></div>
+                    <div class="star gold" data-rating="100" data-index="2"></div>
+                    <div class="star gold" data-rating="80"  data-index="3"></div>
+                    <div class="star gold" data-rating="0"  data-index="4"></div>
+                    <div class="star gold" data-rating="0" data-index="5"></div>
+                  </div>
+            </div>
+            <form id='rating_form' method="post" action="{% url 'update_course_rating' %}">
+                {% csrf_token %}
+                {{ rating_form }}
+            </form>
         </div>
     </div>
     <div id="quiz-time-container" class="quiz-time-container">
@@ -170,6 +184,7 @@
             a['visibility'] = '{{ assignment.visibility|escapejs }}';
             assignments.push(a);
         {% endfor %}
+        const course_rating = '{{ course.course_rating|escapejs }}';
         const quiz_url = '{% url 'get_quiz_questions' %}';
     </script>
     <script src="{% static 'Athena/js/course_content_page.js' %}"></script>

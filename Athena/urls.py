@@ -29,7 +29,8 @@ urlpatterns = [
     path('course/content/chapter/vis', views.ChangeCourseChapterVisibility.as_view(), name='change_chapter_visibility'),
     path('course/content/assignement', views.CreateCourseAssignment.as_view(), name='create_course_assignment'),
     path('course/content/exam', views.CreateInPersonExam.as_view(), name='create_course_exam'),
-    path('course/content/remove', views.RemoveCourseContent.as_view(), name='delete_course_content')
+    path('course/content/remove', views.RemoveCourseContent.as_view(), name='delete_course_content'),
+    path('course/content/rating', views.UpdateCourseRating.as_view(), name='update_course_rating')
 ]
 
 urlpatterns += staticfiles_urlpatterns()
