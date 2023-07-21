@@ -7,16 +7,66 @@
 {% endblock nav_item_search %}
 {% block stylesheets %}
     <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/course_search_page.css' %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/cource_style.css' %}"/>
 {% endblock %}
 
 {% block page %}
     <div class="title_1_container">
         <h2 class="title_h2">Filter</h2>
-        <button class="secondary-btn">
-            Filter
-        </button>
     </div>
+        <form method="post" style="  max-width: fit-content; display: flex;
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;">
+            {% csrf_token %}
+            <div class="form-field" style="margin-bottom: 15px;">
+                <label class="labels" for="title" >Title:</label>
+                {{ form.title }}
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+                <label class="labels" for="description">Description:</label>
+                {{ form.description }}
+            </div>
+{#            <div class="form-field" style="margin-bottom: 15px;">#}
+{#                <label for="startDate">Start Date:</label>#}
+{#                {{ form.start_date }}#}
+{#            </div>#}
+{#            <div class="form-field" style="margin-bottom: 15px;">#}
+{#                <label for="endDate">End Date:</label>#}
+{#                {{ form.end_date }}#}
+{#            </div>#}
+            <div class="form-field" style="margin-bottom: 15px;">
+                <label for="categories">Categories:</label>
+                {{ form.categories }}
+            </div>
+            <div class="form-field" style="margin-bottom: 15px;">
+                <label for="rating">Rating:</label>
+                {{ form.rating }}
+            </div>
+            <button type="submit" class="secondary-btn">
+                Filter
+            </button>
+        </form>
 
+<hr>
+    <div class="title_1_container">
+        <h2 class="title_h2">Filtered Courses</h2>
+    </div>
+    <div id="course-container" class="course-container">
+        {% for course in courses %}
+            <div class="course-view t-b-margin">
+              <div class="course-card">
+                <a href="{% url 'course_details_page' course.id %}">
+                  <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                </a>
+              </div>
+              <h3>{{ course.course_title }}</h3>
+              <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
+            </div>
+        {% endfor %}
+    </div>
 {% endblock %}
 
 {% block extrascripts %}

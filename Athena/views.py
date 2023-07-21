@@ -200,7 +200,6 @@ class CourseBuilder(views.View):
 
 class Login(views.View):
 
-
     def get(self, request):
         context = {'title': 'Login'}
         return render(request, 'Athena/login.html', context)
@@ -253,11 +252,11 @@ class Signup(views.View):
         if password != v_password:
             return render(request, 'Athena/signup.html', context={'Error': 'Password Verification'})
         User = get_user_model()
-        user = User.objects.create_user(username=(first_name+last_name), email=email, password=password,
+        user = User.objects.create_user(username=(first_name + last_name), email=email, password=password,
                                         first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
-            return redirect('dash_page')
+            return redirect('home_page')
         else:
             return render(request, 'Athena/signup.html')
 
@@ -375,17 +374,78 @@ class EnrollCourse(views.View):
             return redirect('course_page')
 
 
+# class CourseSearchPage(views.View):
+#
+#     def get(self, request):
+#         context = {'title': 'Find Course'}
+#         load_profile(context, request)
+#         return render(request, 'Athena/course_search_page.html', context)
+#
+#     def post(self, request):
+#         context = {'title': 'Find Course'}
+#         load_profile(context, request)
+#         return render(request, 'Athena/course_search_page.html', context)
+
+
 class CourseSearchPage(views.View):
+    template_name = 'Athena/course_search_page.html'
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm()
+        courses = Course.objects.all()
+        context['form'] = form
+        context['courses'] = courses
+        return render(request, self.template_name, context)
 
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            description = form.cleaned_data.get('description')
+            start_date = form.cleaned_data.get('start_date')
+            end_date = form.cleaned_data.get('end_date')
+            categories = form.cleaned_data.get('categories')
+            rating = form.cleaned_data.get('rating')
+
+            # Prepare the filter kwargs based on the provided form data
+            filter_kwargs = {}
+            if title:
+                filter_kwargs['course_title__icontains'] = title
+            if description:
+                filter_kwargs['course_desc__icontains'] = description
+            if start_date:
+                filter_kwargs['course_start_date__gte'] = start_date
+            if end_date:
+                filter_kwargs['course_end_date__lte'] = end_date
+            if categories:
+                filter_kwargs['categories__icontains'] = categories
+            if rating is not None:
+                filter_kwargs['course_rating__gte'] = rating
+
+            # Filter courses based on the search criteria
+            courses = Course.objects.filter(**filter_kwargs)
+            #
+            # # Filter courses based on the search criteria
+            # courses = Course.objects.filter(
+            #     course_title__icontains=title,
+            #     course_desc__icontains=description,
+            #     course_start_date__gte=start_date,
+            #     course_end_date__lte=end_date,
+            #     categories__icontains=categories,
+            #     course_rating__gte=rating if rating is not None else 0,
+            # )
+        else:
+            # If the form is not valid, display all courses
+            courses = Course.objects.all()
+
+        context['form'] = form
+        context['courses'] = courses
+
+        return render(request, self.template_name, context)
 
 
 class CourseAuthor(views.View):
@@ -591,7 +651,7 @@ class CreateQuiz(views.View):
                 option_4 = temp[0].strip()
                 t_answer = temp[-1].strip()
                 index_o = t_answer.find('O')
-                answer = int(t_answer[index_o+1:index_o+2])
+                answer = int(t_answer[index_o + 1:index_o + 2])
                 print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
                 QuizContent.objects.create(
                     course=quiz_form.cleaned_data['course'],
@@ -626,9 +686,10 @@ class GetQuizQuestion(views.View):
         # update previous_question submission
         if q_no > 0 and prev_selection > 0:
             print('Submit Last answer')
-            p_questions = all_questions[q_no-1]
+            p_questions = all_questions[q_no - 1]
             try:
-                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
+                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id,
+                                                          question=p_questions)
                 check.submission = prev_selection
             except StudentQuizSubmission.DoesNotExist:
                 StudentQuizSubmission.objects.create(

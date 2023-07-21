@@ -16,7 +16,7 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
     border-radius: 24px;
     border-width: 0;
-    font-size: medium;
+    font-size: small;
     text-transform: uppercase;
 }
 
@@ -31,3 +31,46 @@
     background-color: #c9d9f0;
     box-shadow: 0 0 0 rgba(0, 0, 0, 0.2);
 }
+
+ .labels {
+     display: block;
+     margin-bottom: 8px;
+     color: #4CAF50;
+ }
+
+ /* Form container */
+.form-container {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+}
+
+/* Form field */
+.form-field {
+  margin-bottom: 15px;
+}
+
+.form-field label {
+  font-weight: bold;
+  display: block;
+}
+
+.form-field input,
+.form-field select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.form-field textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+}
+
