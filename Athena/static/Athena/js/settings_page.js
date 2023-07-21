@@ -15,7 +15,19 @@ const upgradeDialog = document.getElementById('upgrade-dialog');
 const monthlyRateBtn = document.getElementById('monthly-button');
 const yearlyRateBtn = document.getElementById('yearly-button');
 const exitBuyDialog = document.getElementById('exit-dialog-button');
-const buySelectedButton = document.getElementById('buy-selected-btn');
+const buySelectedButtonD = document.getElementById('buy-selected-btn-d');
+const buySelectedButtonL = document.getElementById('buy-selected-btn-l');
+const buySelectedButtonI = document.getElementById('buy-selected-btn-i');
+const buySelectedButtonG = document.getElementById('buy-selected-btn-g');
+
+const buySelectedButtonDDiv = document.getElementById('buy-selected-btn-d-div');
+const buySelectedButtonLDiv = document.getElementById('buy-selected-btn-l-div');
+const buySelectedButtonIDiv = document.getElementById('buy-selected-btn-i-div');
+const buySelectedButtonGDiv = document.getElementById('buy-selected-btn-g-div');
+
+const buySelectedButtonLDivY = document.getElementById('buy-selected-btn-l-div-y');
+const buySelectedButtonIDivY = document.getElementById('buy-selected-btn-i-div-y');
+const buySelectedButtonGDivY = document.getElementById('buy-selected-btn-g-div-y');
 
 const membershipItems = document.querySelectorAll('.membership-price-item')
 const featureItems = document.querySelectorAll('.feature-item')
@@ -148,7 +160,7 @@ yearlyRateBtn.addEventListener('click', () => {
     }
 });
 
-buySelectedButton.addEventListener('click', () => {
+buySelectedButtonD.addEventListener('click', () => {
     membershipUpForm.submit();
 });
 
@@ -171,6 +183,42 @@ function updateFeatures() {
     });
 }
 
+function updateButtons(index) {
+    buySelectedButtonDDiv.classList.add("hide");
+    buySelectedButtonLDiv.classList.add("hide");
+    buySelectedButtonIDiv.classList.add("hide");
+    buySelectedButtonGDiv.classList.add("hide");
+    buySelectedButtonLDivY.classList.add("hide");
+    buySelectedButtonIDivY.classList.add("hide");
+    buySelectedButtonGDivY.classList.add("hide");
+    switch(index) {
+        case '2':
+            if (selectedPriceType > 0) {
+                buySelectedButtonLDivY.classList.remove("hide");
+            } else {
+                buySelectedButtonLDiv.classList.remove("hide");
+            }
+            break;
+        case '3':
+            if (selectedPriceType > 0) {
+                buySelectedButtonIDivY.classList.remove("hide");
+            } else {
+                buySelectedButtonIDiv.classList.remove("hide");
+            }
+            break;
+        case '4':
+            if (selectedPriceType > 0) {
+                buySelectedButtonGDivY.classList.remove("hide");
+            } else {
+                buySelectedButtonGDiv.classList.remove("hide");
+            }
+            break;
+        default:
+            buySelectedButtonDDiv.classList.remove("hide");
+            break;
+    }
+}
+
 membershipItems.forEach(item => {
   item.addEventListener('click', () => {
     // Remove 'sel' class from all items
@@ -187,7 +235,13 @@ membershipItems.forEach(item => {
 
     const cureM = item.querySelector('p');
     currentMinFeature = cureM.textContent;
+    updateButtons(currentMinFeature);
     membershipBuySelection.value = currentMinFeature;
     updateFeatures();
+
+  });
+
+  item.addEventListener('dblclick', () => {
+      membershipUpForm.submit();
   });
 });

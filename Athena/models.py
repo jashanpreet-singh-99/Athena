@@ -164,3 +164,10 @@ class CourseAssignment(models.Model):
     visibility = models.BooleanField(default=True)
     created_on = models.DateField(auto_now_add=True)
 
+
+class CourseInPersonExam(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    grade = models.DecimalField(max_digits=4, decimal_places=2)
+    exam_date = models.DateTimeField()
+    created_on = models.DateField(auto_now_add=True)

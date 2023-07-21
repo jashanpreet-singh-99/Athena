@@ -75,6 +75,15 @@ class CourseQuizForm(forms.ModelForm):
 
 class CourseAssignmentForm(forms.ModelForm):
     grade = forms.DecimalField(widget=forms.TextInput)
+
     class Meta:
         model = CourseAssignment
+        fields = '__all__'
+
+
+class CourseInPersonExamForm(forms.ModelForm):
+    grade = forms.DecimalField(widget=forms.TextInput)
+
+    class Meta:
+        model = CourseInPersonExam
         fields = '__all__'

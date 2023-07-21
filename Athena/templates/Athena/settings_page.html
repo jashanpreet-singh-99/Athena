@@ -10,6 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Pacifico&family=Roboto:wght@300&display=swap" rel="stylesheet">
+    <script
+        id="fsc-api"
+        src="https://sbl.onfastspring.com/sbl/0.9.5/fastspring-builder.min.js"
+        type="text/javascript"
+        data-storefront="findmyroomie.test.onfastspring.com/popup-findmyroomie">
+    </script>
 {% endblock stylesheets %}
 {% block page %}
     
@@ -143,9 +149,36 @@
       <div class="buy-divider"></div>
       <div class="plan-buy-container">
         <button id="exit-dialog-button" class="secondary-btn">Exit</button>
-        <button id="buy-selected-btn" class="edit-button">Buy Selected</button>
+        <div id="buy-selected-btn-d-div" class="hide">
+            <button id="buy-selected-btn-d" data-fsc-item-path-value='demi' data-fsc-action="Add, Checkout"  class="edit-button">Buy Demi</button>
+        </div>
+
+        <div id="buy-selected-btn-l-div" class="hide">
+          <button id="buy-selected-btn-l" class="edit-button" data-fsc-item-path-value='lesser' data-fsc-action="Add, Checkout">Buy Lesser</button>
+        </div>
+
+        <div id="buy-selected-btn-i-div" class="hide">
+          <button id="buy-selected-btn-i" class="edit-button" data-fsc-item-path-value='inter' data-fsc-action="Add, Checkout">Buy Inter</button>
+        </div>
+
+        <div id="buy-selected-btn-g-div" class="hide">
+          <button id="buy-selected-btn-g" class="edit-button" data-fsc-item-path-value='greater' data-fsc-action="Add, Checkout">Buy Greater</button>
+        </div>
+
+        <div id="buy-selected-btn-l-div-y" class="hide">
+          <button class="edit-button" data-fsc-item-path-value='lesser-y' data-fsc-action="Add, Checkout">Buy Lesser</button>
+        </div>
+
+        <div id="buy-selected-btn-i-div-y" class="hide">
+          <button class="edit-button" data-fsc-item-path-value='inter-y' data-fsc-action="Add, Checkout">Buy Inter</button>
+        </div>
+
+        <div id="buy-selected-btn-g-div-y" class="hide">
+          <button class="edit-button" data-fsc-item-path-value='greater-y' data-fsc-action="Add, Checkout">Buy Greater</button>
+        </div>
       </div>
     </div>
+{#      <button class="secondary-btn" data-fsc-item-path-value='greater' data-fsc-action="Add, Checkout">Buy</button>#}
 {% endblock %}
 {% block extrascripts %}
     <script>
@@ -153,6 +186,10 @@
         var features = {};
         {% for item in features_list %}
             features["{{ item.name|escapejs }}"] = '{{ item.min|escapejs }}';
+        {% endfor %}
+        var memberships = {};
+        {% for members in membership_list %}
+            memberships['{{ members.id|escapejs }}'] = '{{ members.type|escapejs }}';
         {% endfor %}
     </script>
     <script src="{% static 'Athena/js/settings_page.js' %}"></script>

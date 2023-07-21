@@ -396,6 +396,10 @@
     justify-content: space-between;
 }
 
+.hide {
+    display: none;
+}
+
 /*.edit-mode .read-only {*/
 /*    display: none;*/
 /*}*/

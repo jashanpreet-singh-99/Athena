@@ -99,8 +99,8 @@ openStartDialogBtn.addEventListener('click', (event) => {
   dateDialog.style.display = 'block';
 
   const btnRect = openStartDialogBtn.getBoundingClientRect();
-  const btnTop = btnRect.top + window.pageYOffset;
-  const btnLeft = btnRect.left + window.pageXOffset;
+  const btnTop = btnRect.top + window.pageYOffset - 50;
+  const btnLeft = btnRect.left + window.pageXOffset - 50;
 
   dateDialog.style.top = btnTop + 'px';
   dateDialog.style.left = btnLeft + 'px';
@@ -114,8 +114,8 @@ openEndDialogBtn.addEventListener('click', (event) => {
   dateDialog.style.display = 'block';
 
   const btnRect = openEndDialogBtn.getBoundingClientRect();
-  const btnTop = btnRect.top + window.pageYOffset;
-  const btnLeft = btnRect.left + window.pageXOffset;
+  const btnTop = btnRect.top + window.pageYOffset - 50;
+  const btnLeft = btnRect.left + window.pageXOffset - 50;
 
   dateDialog.style.top = btnTop + 'px';
   dateDialog.style.left = btnLeft + 'px';

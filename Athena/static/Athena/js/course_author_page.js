@@ -253,6 +253,8 @@ const dummyFormScroll = document.getElementById('scroll-f-input');
 chapterContainers.forEach((container, index) => {
   const visibleButton = container.querySelector('#ch-visible-button');
   const hiddenButton = container.querySelector('#ch-hidden-button');
+  const removeBtn = container.querySelector('#ch-delete-btn');
+
   if (chapters[index]['visibility'] === 'True') {
       visibleButton.classList.add('sel');
       hiddenButton.classList.remove('sel');
@@ -266,6 +268,7 @@ chapterContainers.forEach((container, index) => {
     // Remove the "sel" class from the hidden button
     hiddenButton.classList.remove('sel');
     console.log('Vis: ch-' + index);
+    visForm.action = change_vis_url;
     dummyFormVis.value = 'True';
     dummyFormID.value = chapters[index]['id'];
     dummyFormMode.value = "Chapter";
@@ -279,8 +282,18 @@ chapterContainers.forEach((container, index) => {
     hiddenButton.classList.add('sel');
     // Remove the "sel" class from the visible button
     visibleButton.classList.remove('sel');
+    visForm.action = change_vis_url;
     console.log('Hid: ch-' + index);
     dummyFormVis.value = 'False';
+    dummyFormID.value = chapters[index]['id'];
+    dummyFormMode.value = "Chapter";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  removeBtn.addEventListener('click', () => {
+    visForm.action = delete_url;
     dummyFormID.value = chapters[index]['id'];
     dummyFormMode.value = "Chapter";
     dummyFormScroll.value = basePageContainer.scrollTop;
@@ -293,6 +306,8 @@ const quizContainers = document.querySelectorAll('.quiz-v-container');
 quizContainers.forEach((container, index) => {
   const visibleButton = container.querySelector('#qq-visible-button');
   const hiddenButton = container.querySelector('#qq-hidden-button');
+  const removeBtn = container.querySelector('#q-delete-btn');
+
   if (quizzes[index]['visibility'] === 'True') {
       visibleButton.classList.add('sel');
       hiddenButton.classList.remove('sel');
@@ -305,6 +320,7 @@ quizContainers.forEach((container, index) => {
     visibleButton.classList.add('sel');
     // Remove the "sel" class from the hidden button
     hiddenButton.classList.remove('sel');
+    visForm.action = change_vis_url;
     console.log('Vis: q-' + index);
     dummyFormVis.value = 'True';
     dummyFormID.value = quizzes[index]['id'];
@@ -319,8 +335,18 @@ quizContainers.forEach((container, index) => {
     hiddenButton.classList.add('sel');
     // Remove the "sel" class from the visible button
     visibleButton.classList.remove('sel');
+    visForm.action = change_vis_url;
     console.log('Hid: q-' + index);
     dummyFormVis.value = 'False';
+    dummyFormID.value = quizzes[index]['id'];
+    dummyFormMode.value = "Quiz";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  removeBtn.addEventListener('click', () => {
+    visForm.action = delete_url;
     dummyFormID.value = quizzes[index]['id'];
     dummyFormMode.value = "Quiz";
     dummyFormScroll.value = basePageContainer.scrollTop;
@@ -379,14 +405,17 @@ const currentDate = new Date();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
 let selectedDate = null;
-
 const openStartDialogBtn = document.getElementById('open-deadline-dialog');
+const openExamDialogBtn = document.getElementById('open-exam-dialog');
 const dateDialog = document.getElementById('date-dialog');
 const currentMonthSpan = document.getElementById('current-month');
 const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const datesDiv = document.getElementById('dates');
 const deadlineInput = document.getElementById('deadline-input');
+const examInput = document.getElementById('exam_date-input');
+
+let selectField = deadlineInput;
 
 function updateCalendar() {
   const firstDay = new Date(currentYear, currentMonth, 1);
@@ -418,7 +447,7 @@ function selectDate(dateBtn) {
   dateBtn.classList.add('selected');
   selectedDate = dateBtn;
 
-  deadlineInput.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
+  selectField.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
 }
 
 prevMonthBtn.addEventListener('click', () => {
@@ -439,20 +468,28 @@ nextMonthBtn.addEventListener('click', () => {
   updateCalendar();
 });
 
-openStartDialogBtn.addEventListener('click', (event) => {
+function openDateWork(btn, event, input) {
   event.stopPropagation();
   event.preventDefault();
   updateCalendar();
   dateDialog.style.display = 'block';
 
-  const btnRect = openStartDialogBtn.getBoundingClientRect();
-  const btnTop = btnRect.top + window.pageYOffset;
-  const btnLeft = btnRect.left + window.pageXOffset;
+  const btnRect = btn.getBoundingClientRect();
+  const btnTop = btnRect.top + window.pageYOffset - 50;
+  const btnLeft = btnRect.left + window.pageXOffset - 50;
 
   dateDialog.style.top = btnTop + 'px';
   dateDialog.style.left = btnLeft + 'px';
-  selectField = inputFieldStart;
+  selectField = input;
   updateCalendar();
+}
+
+openStartDialogBtn.addEventListener('click', (event) => {
+  openDateWork( openStartDialogBtn, event, deadlineInput);
+});
+
+openExamDialogBtn.addEventListener('click', (event) => {
+    openDateWork( openExamDialogBtn, event, examInput);
 });
 
 dateDialog.addEventListener('click', (event) => {
@@ -470,6 +507,7 @@ const assContainers = document.querySelectorAll('.ass-v-container');
 assContainers.forEach((container, index) => {
   const visibleButton = container.querySelector('#aa-visible-button');
   const hiddenButton = container.querySelector('#aa-hidden-button');
+  const removeBtn = container.querySelector('#ass-delete-btn');
   if (assignments[index]['visibility'] === 'True') {
       visibleButton.classList.add('sel');
       hiddenButton.classList.remove('sel');
@@ -482,6 +520,7 @@ assContainers.forEach((container, index) => {
     visibleButton.classList.add('sel');
     // Remove the "sel" class from the hidden button
     hiddenButton.classList.remove('sel');
+    visForm.action = change_vis_url;
     console.log('Vis: q-' + index);
     dummyFormVis.value = 'True';
     dummyFormID.value = assignments[index]['id'];
@@ -496,10 +535,34 @@ assContainers.forEach((container, index) => {
     hiddenButton.classList.add('sel');
     // Remove the "sel" class from the visible button
     visibleButton.classList.remove('sel');
+    visForm.action = change_vis_url;
     console.log('Hid: q-' + index);
     dummyFormVis.value = 'False';
     dummyFormID.value = assignments[index]['id'];
     dummyFormMode.value = "Assignment";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+
+  removeBtn.addEventListener('click', () => {
+    visForm.action = delete_url;
+    dummyFormID.value = assignments[index]['id'];
+    dummyFormMode.value = "Assignment";
+    dummyFormScroll.value = basePageContainer.scrollTop;
+    console.log('Page Scroll:' + dummyFormScroll.value);
+    visForm.submit();
+  });
+});
+
+
+const examContainers = document.querySelectorAll('.exam-v-container');
+examContainers.forEach((container, index) => {
+  const removeBtn = container.querySelector('#ex-delete-btn');
+  removeBtn.addEventListener('click', () => {
+    visForm.action = delete_url;
+    dummyFormID.value = exams[index]['id'];
+    dummyFormMode.value = "Exam";
     dummyFormScroll.value = basePageContainer.scrollTop;
     console.log('Page Scroll:' + dummyFormScroll.value);
     visForm.submit();

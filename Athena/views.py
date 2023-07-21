@@ -200,6 +200,7 @@ class CourseBuilder(views.View):
 
 class Login(views.View):
 
+
     def get(self, request):
         context = {'title': 'Login'}
         return render(request, 'Athena/login.html', context)
@@ -220,7 +221,7 @@ class Login(views.View):
             if user is not None:
                 login(request, user)
                 print('Opening dashboard for the user {}'.format(user_e.username))
-                return redirect('dash_page')
+                return redirect('course_page')
             else:
                 print('Login password combination incorrect')
                 return redirect('login_page')
@@ -466,7 +467,7 @@ class CourseAuthor(views.View):
         context['quizzes'] = quizzes
 
         #
-        # Assignment Ingo
+        # Assignment Info
         #
         a_data = {'course': course}
         ass_form = CourseAssignmentForm(initial=a_data)
@@ -494,6 +495,25 @@ class CourseAuthor(views.View):
         context['a_form'] = ass_form
         assignments = CourseAssignment.objects.filter(course=course)
         context['assignments'] = assignments
+
+        #
+        # Exam Info
+        #
+        e_data = {'course': course}
+        exam_form = CourseInPersonExamForm(initial=e_data)
+
+        exam_form.fields['course'].widget.attrs['style'] = 'display: none;'
+        exam_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        exam_form.fields['exam_date'].widget.attrs['id'] = 'exam_date-input'
+        exam_form.fields['exam_date'].widget.attrs['class'] = 'input-fields chapter-title-f'
+        exam_form.fields['exam_date'].widget.attrs['readonly'] = 'readonly'
+
+        exam_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        context['e_form'] = exam_form
+        exams = CourseInPersonExam.objects.filter(course=course)
+        context['exams'] = exams
 
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
@@ -682,6 +702,30 @@ class ChangeCourseChapterVisibility(views.View):
         return redirect(reverse('course_author_page', args=[request.POST['course']]))
 
 
+class RemoveCourseContent(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        if request.POST['mode'] == 'Chapter':
+            chapter = CourseChapter.objects.get(id=request.POST['id'])
+            print(chapter)
+            chapter.delete()
+        elif request.POST['mode'] == 'Quiz':
+            quiz = Quiz.objects.get(id=request.POST['id'])
+            print(quiz)
+            quiz.delete()
+        elif request.POST['mode'] == 'Assignment':
+            ass = CourseAssignment.objects.get(id=request.POST['id'])
+            print(ass)
+            ass.delete()
+        elif request.POST['mode'] == 'Exam':
+            exam = CourseInPersonExam.objects.get(id=request.POST['id'])
+            print(exam)
+            exam.delete()
+        request.session['page_scroll'] = int(request.POST['page_scroll'])
+        return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
 class CreateCourseAssignment(views.View):
 
     def post(self, request):
@@ -689,6 +733,19 @@ class CreateCourseAssignment(views.View):
         a_form = CourseAssignmentForm(request.POST, request.FILES)
         if a_form.is_valid():
             a_form.save()
+            return redirect(reverse('course_author_page', args=[request.POST['course']]))
+        else:
+            print('Invalid Assignment Form')
+            return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
+class CreateInPersonExam(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        e_form = CourseInPersonExamForm(request.POST)
+        if e_form.is_valid():
+            e_form.save()
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
         else:
             print('Invalid Assignment Form')
