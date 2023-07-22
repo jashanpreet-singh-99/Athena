@@ -349,10 +349,79 @@
             </div>
         </div>
         <div id="tab3" class="tab-content">
+            <h2>Student Status</h2>
+            <div class="view_container">
+                <div class="view_content_container">
+                    <h4>Chapters</h4>
+                    {% for chapter in chapters %}
+                        <div class="chapter-view-container quiz-v-container">
+                            <div class="chapter-info-container">
+                                <span>{{ forloop.counter }}</span>
+                                <p class="ch-title-info">{{ chapter.title }}</p>
+                            </div>
+                            <button class="content-buttons light no-mrg">Received</button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="view_content_container">
+                    {% if g_q_data|length > 0 %}
+                        <h4>Quizzes</h4>
+                        {% for quiz in g_q_data %}
+                            <div class="chapter-view-container quiz-v-container">
+                                <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ quiz.content_object.title }}</p>
+                                </div>
+                                <button class="content-buttons light no-mrg">{{ quiz.scored_grade }} / {{ quiz.total_grade }}</button>
+                            </div>
+                        {% endfor %}
+                    {%  endif %}
+                </div>
+            </div>
+            <div class="view_container">
+                <div class="view_content_container">
+                    <h4>Assignment</h4>
+                    {% for assignment in assignments %}
+                        <div class="chapter-view-container">
+                            <div class="chapter-info-container">
+                                <span>{{ forloop.counter }}</span>
+                                <p class="ch-title-info">{{ assignment.title }}</p>
+                            </div>
+                            <button class="content-buttons light no-mrg">Submitted</button>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="view_content_container">
+                    {% if g_e_data|length > 0 %}
+                        <h4>Exam</h4>
+                        {% for exam in g_e_data %}
+                            <div class="chapter-view-container">
+                                <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ exam.content_object.title }}</p>
+                                </div>
+                                <button class="content-buttons light no-mrg">{{ exam.scored_grade }} / {{ exam.total_grade }}</button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+            <h2>Enrolled Students</h2>
             {% for students in e_info %}
-                <div>
-                    <p>{{ students.user.first_name }} {{ students.user.last_name }}</p>
-                    <p>{{ students.user.email }}</p>
+                <div class="chapter-view-container quiz-v-container">
+                    <div class="chapter-info-container">
+                        <span>{{ forloop.counter }}</span>
+                        <p class="ch-title-info">{{ students.user.first_name }} {{ students.user.last_name }}</p>
+                    </div>
+                    <div class="chapter-info-container">
+                        <p class="ch-title-info">{{ students.user.email }}</p>
+                        <form method="get">
+                            <input type="hidden" name="student_id" value="{{ students.user.id }}">
+                            <button class="icon-buttons s-sel">
+                                <img width="36" height="36" src="https://img.icons8.com/fluency/48/grades.png"  alt="delete"/>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>

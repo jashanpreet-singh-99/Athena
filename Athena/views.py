@@ -382,6 +382,20 @@ class CourseAuthor(views.View):
         exams = CourseInPersonExam.objects.filter(course=course)
         context['exams'] = exams
 
+        #
+        # Grade Info
+        #
+        if 'student_id' in request.GET.keys():
+            try:
+                student = User.objects.get(id=request.GET['student_id'])
+                g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=student)
+                context['g_q_data'] = g_q_data
+
+                g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), user=student)
+                context['g_e_data'] = g_e_data
+            except User.DoesNotExist:
+                print('User not found.')
+
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
         print('Page Scroll:', page_scroll)
@@ -553,6 +567,21 @@ class GetQuizQuestion(views.View):
             context['answered'] = len(answered_q)
             context['score'] = round(score, 2)
             context['total_score'] = round(total * quiz.each_mark, 2)
+            # save score to models
+            scored = (context['score'] / context['total_score']) * quiz.grade
+            try:
+                prev_grade = Grade.objects.get(content_type=ContentType.objects.get_for_model(quiz), object_id=quiz.id, user=request.user)
+                prev_grade.total_grade = quiz.grade
+                prev_grade.scored_grade = 0 if scored < 0 else scored
+                prev_grade.save()
+            except Grade.DoesNotExist:
+                Grade.objects.create(
+                    user=request.user,
+                    total_grade=quiz.grade,
+                    scored_grade=0 if scored < 0 else scored,
+                    content_type=ContentType.objects.get_for_model(quiz),
+                    object_id=quiz.id
+                )
             print(context)
             return JsonResponse(context)
 
