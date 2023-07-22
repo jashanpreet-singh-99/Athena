@@ -92,3 +92,20 @@ class CourseInPersonExamForm(forms.ModelForm):
 class RatingForm(forms.Form):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), label='')
     rating = forms.DecimalField(label='')
+
+
+class QuizContentForm(forms.ModelForm):
+    LIST_CHOICES = [
+        (1, 'Option 1'),
+        (2, 'Option 2'),
+        (3, 'Option 3'),
+        (4, 'Option 4'),
+    ]
+    answers = forms.ChoiceField(choices=LIST_CHOICES)
+    type = forms.BooleanField(required=False)
+    id = forms.IntegerField(required=False)
+
+    class Meta:
+        model = QuizContent
+        fields = '__all__'
+

@@ -641,6 +641,7 @@ class GetQuizQuestion(views.View):
             print('Submit Last answer')
             p_questions = all_questions[q_no-1]
             try:
+
                 check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
                 check.submission = prev_selection
             except StudentQuizSubmission.DoesNotExist:
@@ -779,3 +780,81 @@ class UpdateCourseRating(views.View):
             course.save()
 
         return redirect(reverse('course_content', args=[request.POST['course']]))
+
+
+class AddQuizQuestion(views.View):
+    def get(self, request, quiz_id):
+        print(request.GET)
+        context = {'title': 'Add Question'}
+        quiz_questions = QuizContent.objects.filter(quiz__id = quiz_id)
+        context['quiz_questions'] = quiz_questions
+
+        quiz = Quiz.objects.get(id = quiz_id)
+        if 'q_no' in request.GET.keys():
+            q_data = QuizContent.objects.get(id=request.GET['q_no'])
+            quiz_content_form = QuizContentForm(instance=q_data)
+        else:
+            q_data = {'course': quiz.course, 'quiz': quiz}
+            quiz_content_form = QuizContentForm(initial=q_data)
+
+        quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
+        quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
+        quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
+        quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
+        quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
+        quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
+        quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
+        quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
+
+
+
+        context['quiz_content_form'] = quiz_content_form
+
+        return render(request, 'Athena/add_quiz_question.html', context)
+
+    def post(self, request, quiz_id):
+        print(request.POST)
+        context = {'title': 'Add Question'}
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
+        context['quiz_questions'] = quiz_questions
+
+        quiz = Quiz.objects.get(id=quiz_id)
+        q_data = {'course': quiz.course, 'quiz': quiz}
+
+        quiz_content_form = QuizContentForm(request.POST)
+
+        quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
+        quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
+        quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
+        quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
+        quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
+        quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
+        quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
+        quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
+
+        if quiz_content_form.is_valid():
+            if quiz_content_form.cleaned_data['type']:
+                quiz_content_form.save()
+            else:
+                quiz_question = QuizContent.objects.get(id=quiz_content_form.cleaned_data['id'])
+                quiz_content_form = QuizContentForm(request.POST, instance=quiz_question)
+                quiz_content_form.save()
+
+            quiz_content_form = QuizContentForm(initial=q_data)
+
+            quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
+            quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
+            quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
+            quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
+            quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
+            quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
+            quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
+            quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
+
+            context['quiz_content_form'] = quiz_content_form
+
+        else:
+            context['msg'] = 'Error: '+str(quiz_content_form.errors)
+            context['quiz_content_form'] = quiz_content_form
+
+        return render(request, 'Athena/add_quiz_question.html', context)
