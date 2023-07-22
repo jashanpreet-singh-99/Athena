@@ -19,6 +19,8 @@ const MODE_CH = 1;
 const MODE_Q = 2;
 const MODE_A = 3;
 
+let current_chapter_index = 0;
+
 function changePDF(newUrl, container) {
   var pdfPages = document.querySelectorAll("#content-frame canvas");
 
@@ -121,8 +123,10 @@ chapterButtons.forEach((button, index) => {
     button.classList.add("sel");
     chapterTitle.textContent = chapters[index]['title'];
     console.log(chapters[index]);
-    dummyFileType.value = 'Chapter'
-    dummyObjectID.value = chapters[index]['id']
+    dummyFileType.value = 'Chapter';
+    dummyObjectID.value = chapters[index]['id'];
+    sendChapterViewed(chapters[index]['id']);
+    current_chapter_index = index;
   });
 });
 
@@ -136,7 +140,6 @@ const quizTitle = document.getElementById('quiz_title');
 const quizTime = document.getElementById('quiz_time');
 const quizNMarking = document.getElementById('quiz_negative_marking');
 const quizInstructions = document.getElementById('quiz-instructions');
-const quizStartButton = document.getElementById('start-quiz');
 let selected_quiz_id = 0
 
 quizButtons.forEach((button, index) => {
@@ -176,7 +179,7 @@ assignmentButtons.forEach((button, index) => {
     assignmentInstructions.innerText = assignments[index]['instructions']
     dummyFileType.value = 'Assignment'
     dummyObjectID.value = assignments[index]['id']
-    submissions.forEach((sub, inx) => {
+    submissions.forEach((sub) => {
         if (sub['assignment_id'] === assignments[index]['id']) {
             assPrevSubContainer.style.display = "flex";
             assPrevSubFileInput.value = sub['id']
@@ -318,7 +321,10 @@ overlay_video.addEventListener('click', () => {
 });
 
 previous_btn.addEventListener('click', () => {
-
+    if (current_chapter_index > 0) {
+        current_chapter_index = current_chapter_index - 1
+        chapterButtons[current_chapter_index].click()
+    }
 });
 
 rewind_btn.addEventListener('click', () => {
@@ -336,7 +342,10 @@ play_pause_btn.addEventListener('click', () => {
 });
 
 next_btn.addEventListener('click', () => {
-
+    if (current_chapter_index < chapterButtons.length - 1) {
+        current_chapter_index = current_chapter_index + 1
+        chapterButtons[current_chapter_index].click()
+    }
 });
 
 seek_bar.addEventListener('input', () => {
@@ -465,3 +474,27 @@ ratingWidget.addEventListener('mouseover', (event) => {
   });
   ratingIntput.value = 5 * indexH /5;
 });
+
+//
+// Chapter views
+//
+function sendChapterViewed(chNo) {
+  var xhr = new XMLHttpRequest();
+
+  var data = '?chapter_id=' + encodeURIComponent(chNo);
+  xhr.open('GET', chapter_view_url + data);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = function() {
+    console.log(xhr.status);
+      if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          console.log('Chapter Viewed', response.msg);
+        } else {
+            console.log('AJAX request failed');
+        }
+  };
+  xhr.onerror = function() {
+      console.log('AJAX: request Error:');
+  }
+  xhr.send();
+}

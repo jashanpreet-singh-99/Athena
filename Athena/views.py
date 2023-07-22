@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
@@ -783,4 +783,22 @@ class SubmitAssignment(views.View):
             missing_fields = [field for field in s_form.errors]
             error_msg = f'Submission failed. The following fields are missing or contain errors: {", ".join(missing_fields)}.'
             messages.error(request, 'Submission failed.' + error_msg)
-        return redirect(reverse_lazy('course_content', args=[course_c.id]))
+        return redirect(reverse('course_content', args=[course_c.id]))
+
+
+class ChapterViewed(views.View):
+
+    def get(self, request):
+        print(request.GET)
+        chapter = CourseChapter.objects.get(id=request.GET['chapter_id'])
+        try:
+            chapter_v = ChapterViews.objects.get(user=request.user, chapter=chapter)
+            chapter_v.view_status = True
+            chapter_v.save()
+        except ChapterViews.DoesNotExist:
+            ChapterViews.objects.create(
+                user=request.user,
+                chapter=chapter,
+                view_status=True
+            )
+        return JsonResponse({'msg': 'success'})

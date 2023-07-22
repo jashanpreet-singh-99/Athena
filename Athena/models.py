@@ -194,3 +194,9 @@ class AssignmentSubmission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     assignment = models.ForeignKey(CourseAssignment, on_delete=models.CASCADE)
     file = models.FileField(upload_to=course_submission_directory_path, blank=False)
+
+
+class ChapterViews(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chapter = models.ForeignKey(CourseChapter, on_delete=models.CASCADE)
+    view_status = models.BooleanField(default=False)

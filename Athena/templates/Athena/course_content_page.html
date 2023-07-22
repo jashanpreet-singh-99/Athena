@@ -232,6 +232,7 @@
         {% endfor %}
         const course_rating = '{{ course.course_rating|escapejs }}';
         const quiz_url = '{% url 'get_quiz_questions' %}';
+        const chapter_view_url = '{% url 'chapter_view_status' %}';
     </script>
     <script src="{% static 'Athena/js/course_content_page.js' %}"></script>
 {% endblock %}
