@@ -74,11 +74,6 @@ class Settings(views.View):
         # User Profile Form
         form = UserProfileForm(initial=initial_data)
 
-        # to manage image selection using custom button
-        form.fields['user'].widget.attrs['style'] = 'display: none;'
-        form.fields['img'].widget.attrs['id'] = 'image-input'
-        form.fields['img'].widget.attrs['style'] = 'display: none;'
-
         context = {'title': 'Settings', 'form': form}
         # load profile image if present
         load_profile(context, request)
@@ -86,23 +81,12 @@ class Settings(views.View):
         # User info Form
         u_form = UserInfoSettingsForm(initial=initial_data_u)
 
-        u_form.fields['first_name'].widget.attrs['id'] = 'firstname'
-        u_form.fields['first_name'].widget.attrs['class'] = 'read-only'
-        u_form.fields['first_name'].widget.attrs['readonly'] = 'readonly'
-
-        u_form.fields['last_name'].widget.attrs['id'] = 'lastname'
-        u_form.fields['last_name'].widget.attrs['class'] = 'read-only'
-        u_form.fields['last_name'].widget.attrs['readonly'] = 'readonly'
-
         context['u_form'] = u_form
 
         # Membership Form
         m_form = UserMembershipForm(initial=initial_data_m)
 
         m_form.fields['membership'].widget.attrs['id'] = 'membership'
-        m_form.fields['membership'].widget.attrs['class'] = 'read-only'
-        m_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
-        m_form.fields['membership'].widget.attrs['style'] = 'display: none;'
 
         context['m_form'] = m_form
 
@@ -117,9 +101,6 @@ class Settings(views.View):
         mm_form = UserMembershipForm(initial=initial_data_m)
 
         mm_form.fields['membership'].widget.attrs['id'] = 'membership-buy-selection'
-        mm_form.fields['membership'].widget.attrs['class'] = 'read-only'
-        mm_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
-        mm_form.fields['membership'].widget.attrs['style'] = 'display: none;'
 
         context['mm_form'] = mm_form
 
@@ -132,38 +113,6 @@ class CourseBuilder(views.View):
         context = {'title': 'Course Builder'}
 
         form = CourseCreationForm()
-
-        form.fields['course_title'].widget.attrs['id'] = 'courseTitle'
-        form.fields['course_title'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_desc'].widget.attrs['id'] = 'courseDesc'
-        form.fields['course_desc'].widget.attrs['class'] = 'input_text courseDec'
-
-        form.fields['course_start_date'].widget.attrs['id'] = 'startDate'
-        form.fields['course_start_date'].widget.attrs['class'] = 'input_text'
-        form.fields['course_start_date'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['course_end_date'].widget.attrs['id'] = 'endDate'
-        form.fields['course_end_date'].widget.attrs['class'] = 'input_text'
-        form.fields['course_end_date'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['categories'].widget.attrs['id'] = 'categories'
-        form.fields['categories'].widget.attrs['class'] = 'input_item'
-        form.fields['categories'].widget.attrs['style'] = 'display: none;'
-
-        form.fields['course_type'].widget.attrs['id'] = 'courseType'
-        form.fields['course_type'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_difficulty'].widget.attrs['id'] = 'courseDiff'
-        form.fields['course_difficulty'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_day'].widget.attrs['id'] = 'courseDay'
-        form.fields['course_day'].widget.attrs['class'] = 'input_text'
-        form.fields['course_day'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['course_banner'].widget.attrs['id'] = 'image-input'
-        form.fields['course_banner'].widget.attrs['style'] = 'display: none;'
-
         context['form'] = form
 
         c_form = CourseCategoriesForm()
@@ -199,7 +148,6 @@ class CourseBuilder(views.View):
 
 
 class Login(views.View):
-
 
     def get(self, request):
         context = {'title': 'Login'}
@@ -257,7 +205,7 @@ class Signup(views.View):
                                         first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
-            return redirect('students_page')
+            return redirect('course_page')
         else:
             return render(request, 'Athena/signup.html')
 
@@ -354,10 +302,6 @@ class CourseDetails(views.View):
             'course': course
         }
         e_form = EnrollmentForm(initial=e_data)
-
-        e_form.fields['user'].widget.attrs['style'] = 'display: none;'
-        e_form.fields['course'].widget.attrs['style'] = 'display: none;'
-
         context['e_form'] = e_form
 
         return render(request, 'Athena/course_details_page.html', context)
@@ -406,26 +350,6 @@ class CourseAuthor(views.View):
         #
         c_data = {'course': course}
         chapter_form = CourseChapterForm(initial=c_data)
-
-        chapter_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        chapter_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        chapter_form.fields['visibility'].widget.attrs['id'] = 'chapter-visibility'
-        chapter_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
-        chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
-        chapter_form.fields['files'].widget.attrs['type'] = 'file'
-        chapter_form.fields['files'].widget.attrs['accept'] = '.pdf'
-
-        chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
-        chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
-
-        chapter_form.fields['video_file'].widget.attrs['id'] = 'video_file_block'
-        chapter_form.fields['video_file'].widget.attrs['class'] = 'video-file-block'
-        chapter_form.fields['video_file'].widget.attrs['type'] = 'file'
-        chapter_form.fields['video_file'].widget.attrs['accept'] = '.mp4'
-
         context['c_form'] = chapter_form
 
         chapters = CourseChapter.objects.filter(course=course)
@@ -436,32 +360,6 @@ class CourseAuthor(views.View):
         #
         q_data = {'course': course}
         quiz_form = CourseQuizForm(initial=q_data)
-
-        quiz_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        quiz_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        quiz_form.fields['visibility'].widget.attrs['id'] = 'quiz-visibility'
-        quiz_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        quiz_form.fields['negative_marking'].widget.attrs['id'] = 'quiz-negative-marking'
-        quiz_form.fields['negative_marking'].widget.attrs['style'] = 'display: none;'
-        quiz_form.fields['negative_grade'].widget.attrs['id'] = 'negative_grade'
-        quiz_form.fields['negative_grade'].widget.attrs['class'] = 'input-fields small chapter-title-f'
-        quiz_form.fields['negative_grade'].widget.attrs['hidden'] = 'hidden'
-
-        quiz_form.fields['time'].widget.attrs['id'] = 'quiz_time'
-        quiz_form.fields['time'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
-        quiz_form.fields['instructions'].widget.attrs['class'] = 'input-text'
-
-        quiz_form.fields['files'].widget.attrs['id'] = 'video_file_block'
-        quiz_form.fields['files'].widget.attrs['class'] = 'video-file-block'
-        quiz_form.fields['files'].widget.attrs['type'] = 'file'
-        quiz_form.fields['files'].widget.attrs['accept'] = '.txt'
-
-        quiz_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-        quiz_form.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['q_form'] = quiz_form
         quizzes = Quiz.objects.filter(course=course)
         context['quizzes'] = quizzes
@@ -471,27 +369,6 @@ class CourseAuthor(views.View):
         #
         a_data = {'course': course}
         ass_form = CourseAssignmentForm(initial=a_data)
-
-        ass_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        ass_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        ass_form.fields['deadline'].widget.attrs['id'] = 'deadline-input'
-        ass_form.fields['deadline'].widget.attrs['class'] = 'input-fields chapter-title-f'
-        ass_form.fields['deadline'].widget.attrs['readonly'] = 'readonly'
-
-        ass_form.fields['visibility'].widget.attrs['id'] = 'ass-visibility'
-        ass_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        ass_form.fields['plagiarism_check'].widget.attrs['id'] = 'plagiarism_check'
-        ass_form.fields['plagiarism_check'].widget.attrs['style'] = 'display: none;'
-
-        ass_form.fields['instructions'].widget.attrs['class'] = 'input-text'
-        ass_form.fields['file'].widget.attrs['class'] = 'video-file-block'
-        ass_form.fields['file'].widget.attrs['type'] = 'file'
-        ass_form.fields['file'].widget.attrs['accept'] = '.pdf'
-
-        ass_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['a_form'] = ass_form
         assignments = CourseAssignment.objects.filter(course=course)
         context['assignments'] = assignments
@@ -501,16 +378,6 @@ class CourseAuthor(views.View):
         #
         e_data = {'course': course}
         exam_form = CourseInPersonExamForm(initial=e_data)
-
-        exam_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        exam_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        exam_form.fields['exam_date'].widget.attrs['id'] = 'exam_date-input'
-        exam_form.fields['exam_date'].widget.attrs['class'] = 'input-fields chapter-title-f'
-        exam_form.fields['exam_date'].widget.attrs['readonly'] = 'readonly'
-
-        exam_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['e_form'] = exam_form
         exams = CourseInPersonExam.objects.filter(course=course)
         context['exams'] = exams
@@ -797,17 +664,6 @@ class AddQuizQuestion(views.View):
             q_data = {'course': quiz.course, 'quiz': quiz}
             quiz_content_form = QuizContentForm(initial=q_data)
 
-        quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
-        quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
-        quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
-        quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
-        quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
-        quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
-        quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
-        quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
-
-
-
         context['quiz_content_form'] = quiz_content_form
 
         return render(request, 'Athena/add_quiz_question.html', context)
@@ -823,15 +679,6 @@ class AddQuizQuestion(views.View):
 
         quiz_content_form = QuizContentForm(request.POST)
 
-        quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
-        quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
-        quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
-        quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
-        quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
-        quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
-        quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
-        quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
-
         if quiz_content_form.is_valid():
             if quiz_content_form.cleaned_data['type']:
                 quiz_content_form.save()
@@ -841,15 +688,6 @@ class AddQuizQuestion(views.View):
                 quiz_content_form.save()
 
             quiz_content_form = QuizContentForm(initial=q_data)
-
-            quiz_content_form.fields['course'].widget.attrs['style'] = 'display: none'
-            quiz_content_form.fields['quiz'].widget.attrs['style'] = 'display: none'
-            quiz_content_form.fields['question'].widget.attrs['id'] = 'question-input'
-            quiz_content_form.fields['options_1'].widget.attrs['id'] = 'option1-input'
-            quiz_content_form.fields['options_2'].widget.attrs['id'] = 'option2-input'
-            quiz_content_form.fields['options_3'].widget.attrs['id'] = 'option3-input'
-            quiz_content_form.fields['options_4'].widget.attrs['id'] = 'option4-input'
-            quiz_content_form.fields['answers'].widget.attrs['id'] = 'answers-input'
 
             context['quiz_content_form'] = quiz_content_form
 

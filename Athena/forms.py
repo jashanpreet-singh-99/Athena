@@ -18,6 +18,17 @@ class UserInfoSettingsForm(forms.ModelForm):
             'last_name': 'Last Name',
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['first_name'].widget.attrs['id'] = 'firstname'
+        self.fields['first_name'].widget.attrs['class'] = 'read-only'
+        self.fields['first_name'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['last_name'].widget.attrs['id'] = 'lastname'
+        self.fields['last_name'].widget.attrs['class'] = 'read-only'
+        self.fields['last_name'].widget.attrs['readonly'] = 'readonly'
+
 
 class UserProfileForm(forms.ModelForm):
 
@@ -25,6 +36,13 @@ class UserProfileForm(forms.ModelForm):
         model = UserProfiles
         fields = ['user', 'img']
         labels = {'user': '', 'img': ''}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['user'].widget.attrs['style'] = 'display: none;'
+        self.fields['img'].widget.attrs['id'] = 'image-input'
+        self.fields['img'].widget.attrs['style'] = 'display: none;'
 
 
 class UserMembershipForm(forms.ModelForm):
@@ -34,6 +52,13 @@ class UserMembershipForm(forms.ModelForm):
         model = User
         fields = ['membership']
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['membership'].widget.attrs['class'] = 'read-only'
+        self.fields['membership'].widget.attrs['readonly'] = 'readonly'
+        self.fields['membership'].widget.attrs['style'] = 'display: none;'
+
 
 class CourseCreationForm(forms.ModelForm):
     course_desc = forms.Textarea()
@@ -42,6 +67,40 @@ class CourseCreationForm(forms.ModelForm):
     class Meta:
         model = Course
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course_title'].widget.attrs['id'] = 'courseTitle'
+        self.fields['course_title'].widget.attrs['class'] = 'input_text'
+
+        self.fields['course_desc'].widget.attrs['id'] = 'courseDesc'
+        self.fields['course_desc'].widget.attrs['class'] = 'input_text courseDec'
+
+        self.fields['course_start_date'].widget.attrs['id'] = 'startDate'
+        self.fields['course_start_date'].widget.attrs['class'] = 'input_text'
+        self.fields['course_start_date'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['course_end_date'].widget.attrs['id'] = 'endDate'
+        self.fields['course_end_date'].widget.attrs['class'] = 'input_text'
+        self.fields['course_end_date'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['categories'].widget.attrs['id'] = 'categories'
+        self.fields['categories'].widget.attrs['class'] = 'input_item'
+        self.fields['categories'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['course_type'].widget.attrs['id'] = 'courseType'
+        self.fields['course_type'].widget.attrs['class'] = 'input_text'
+
+        self.fields['course_difficulty'].widget.attrs['id'] = 'courseDiff'
+        self.fields['course_difficulty'].widget.attrs['class'] = 'input_text'
+
+        self.fields['course_day'].widget.attrs['id'] = 'courseDay'
+        self.fields['course_day'].widget.attrs['class'] = 'input_text'
+        self.fields['course_day'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['course_banner'].widget.attrs['id'] = 'image-input'
+        self.fields['course_banner'].widget.attrs['style'] = 'display: none;'
 
 
 class CourseCategoriesForm(forms.Form):
@@ -54,12 +113,40 @@ class EnrollmentForm(forms.ModelForm):
         model = Enrollment
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['user'].widget.attrs['style'] = 'display: none;'
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+
 
 class CourseChapterForm(forms.ModelForm):
 
     class Meta:
         model = CourseChapter
         fields = ['course', 'title', 'visibility', 'files', 'is_streaming', 'video_file']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+        self.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        self.fields['visibility'].widget.attrs['id'] = 'chapter-visibility'
+        self.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['files'].widget.attrs['id'] = 'files-to-upload'
+        self.fields['files'].widget.attrs['style'] = 'display: none;'
+        self.fields['files'].widget.attrs['type'] = 'file'
+        self.fields['files'].widget.attrs['accept'] = '.pdf'
+
+        self.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
+        self.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['video_file'].widget.attrs['id'] = 'video_file_block'
+        self.fields['video_file'].widget.attrs['class'] = 'video-file-block'
+        self.fields['video_file'].widget.attrs['type'] = 'file'
+        self.fields['video_file'].widget.attrs['accept'] = '.mp4'
 
 
 class CourseQuizForm(forms.ModelForm):
@@ -72,6 +159,34 @@ class CourseQuizForm(forms.ModelForm):
         model = Quiz
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+        self.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        self.fields['visibility'].widget.attrs['id'] = 'quiz-visibility'
+        self.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['negative_marking'].widget.attrs['id'] = 'quiz-negative-marking'
+        self.fields['negative_marking'].widget.attrs['style'] = 'display: none;'
+        self.fields['negative_grade'].widget.attrs['id'] = 'negative_grade'
+        self.fields['negative_grade'].widget.attrs['class'] = 'input-fields small chapter-title-f'
+        self.fields['negative_grade'].widget.attrs['hidden'] = 'hidden'
+
+        self.fields['time'].widget.attrs['id'] = 'quiz_time'
+        self.fields['time'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
+        self.fields['instructions'].widget.attrs['class'] = 'input-text'
+
+        self.fields['files'].widget.attrs['id'] = 'video_file_block'
+        self.fields['files'].widget.attrs['class'] = 'video-file-block'
+        self.fields['files'].widget.attrs['type'] = 'file'
+        self.fields['files'].widget.attrs['accept'] = '.txt'
+
+        self.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+        self.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
 
 class CourseAssignmentForm(forms.ModelForm):
     grade = forms.DecimalField(widget=forms.TextInput)
@@ -80,6 +195,29 @@ class CourseAssignmentForm(forms.ModelForm):
         model = CourseAssignment
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+        self.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        self.fields['deadline'].widget.attrs['id'] = 'deadline-input'
+        self.fields['deadline'].widget.attrs['class'] = 'input-fields chapter-title-f'
+        self.fields['deadline'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['visibility'].widget.attrs['id'] = 'ass-visibility'
+        self.fields['visibility'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['plagiarism_check'].widget.attrs['id'] = 'plagiarism_check'
+        self.fields['plagiarism_check'].widget.attrs['style'] = 'display: none;'
+
+        self.fields['instructions'].widget.attrs['class'] = 'input-text'
+        self.fields['file'].widget.attrs['class'] = 'video-file-block'
+        self.fields['file'].widget.attrs['type'] = 'file'
+        self.fields['file'].widget.attrs['accept'] = '.pdf'
+
+        self.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
+
 
 class CourseInPersonExamForm(forms.ModelForm):
     grade = forms.DecimalField(widget=forms.TextInput)
@@ -87,6 +225,18 @@ class CourseInPersonExamForm(forms.ModelForm):
     class Meta:
         model = CourseInPersonExam
         fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+        self.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
+
+        self.fields['exam_date'].widget.attrs['id'] = 'exam_date-input'
+        self.fields['exam_date'].widget.attrs['class'] = 'input-fields chapter-title-f'
+        self.fields['exam_date'].widget.attrs['readonly'] = 'readonly'
+
+        self.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
 
 
 class RatingForm(forms.Form):
@@ -109,3 +259,15 @@ class QuizContentForm(forms.ModelForm):
         model = QuizContent
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Set custom styles and attributes for the widgets
+        self.fields['course'].widget.attrs['style'] = 'display: none'
+        self.fields['quiz'].widget.attrs['style'] = 'display: none'
+        self.fields['question'].widget.attrs['id'] = 'question-input'
+        self.fields['options_1'].widget.attrs['id'] = 'option1-input'
+        self.fields['options_2'].widget.attrs['id'] = 'option2-input'
+        self.fields['options_3'].widget.attrs['id'] = 'option3-input'
+        self.fields['options_4'].widget.attrs['id'] = 'option4-input'
+        self.fields['answers'].widget.attrs['id'] = 'answers-input'
