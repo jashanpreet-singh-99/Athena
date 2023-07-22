@@ -1,12 +1,16 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from datetime import datetime
 from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 from .forms import *
 from .models import *
-from django.http import JsonResponse
-
-from datetime import datetime
+import random
+import re
+import string
 
 
 def load_profile(context, request):
@@ -204,6 +208,7 @@ class Login(views.View):
         context = {'title': 'Login'}
         return render(request, 'Athena/login.html', context)
 
+    @method_decorator(login_required(login_url='login_page'))  # Applied the login_required decorator
     def post(self, request):
         email = request.POST['email']
         password = request.POST['password']
@@ -243,17 +248,37 @@ class Signup(views.View):
         email = request.POST['email']
         password = request.POST['password']
         v_password = request.POST['v_password']
+        # Validate input characters
+        validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
+        if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
+            return render(request, 'Athena/signup.html',
+                          context={'Error': 'Invalid character found in first or last name'})
+
+        # Check if username (combination of first_name and last_name) already exists
+        username = (first_name + last_name).lower()
+        if User.objects.filter(username=username).exists():
+            return render(request, 'Athena/signup.html', context={'Error': 'Username already exists'})
+
+            # Check if the email is already registered
+        if User.objects.filter(email=email).exists():
+            return render(request, 'Athena/signup.html', context={'Error': 'Email already registered'})
+
         '''
         User name checks are pending
-        check for invalid char in first and lasy name
+        check for invalid char in first and last name
         send signal if incorrect password
         verify the username and email is unique in the system, handle if error thrown
         '''
         if password != v_password:
             return render(request, 'Athena/signup.html', context={'Error': 'Password Verification'})
-        User = get_user_model()
-        user = User.objects.create_user(username=(first_name + last_name), email=email, password=password,
-                                        first_name=first_name, last_name=last_name)
+
+        newUser = get_user_model()
+        try:
+            user = newUser.objects.create_user(username=(first_name + last_name), email=email, password=password,
+                                               first_name=first_name, last_name=last_name)
+        except Exception as e:
+            return render(request, 'Athena/signup.html', context={'Error': 'Error occurred during user creation'})
+
         if user is not None:
             login(request, user)
             return redirect('home_page')
@@ -811,3 +836,43 @@ class CreateInPersonExam(views.View):
         else:
             print('Invalid Assignment Form')
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
+def confirm_password(request):
+    if request.method == 'POST':
+        # Get the new generated password from the user's session (you can use a database instead)
+        new_password = request.session.get('new_password')
+
+        # Get the user's entered password from the form
+        entered_password = request.POST.get('new_password')
+
+        # Compare the entered password with the generated password
+        if new_password == entered_password:
+            # redirect back to the login page
+            return redirect('login_page')
+        else:
+            # If passwords don't match, display an error message
+            error_message = "Passwords do not match. Please try again."
+            return render(request, 'Athena/confirm_password.html', {'error_message': error_message})
+
+    return render(request, 'Athena/confirm_password.html')
+
+
+def generate_random_password(length=10):
+    # Generate a random password of the specified length
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(characters) for _ in range(length))
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        # Generate a new random password
+        new_password = generate_random_password()
+
+        # Store the new password in the user's session (you can use a database instead)
+        request.session['new_password'] = new_password
+
+        # Redirect to the password confirmation page
+        return redirect('confirm_password')
+
+    return render(request, 'Athena/confirm_password.html')

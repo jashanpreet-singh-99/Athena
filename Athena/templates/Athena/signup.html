@@ -12,6 +12,9 @@
     </head>
     <body style="background-image: url('{% static "Athena/media/login-bg.svg" %}'); background-size: cover;">
         <div class="login-container">
+            {% if Error %}
+                <p style="color: #4CAF50">{{ Error }}</p>
+            {% endif %}
             <div class="brand">
                 <img src="{% static 'Athena/media/athena-50.png' %}" alt="User Icon" width="50" height="50">
                 <h1>Athena</h1>
