@@ -9,6 +9,11 @@ const chapterTitle = document.getElementById('chapter_title');
 
 const quizBottomBar = document.getElementById('quiz-time-container');
 const chapterExtra = document.getElementById('chapter-extra-container');
+const assignmentExtra = document.getElementById('assignment-extra-container');
+
+const dummyFileType = document.getElementById('dummy-file-type');
+const dummyObjectID = document.getElementById('dummy-object-id');
+const assPrevSubContainer = document.getElementById('prev-submission');
 
 const MODE_CH = 1;
 const MODE_Q = 2;
@@ -67,6 +72,8 @@ function switchContentModes(mode, index = -1) {
     chapterExtra.style.display = 'none';
     quizContainer.style.display = "none";
     quizBottomBar.style.display = "none";
+    assignmentExtra.style.display = "none";
+    assPrevSubContainer.style.display = "none";
     console.log(mode, index);
     chapterButtons.forEach(b => {
     b.classList.remove("sel");
@@ -96,6 +103,7 @@ function switchContentModes(mode, index = -1) {
         case MODE_A:
             nonVideoContent.style.display = "flex";
             chapterExtra.style.display = 'flex';
+            assignmentExtra.style.display = 'flex';
             break;
     }
 }
@@ -113,6 +121,8 @@ chapterButtons.forEach((button, index) => {
     button.classList.add("sel");
     chapterTitle.textContent = chapters[index]['title'];
     console.log(chapters[index]);
+    dummyFileType.value = 'Chapter'
+    dummyObjectID.value = chapters[index]['id']
   });
 });
 
@@ -148,7 +158,11 @@ quizButtons.forEach((button, index) => {
 });
 
 const assignmentButtons = document.querySelectorAll('.assignment-view-container');
+const assignmentIDInput = document.getElementById('assignment-submission-id');
+const assignmentInstructions = document.getElementById('assignment-instructions');
 
+const assPrevSubFile = document.getElementById('p-s-file-name');
+const assPrevSubFileInput = document.getElementById('submission_id');
 assignmentButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
     switchContentModes(MODE_A, index);
@@ -158,6 +172,17 @@ assignmentButtons.forEach((button, index) => {
     button.classList.add("sel");
     chapterTitle.textContent = assignments[index]['title'];
     console.log(assignments[index]);
+    assignmentIDInput.value = assignments[index]['id']
+    assignmentInstructions.innerText = assignments[index]['instructions']
+    dummyFileType.value = 'Assignment'
+    dummyObjectID.value = assignments[index]['id']
+    submissions.forEach((sub, inx) => {
+        if (sub['assignment_id'] === assignments[index]['id']) {
+            assPrevSubContainer.style.display = "flex";
+            assPrevSubFileInput.value = sub['id']
+            assPrevSubFile.innerText = sub['file_name']
+        }
+    });
   });
 });
 

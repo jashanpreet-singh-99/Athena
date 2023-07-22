@@ -31,7 +31,9 @@ urlpatterns = [
     path('course/content/exam', views.CreateInPersonExam.as_view(), name='create_course_exam'),
     path('course/content/remove', views.RemoveCourseContent.as_view(), name='delete_course_content'),
     path('course/content/rating', views.UpdateCourseRating.as_view(), name='update_course_rating'),
-    path('course/add_question/<int:quiz_id>',views.AddQuizQuestion.as_view(), name='add_quiz_question')
+    path('course/add_question/<int:quiz_id>', views.AddQuizQuestion.as_view(), name='add_quiz_question'),
+    path('course/content/downlaod', views.DownloadFile.as_view(), name='download_file'),
+    path('course/content/assignment/submit', views.SubmitAssignment.as_view(), name='submit_assignment'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

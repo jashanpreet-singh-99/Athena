@@ -243,6 +243,13 @@ class RatingForm(forms.Form):
     course = forms.ModelChoiceField(queryset=Course.objects.all(), label='')
     rating = forms.DecimalField(label='')
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['course'].widget.attrs['style'] = 'display: none;'
+        self.fields['rating'].widget.attrs['id'] = 'rating_input'
+        self.fields['rating'].widget.attrs['style'] = 'display: none;'
+
 
 class QuizContentForm(forms.ModelForm):
     LIST_CHOICES = [
@@ -271,3 +278,19 @@ class QuizContentForm(forms.ModelForm):
         self.fields['options_3'].widget.attrs['id'] = 'option3-input'
         self.fields['options_4'].widget.attrs['id'] = 'option4-input'
         self.fields['answers'].widget.attrs['id'] = 'answers-input'
+
+
+class SubmitForm(forms.ModelForm):
+
+    class Meta:
+        model = AssignmentSubmission
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['user'].widget.attrs['style'] = 'display: none'
+        self.fields['assignment'].widget.attrs['id'] = 'assignment-submission-id'
+        self.fields['assignment'].widget.attrs['style'] = 'display: none'
+        self.fields['file'].widget.attrs['class'] = 'submission-file-block'
+        self.fields['file'].widget.attrs['type'] = 'file'
+        self.fields['file'].widget.attrs['accept'] = '.txt'

@@ -150,8 +150,44 @@
         <div id="question-container" class="question-container-progress"></div>
         <span id="time-display" class="time-display">00:00</span>
     </div>
+    {# Extra componenets #}
     <div id="chapter-extra-container">
         <h1 id="chapter_title" class="chapter-title">Title</h1>
+        <form method="post" action="{% url 'download_file' %}">
+            {% csrf_token %}
+            <input type="hidden" value="{{ course.id }}" name="course">
+            <input id="dummy-file-type" type="hidden" value="Chapter" name="file_type">
+            <input id="dummy-object-id" type="hidden" value="-1" name="object_id">
+            <button type="submit" class="content-buttons">Download</button>
+        </form>
+    </div>
+    <div id="assignment-extra-container">
+        <div class="assignment-s-container">
+             <div class="assignment-s-content">
+                 <h2>Instructions</h2>
+                 <p id="assignment-instructions"></p>
+             </div>
+            <div>
+                <div id="prev-submission">
+                    <h2>Previous submission</h2>
+                    <br>
+                    <p id="p-s-file-name">dd</p>
+                    <br>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input id="submission_id" name="submission_id" type="hidden">
+                        <button type="submit" class="content-buttons light">Open File</button>
+                    </form>
+                </div>
+                <form method="post" action="{% url 'submit_assignment' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ submit_form.user }}
+                    {{ submit_form.assignment }}
+                    {{ submit_form.file }}
+                    <button type="submit" class="content-buttons">Submit</button>
+                </form>
+            </div>
+        </div>
     </div>
 
 {% endblock %}
@@ -161,6 +197,7 @@
         let chapters = [];
         {% for chapter in chapters %}
             var chap = {};
+            chap['id'] = '{{ chapter.id|escapejs }}';
             chap['title'] = '{{ chapter.title|escapejs }}';
             chap['is_streaming'] = '{{ chapter.is_streaming|escapejs }}';
             chapters.push(chap);
@@ -182,7 +219,16 @@
             a['id'] = '{{ assignment.id|escapejs }}';
             a['title'] = '{{ assignment.title|escapejs }}';
             a['visibility'] = '{{ assignment.visibility|escapejs }}';
+            a['instructions'] = '{{ assignment.instructions|escapejs }}';
             assignments.push(a);
+        {% endfor %}
+        let submissions = [];
+        {% for submission in submissions %}
+            var s =[]
+            s['id'] = '{{ submission.id|escapejs }}'
+            s['assignment_id'] = '{{ submission.assignment.id|escapejs }}';
+            s['file_name'] = '{{ submission.file.name|escapejs }}';
+            submissions.push(s);
         {% endfor %}
         const course_rating = '{{ course.course_rating|escapejs }}';
         const quiz_url = '{% url 'get_quiz_questions' %}';

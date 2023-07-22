@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
 from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
 from .models import *
 from django.http import JsonResponse
+from django.http import FileResponse
+from django.contrib import messages
 
 from datetime import datetime
 
@@ -436,13 +438,16 @@ class CourseContentView(views.View):
 
         r_data = {'course': course}
         rating_form = RatingForm(initial=r_data)
-
-        rating_form.fields['course'].widget.attrs['style'] = 'display: none;'
-
-        rating_form.fields['rating'].widget.attrs['id'] = 'rating_input'
-        rating_form.fields['rating'].widget.attrs['style'] = 'display: none;'
-
         context['rating_form'] = rating_form
+
+        # Assignment Submission
+        a_s_data = {'user': request.user}
+        submit_form = SubmitForm(initial=a_s_data)
+        context['submit_form'] = submit_form
+
+        # Submissions
+        submissions = AssignmentSubmission.objects.filter(user=request.user, assignment__course=course)
+        context['submissions'] = submissions
 
         return render(request, 'Athena/course_content_page.html', context)
 
@@ -725,3 +730,57 @@ class AddQuizQuestion(views.View):
             context['quiz_content_form'] = quiz_content_form
 
         return render(request, 'Athena/add_quiz_question.html', context)
+
+
+class DownloadFile(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        if request.POST['file_type'] == 'Chapter':
+            model = CourseChapter.objects.get(id=request.POST['object_id'])
+            if model.is_streaming:
+                file_name = f'{model.title.replace(" ", "_")}.{model.video_file.name.split("/")[-1].split(".")[-1]}'
+                file_path = model.video_file.path
+            else:
+                file_name = f'{model.title.replace(" ", "_")}.{model.files.name.split("/")[-1].split(".")[-1]}'
+                file_path = model.files.path
+            print(file_path, file_name)
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+        elif request.POST['file_type'] == 'Assignment':
+            model = CourseAssignment.objects.get(id=request.POST['object_id'])
+            file_name = f'{model.title.replace(" ", "_")}.{model.file.name.split("/")[-1].split(".")[-1]}'
+            file_path = model.file.path
+            print(file_path, file_name)
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+
+            return response
+        else:
+            return redirect(reverse('course_content', args=[request.POST['course']]))
+
+
+class SubmitAssignment(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        assignment = get_object_or_404(CourseAssignment, pk=request.POST['assignment'])
+        course_c = assignment.course
+        # check previous submissions
+        try:
+            p_submission = AssignmentSubmission.objects.get(user=request.POST['user'], assignment=assignment)
+            s_form = SubmitForm(request.POST, request.FILES, instance=p_submission)
+            print('Using Previous record')
+        except AssignmentSubmission.DoesNotExist:
+            print('No Previous submissions to override.')
+            s_form = SubmitForm(request.POST, request.FILES)
+        print(s_form.fields)
+        if s_form.is_valid():
+            s_form.save()
+        else:
+            # find this message in messages var in template
+            missing_fields = [field for field in s_form.errors]
+            error_msg = f'Submission failed. The following fields are missing or contain errors: {", ".join(missing_fields)}.'
+            messages.error(request, 'Submission failed.' + error_msg)
+        return redirect(reverse_lazy('course_content', args=[course_c.id]))

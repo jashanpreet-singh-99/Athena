@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.contenttypes import fields
 from django.contrib.contenttypes.models import ContentType
 
+
 # Define custom path form files for each user
 def user_directory_path(instance, filename):
     return f'user_{instance.user.username}/{filename}'
@@ -15,6 +16,10 @@ def user_directory_path_course(instance, filename):
 
 def course_directory_path(instance, filename):
     return f'course_{instance.course.id}/{filename}'
+
+
+def course_submission_directory_path(instance, filename):
+    return f'user_{instance.assignment.course.id}/{filename}_{instance.user.id}'
 
 
 class MemberFeatures(models.Model):
@@ -183,3 +188,9 @@ class Grade(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = fields.GenericForeignKey('content_type', 'object_id')
     updated_on = models.DateField(auto_now=True)
+
+
+class AssignmentSubmission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(CourseAssignment, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=course_submission_directory_path, blank=False)
