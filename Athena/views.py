@@ -257,7 +257,7 @@ class Signup(views.View):
                                         first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
-            return redirect('dash_page')
+            return redirect('students_page')
         else:
             return render(request, 'Athena/signup.html')
 
