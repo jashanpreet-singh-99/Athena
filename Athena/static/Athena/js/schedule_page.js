@@ -4,7 +4,10 @@ const prevMonthBtn = document.getElementById('prev-month');
 const nextMonthBtn = document.getElementById('next-month');
 const datesDiv = document.getElementById('dates');
 
-const currentDate = new Date();
+const dateSendForm = document.getElementById('date_send_form');
+
+// const currentDate = new Date();
+let currentDayMonth = currentDate.getDate();
 let currentMonth = currentDate.getMonth();
 let currentYear = currentDate.getFullYear();
 let selectedDate = null;
@@ -20,18 +23,20 @@ function updateCalendar() {
 
   for (let i = 1; i <= numDays; i++) {
     const dateBtn = document.createElement('button');
+    if (i === currentDayMonth) {
+      dateBtn.classList.add('selected');
+    }
     dateBtn.textContent = i;
     dateBtn.addEventListener('click', () => {
       console.log(`Selected date: ${i}/${currentMonth + 1}/${currentYear}`);
       selectDate(dateBtn);
-      //dateDialog.style.display = 'none';
-      // Additional logic to set the date
+      dateSendForm.submit();
     });
     datesDiv.appendChild(dateBtn);
   }
 }
 
-const inputDDate = document.getElementById('input-date');
+const inputDDate = document.getElementById('date-input');
 
 function selectDate(dateBtn) {
   if (selectedDate) {
@@ -41,7 +46,7 @@ function selectDate(dateBtn) {
   dateBtn.classList.add('selected');
   selectedDate = dateBtn;
 
-  inputDDate.value = `${currentMonth + 1}/${dateBtn.textContent}/${currentYear}`;
+  inputDDate.value = `${currentMonth + 1}-${dateBtn.textContent}-${currentYear}`;
 }
 
 prevMonthBtn.addEventListener('click', () => {

@@ -36,8 +36,6 @@ urlpatterns = [
     path('course/content/assignment/submit', views.SubmitAssignment.as_view(), name='submit_assignment'),
     path('course/content/chapter/viewed', views.ChapterViewed.as_view(), name='chapter_view_status'),
     path('course/content/exam/grade', views.UpdateExamGrades.as_view(), name='update_exam_grades'),
-
-
 ]
 
 urlpatterns += staticfiles_urlpatterns()

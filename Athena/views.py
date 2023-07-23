@@ -1,3 +1,9 @@
+import calendar
+import random
+import string
+from datetime import datetime
+from django.db.models import Q
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django import views
@@ -7,9 +13,12 @@ from .models import *
 from django.http import JsonResponse
 from django.http import FileResponse
 from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from datetime import datetime
 from urllib.parse import urlencode
+
 
 def load_profile(context, request):
     user = request.user
@@ -26,6 +35,7 @@ def load_profile(context, request):
 # Create your views here.
 class Students(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Student Mng'}
         load_profile(context, request)
@@ -34,6 +44,7 @@ class Students(views.View):
 
 class Courses(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Courses'}
         load_profile(context, request)
@@ -56,14 +67,75 @@ class Courses(views.View):
 
 class Schedule(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Schedule'}
         load_profile(context, request)
+
+        date = datetime.now().date()
+        day_of_week = date.weekday()
+        day_of_week_name = calendar.day_name[day_of_week]
+        print(date, day_of_week_name)
+
+        # Class dates
+        class_event = Course.objects.filter(
+            course_day=day_of_week_name,
+            course_start_date__lte=date,
+            course_end_date__gte=date
+        )
+        print(class_event)
+        context['class_events'] = class_event
+
+        # Assignment Deadline
+        ass_events = CourseAssignment.objects.filter(deadline__date=date)
+        context['ass_events'] = ass_events
+
+        # In-person exam
+        exam_events = CourseInPersonExam.objects.filter(exam_date__date=date)
+        context['exam_events'] = exam_events
+
+        return render(request, 'Athena/schedule_page.html', context)
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        context = {'title': 'Schedule', 'd_date': request.POST['date']}
+        load_profile(context, request)
+        date = datetime.strptime(request.POST['date'], "%m-%d-%Y").date()
+        day_of_week = date.weekday()
+        day_of_week_name = calendar.day_name[day_of_week]
+        print(request.POST, date, day_of_week_name)
+
+        # events = CourseInPersonExam.objects.filter(
+        #     Q(exam_date=date) |
+        #     Q(course__courseassignment__deadline__date=date) |
+        #     Q(course__course_day=day_of_week_name) &
+        #     Q(course__course_start_date__lte=date, course__course_end_date__gte=date)
+        # )
+        # context['events'] = events
+
+        # Class dates
+        class_event = Course.objects.filter(
+            course_day=day_of_week_name,
+            course_start_date__lte=date,
+            course_end_date__gte=date
+        )
+        print(class_event)
+        context['class_events'] = class_event
+
+        # Assignment Deadline
+        ass_events = CourseAssignment.objects.filter(deadline__date=date)
+        context['ass_events'] = ass_events
+
+        # In-person exam
+        exam_events = CourseInPersonExam.objects.filter(exam_date__date=date)
+        context['exam_events'] = exam_events
+
         return render(request, 'Athena/schedule_page.html', context)
 
 
 class Settings(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         user = request.user
         initial_data = {'user': user}
@@ -111,6 +183,7 @@ class Settings(views.View):
 
 class CourseBuilder(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Course Builder'}
 
@@ -126,6 +199,7 @@ class CourseBuilder(views.View):
         load_profile(context, request)
         return render(request, 'Athena/course_builder_page.html', context)
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         context = {'title': 'Course Builder'}
         print(request.POST)
@@ -179,6 +253,7 @@ class Login(views.View):
 
 class Logout(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         logout(request)
         return redirect('login_page')
@@ -212,8 +287,49 @@ class Signup(views.View):
             return render(request, 'Athena/signup.html')
 
 
+def confirm_password(request):
+    if request.method == 'POST':
+        # Get the new generated password from the user's session (you can use a database instead)
+        new_password = request.session.get('new_password')
+
+        # Get the user's entered password from the form
+        entered_password = request.POST.get('new_password')
+
+        # Compare the entered password with the generated password
+        if new_password == entered_password:
+            # redirect back to the login page
+            return redirect('login_page')
+        else:
+            # If passwords don't match, display an error message
+            error_message = "Passwords do not match. Please try again."
+            return render(request, 'Athena/confirm_password.html', {'error_message': error_message})
+
+    return render(request, 'Athena/confirm_password.html')
+
+
+def generate_random_password(length=10):
+    # Generate a random password of the specified length
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(characters) for _ in range(length))
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        # Generate a new random password
+        new_password = generate_random_password()
+
+        # Store the new password in the user's session (you can use a database instead)
+        request.session['new_password'] = new_password
+
+        # Redirect to the password confirmation page
+        return redirect('confirm_password')
+
+    return render(request, 'Athena/confirm_password.html')
+
+
 class UploadProfile(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         try:
@@ -231,6 +347,7 @@ class UploadProfile(views.View):
 
 class UpdateUserName(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -245,6 +362,7 @@ class UpdateUserName(views.View):
 
 class UpdateMembership(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -261,6 +379,7 @@ class UpdateMembership(views.View):
 
 class CancelMembership(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -276,6 +395,7 @@ class CancelMembership(views.View):
 
 class CourseDetails(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
@@ -319,6 +439,7 @@ class CourseDetails(views.View):
 
 class EnrollCourse(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         context = {}
         e_form = EnrollmentForm(request.POST)
@@ -331,11 +452,13 @@ class EnrollCourse(views.View):
 
 class CourseSearchPage(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Find Course'}
         load_profile(context, request)
         return render(request, 'Athena/course_search_page.html', context)
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         context = {'title': 'Find Course'}
         load_profile(context, request)
@@ -344,6 +467,7 @@ class CourseSearchPage(views.View):
 
 class CourseAuthor(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
@@ -463,6 +587,7 @@ class CourseAuthor(views.View):
 
 class CreateCourseChapter(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         chapter_form = CourseChapterForm(request.POST, request.FILES)
@@ -477,6 +602,7 @@ class CreateCourseChapter(views.View):
 
 class CourseContentView(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Content'}
         load_profile(context, request)
@@ -523,6 +649,7 @@ XXX
 
 class CreateQuiz(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         quiz_form = CourseQuizForm(request.POST, request.FILES)
         if quiz_form.is_valid():
@@ -567,6 +694,7 @@ class CreateQuiz(views.View):
 
 class GetQuizQuestion(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         print(request.GET)
         q_no = int(request.GET['question_no'])
@@ -650,6 +778,7 @@ class GetQuizQuestion(views.View):
 
 class ChangeCourseChapterVisibility(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         if request.POST['mode'] == 'Chapter':
@@ -676,6 +805,7 @@ class ChangeCourseChapterVisibility(views.View):
 
 class RemoveCourseContent(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         if request.POST['mode'] == 'Chapter':
@@ -700,6 +830,7 @@ class RemoveCourseContent(views.View):
 
 class CreateCourseAssignment(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         a_form = CourseAssignmentForm(request.POST, request.FILES)
@@ -713,6 +844,7 @@ class CreateCourseAssignment(views.View):
 
 class CreateInPersonExam(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         e_form = CourseInPersonExamForm(request.POST)
@@ -726,6 +858,7 @@ class CreateInPersonExam(views.View):
 
 class UpdateCourseRating(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         course = Course.objects.get(id=request.POST['course'])
         add_rating = request.POST['rating']
@@ -741,6 +874,8 @@ class UpdateCourseRating(views.View):
 
 
 class AddQuizQuestion(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, quiz_id):
         print(request.GET)
         context = {'title': 'Add Question'}
@@ -759,6 +894,7 @@ class AddQuizQuestion(views.View):
 
         return render(request, 'Athena/add_quiz_question.html', context)
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request, quiz_id):
         print(request.POST)
         context = {'title': 'Add Question'}
@@ -791,6 +927,7 @@ class AddQuizQuestion(views.View):
 
 class DownloadFile(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         if request.POST['file_type'] == 'Chapter':
@@ -820,6 +957,7 @@ class DownloadFile(views.View):
 
 class SubmitAssignment(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         assignment = get_object_or_404(CourseAssignment, pk=request.POST['assignment'])
@@ -845,6 +983,7 @@ class SubmitAssignment(views.View):
 
 class ChapterViewed(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         print(request.GET)
         chapter = CourseChapter.objects.get(id=request.GET['chapter_id'])
@@ -863,6 +1002,7 @@ class ChapterViewed(views.View):
 
 class UpdateExamGrades(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         query_params = urlencode({'exam_get_id': request.POST['exam_id']})
