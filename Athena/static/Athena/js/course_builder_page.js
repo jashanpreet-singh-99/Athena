@@ -231,7 +231,30 @@ nextButtons.forEach((button) => {
     event.stopPropagation();
     event.preventDefault();
 
-     if (currentIndex==2)
+ let days = validateDates(event)
+    // let span = document.getElementById('error')
+    // span.style.visibility = 'inline'
+    let count=0;
+        const  arr=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+    if (days < 0 && currentIndex==0 ) {
+
+ // const spanElement = document.createElement("span");
+ //  spanElement.textContent = "Invalid Dates"
+ //      spanElement.classList.add('errorMessage')
+ //      error.appendChild(spanElement)
+      alert("Invalid Dates!!! Please Select Appropriate Dates.")
+
+      // let span=document.getElementById('error')
+      // span.style.display = 'inline-block'
+    }
+    else if(selectedCategories.size===0 && currentIndex==1 )
+    {
+      alert("Please select any categories which is most related to the course!!!!")
+    }
+
+
+    else if (currentIndex==2)
     {
      // let cur= new Date(document.getElementById('startDate').value)
      //  document.write(cur.getDay())
@@ -251,17 +274,18 @@ nextButtons.forEach((button) => {
       }
         const  d=checkIfDayInDateRange(count,document.getElementById('startDate').value,document.getElementById('endDate').value)
           // document.write(d)
-         if(d<2 && d>0)
+         if(d>=2 || d<0)
        {
+                          navigateRight();
 
-         navigateRight();
         }
          // else if(d===-1)
          // {
          //   alert("-1")
          // }
         else{
-          alert("Range Doesnt Match......!!!!!!!!!!!!!!!!!!!!")
+           alert(selectedDayInput.value+" is not repeated in given range of dates!!!!!")
+
 
     //      document.write(count)
     //                alert("Range Match..!!!!")
@@ -271,7 +295,9 @@ nextButtons.forEach((button) => {
       // document.write(count)
 
     }
+     else{
     navigateRight();
+     }
   });
 });
 
@@ -428,14 +454,31 @@ function handleImageSelection(event) {
     reader.readAsDataURL(file);
   }
 }
+function validateDates(event){
+  let startDate = document.getElementById('startDate').value
+  let endDate = document.getElementById('endDate').value
+
+  console.log(startDate, typeof  startDate)
+  console.log(endDate, typeof  endDate)
+
+  let days = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)
+   // let nextBtn = document.getElementById('next-button')
+  console.log(days)
+  // if( days < 0){
+  //   let span  = document.getElementById('error')
+  //   span.style.visibility = 'inline'
+  // }
+  return days
+}
   function checkIfDayInDateRange(dayOfWeek, startDate, endDate){
    let occ=0
   // document.write(startDate)
   //   document.write(endDate)
 
+if(dayOfWeek>0) {
   const current = new Date(startDate);
   const end = new Date(endDate);
-if(dayOfWeek>0) {
+
   while (current <= end) {
 
     if (current.getDay() === dayOfWeek) {
@@ -443,6 +486,7 @@ if(dayOfWeek>0) {
     }
     current.setDate(current.getDate() + 1);
   }
+
 }
 else{
   occ=-1
