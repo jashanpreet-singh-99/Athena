@@ -45,5 +45,20 @@
                 </form>
             </div>
         </div>
+        <div id="callContainer" class="hidden">
+                <div class="callContent">
+                    <p id="err_msg_value">Call in Progress...</p>
+                    <button id="closeCallButton" class="close-call-button">
+                        <img height="24" width="24" src="https://img.icons8.com/ios/50/delete-sign--v1.png" alt="close_btn">
+                    </button>
+                </div>
+        </div>
+        <script>
+            let err_msg = '';
+            {% if err_msg %}
+                err_msg = '{{ err_msg|escapejs }}';
+            {% endif %}
+        </script>
+        <script src="{% static 'Athena/js/erro_box.js' %}"></script>
     </body>
 </html>

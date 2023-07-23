@@ -231,6 +231,7 @@ class Login(views.View):
         return render(request, 'Athena/login.html', context)
 
     def post(self, request):
+        context = {'title': 'Login'}
         email = request.POST['email']
         password = request.POST['password']
         print("Login :", email, password)
@@ -239,7 +240,8 @@ class Login(views.View):
             user_e = User.objects.get(email__exact=email)
         except User.DoesNotExist as e:
             print('New user, redirect to signin page')
-            return redirect('signup_page')
+            context['err_msg'] = 'No Such, email password combination found!'
+            return render(request, 'Athena/login.html', context)
         else:
             print(user_e.username)
             user = authenticate(request, username=user_e.username, password=password)
@@ -274,12 +276,13 @@ class Signup(views.View):
         validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
         if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
             return render(request, 'Athena/signup.html',
-                          context={'Error': 'Invalid character found in first or last name'})
-        username = (first_name + last_name).lower()
-        if User.objects.filter(username=username).exists():
-            return render(request, 'Athena/signup.html', context={'Error': 'Username already exists'})
+                          context={'err_msg': 'Invalid character found in first or last name!'})
+        username = (first_name + last_name)
+        c = 0
+        while User.objects.filter(username=username).exists():
+            username += str(c)
         if User.objects.filter(email=email).exists():
-            return render(request, 'Athena/signup.html', context={'Error': 'Email already registered'})
+            return render(request, 'Athena/signup.html', context={'err_msg': 'Email already registered!'})
         '''
         User name checks are pending
         check for invalid char in first and last name
@@ -288,8 +291,8 @@ class Signup(views.View):
         '''
         NUser = get_user_model()
         if password != v_password:
-            return render(request, 'Athena/signup.html', context={'Error': 'Password Verification'})
-        user = NUser.objects.create_user(username=(first_name+last_name), email=email, password=password,
+            return render(request, 'Athena/signup.html', context={'err_msg': 'Password Verification failed!'})
+        user = NUser.objects.create_user(username=username, email=email, password=password,
                                          first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
