@@ -20,6 +20,11 @@ from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from urllib.parse import urlencode
 
+# Cookies const
+
+# Session id const
+S_SETTINGS_E = 'settings_err_msg'
+
 
 def load_profile(context, request):
     user = request.user
@@ -31,6 +36,14 @@ def load_profile(context, request):
             print('No User profile_img present')
         return context
     return context
+
+
+def error_msg_to_string(form):
+    errors = []
+    for field, error_list in form.errors.items():
+        for error in error_list:
+            errors.append(f"{field}: {error}")
+    return str('\n'.join(errors))
 
 
 # Create your views here.
@@ -179,6 +192,9 @@ class Settings(views.View):
 
         context['mm_form'] = mm_form
 
+        context['err_msg'] = request.session.get(S_SETTINGS_E, '')
+        request.session[S_SETTINGS_E] = ''
+        print('Settings : ', context['err_msg'])
         return render(request, 'Athena/settings_page.html', context)
 
 
@@ -356,6 +372,8 @@ class UploadProfile(views.View):
             form.save()
         else:
             print('Invalid Form Data:', request.POST)
+            err_msg = error_msg_to_string(form)
+            request.session[S_SETTINGS_E] = err_msg
         return redirect('settings_page')
 
 
@@ -369,8 +387,11 @@ class UpdateUserName(views.View):
         if form.is_valid():
             print('Valid form : ', request.POST)
             form.save()
+            request.session[S_SETTINGS_E] = ''
         else:
             print('InValid form : ', request.POST)
+            err_msg = error_msg_to_string(form)
+            request.session[S_SETTINGS_E] = err_msg
         return redirect('settings_page')
 
 

@@ -1,3 +1,5 @@
+import re
+
 from django import forms
 from .models import *
 
@@ -17,6 +19,18 @@ class UserInfoSettingsForm(forms.ModelForm):
             'first_name': 'First Name',
             'last_name': 'Last Name',
         }
+
+    def clean_first_name(self):
+        first_name = self.cleaned_data['first_name']
+        if not re.match(r'^[a-zA-Z]+$', first_name):
+            raise forms.ValidationError('First name should only contain alphabets.')
+        return first_name
+
+    def clean_last_name(self):
+        last_name = self.cleaned_data['last_name']
+        if not re.match(r'^[a-zA-Z]+$', last_name):
+            raise forms.ValidationError('Last name should only contain alphabets.')
+        return last_name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

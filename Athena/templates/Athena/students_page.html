@@ -8,3 +8,11 @@
     <p> Student Management</p>
     <button onclick="show_error('student page')">Error</button>
 {% endblock %}
+{% block extrascripts %}
+    <script>
+            let err_msg = '';
+            {% if err_msg %}
+                err_msg = '{{ err_msg|escapejs }}';
+            {% endif %}
+    </script>
+{% endblock %}
