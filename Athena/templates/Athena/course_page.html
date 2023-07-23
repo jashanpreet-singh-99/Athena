@@ -37,30 +37,31 @@
         </div>
     </div>
     <!-- Add condition that only If the user is Lesser or above only show this -->
-    <div class="title_1_container">
-        <h2 class="title_h2">My Courses</h2>
-        <button class="primary-btn" onclick="location.href='{% url 'course_builder_page' %}'">
-            Create
-        </button>
-    </div>
-
-    <div class="course_box">
-        {% for course in my_courses %}
-        <div class="course-view">
-            <div class="course-card">
-                <a href="{% url 'course_details_page' course.id %}">
-                    <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
-                </a>
-            </div>
-            <h3>{{ course.course_title }}</h3>
-            <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
+    {% if request.user.membership.id >  2 %}
+        <div class="title_1_container">
+            <h2 class="title_h2">My Courses</h2>
+            <button class="primary-btn" onclick="location.href='{% url 'course_builder_page' %}'">
+                Create
+            </button>
         </div>
-        {% empty %}
-            <div class="center-box">
-                <p>No courses created yet. Click on the create button to build new course.</p>
+        <div class="course_box">
+            {% for course in my_courses %}
+            <div class="course-view">
+                <div class="course-card">
+                    <a href="{% url 'course_details_page' course.id %}">
+                        <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                    </a>
+                </div>
+                <h3>{{ course.course_title }}</h3>
+                <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
             </div>
-        {% endfor %}
-    </div>
+            {% empty %}
+                <div class="center-box">
+                    <p>No courses created yet. Click on the create button to build new course.</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     {% if e_courses|length > 0 %}
         <div class="title_1_container">
             <h2 class="title_h2">Enrolled Courses</h2>

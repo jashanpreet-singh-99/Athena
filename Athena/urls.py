@@ -29,7 +29,15 @@ urlpatterns = [
     path('course/content/chapter/vis', views.ChangeCourseChapterVisibility.as_view(), name='change_chapter_visibility'),
     path('course/content/assignement', views.CreateCourseAssignment.as_view(), name='create_course_assignment'),
     path('course/content/exam', views.CreateInPersonExam.as_view(), name='create_course_exam'),
-    path('course/content/remove', views.RemoveCourseContent.as_view(), name='delete_course_content')
+    path('course/content/remove', views.RemoveCourseContent.as_view(), name='delete_course_content'),
+    path('course/content/rating', views.UpdateCourseRating.as_view(), name='update_course_rating'),
+    path('course/add_question/<int:quiz_id>', views.AddQuizQuestion.as_view(), name='add_quiz_question'),
+    path('course/content/downlaod', views.DownloadFile.as_view(), name='download_file'),
+    path('course/content/assignment/submit', views.SubmitAssignment.as_view(), name='submit_assignment'),
+    path('course/content/chapter/viewed', views.ChapterViewed.as_view(), name='chapter_view_status'),
+    path('course/content/exam/grade', views.UpdateExamGrades.as_view(), name='update_exam_grades'),
+    path('reset-password/', views.reset_password, name='reset_password'),
+    path('confirm-password/', views.confirm_password, name='confirm_password'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

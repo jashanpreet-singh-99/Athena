@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Athena</title>
     <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/base_style.css' %}"/>
-    <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/athena-logo.png' %}"/>
     {% block stylesheets %} {% endblock stylesheets %}
     <!-- #ffffff light semi-light #c9d9f0 Dark #070708 -->
 </head>
@@ -16,7 +16,7 @@
     <div class="nav-bar">
         <div class="logo-head">
 
-            <img width="40" height="40" src="{% static "Athena/media/Athena-logo.png" %}" alt="Logo"/>
+            <img width="40" height="40" src="{% static "Athena/media/athena-logo.png" %}" alt="Logo"/>
         </div>
         <ul class="nav-links">
             <li>
@@ -25,13 +25,6 @@
                     <a href="{% url 'course_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/sf-regular/48/home.png" alt="home"/></a>
                 </div>
                 {% endblock nav_item_home %}
-            </li>    
-            <li>
-                {% block nav_item_course %}
-                <div class="nav-border ">
-                    <a href="{% url 'students_page' %}"><img width="40" height="40" src="https://img.icons8.com/eeeeee/fluency-systems-regular/48/user.png" alt="user"/></a>
-                </div>
-                {% endblock nav_item_course %}
             </li>
             <li>
                 {% block nav_item_schedule %}
@@ -64,7 +57,7 @@
                 <input class="search-f" type="text" name="search-box" placeholder="Search">
             </div>
             <div class="nav-border dark">
-                <img width="48" height="48" src="https://img.icons8.com/070708/external-creatype-outline-colourcreatype/64/external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2.png" alt="external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2"/>
+                <a href="{% url 'schedule_page' %}"><img width="48" height="48" src="https://img.icons8.com/070708/external-creatype-outline-colourcreatype/64/external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2.png" alt="notifications"/></a>
             </div>
             {% if user.is_authenticated %}
             <div class="nav-border">
@@ -95,12 +88,27 @@
             {% block page %}
 
             {% endblock %}
+            <div id="callContainer" class="hidden">
+                <div class="callContent">
+                    <p id="err_msg_value">Call in Progress...</p>
+                    <button id="closeCallButton" class="close-call-button">
+                        <img height="24" width="24" src="https://img.icons8.com/ios/50/delete-sign--v1.png" alt="close_btn">
+                    </button>
+                </div>
+            </div>
         </div>
         <div>
         </div>
     </div>
 </div>
 <script src="{% static 'Athena/js/nav_bar.js' %}"></script>
+<script src="{% static 'Athena/js/erro_box.js' %}"></script>
+<script>
+    let err_msg = '';
+    {% if err_msg %}
+        err_msg = '{{ err_msg|escapejs }}';
+    {% endif %}
+</script>
 {% block extrascripts %}
 
 {% endblock %}

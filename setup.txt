@@ -16,3 +16,24 @@ Add membership objects:
 - Greater 	Prices: 200
 
 Note: settings page won't work if you are not logged in
+
+<VirtualHost *:80>
+  ServerName Athena
+
+  Alias /static /var/www/athena/web/Athena/static
+  <Directory /var/www/athena/web/Athena/static>
+        Require all granted
+  </Directory>
+
+  Alias /media /var/www/athena/web/Athena/static/Athena/media
+  <Directory /var/www/athena/web/Athena/static/Athena/media>
+        Require all granted
+  </Directory>
+
+</VirtualHost>
+WSGIScriptAlias / /var/www/athena/web/AthenaSite/wsgi.py
+WSGIPythonPath /var/www/athena/web
+
+
+http://4.204.223.2/static/Athena/media/login-bg.svg
+http://4.204.223.2/static/Athena/media/Login-bg.svg

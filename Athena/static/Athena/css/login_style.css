@@ -73,6 +73,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+        gap: 24px;
     }
 
     .login-card input[type="submit"] {
@@ -81,7 +82,7 @@ body {
       border-radius: 24px;
       background-color: #ffffff;
       color: #373741;
-      border: none;
+      border: 2px solid #ffffff;
       cursor: pointer;
         text-transform: uppercase;
         font-size: medium;
@@ -90,6 +91,7 @@ body {
     .login-card input[type="submit"]:hover{
         color: #ffffff;
         background-color: #222126;
+        border: 2px solid #222126;
     }
 
     .login-container a {
@@ -101,3 +103,77 @@ body {
         margin-top: 20px;
         font-size: small;
     }
+
+    .signup-button {
+      padding: 14px 40px;
+      margin-top: 10px;
+      border-radius: 24px;
+      background-color: transparent;
+      color: white;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: medium;
+    }
+
+    .signup-button:hover {
+      background-color: #ffffff;
+      color: #373741;
+    }
+
+
+#callContainer {
+  position: fixed;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 360px;
+  background-color: #373741;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border: 2px solid #FF9494;
+  color: #eeeeee;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.2s ease-in-out;
+  padding: 16px 24px;
+}
+
+.callContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+    justify-content: space-between;
+  align-items: center;
+}
+
+.hidden {
+  opacity: 0;
+}
+
+.visible {
+  opacity: 1;
+}
+
+.close-call-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background-color: #FF9494;
+    padding: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    right: 0;
+}
+
+.close-call-button:hover {
+    background-color: #FF4848;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.callContent p {
+    font-family: 'Poppins', sans-serif
+}

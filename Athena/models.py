@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.contenttypes import fields
+from django.contrib.contenttypes.models import ContentType
 
 
 # Define custom path form files for each user
@@ -14,6 +16,10 @@ def user_directory_path_course(instance, filename):
 
 def course_directory_path(instance, filename):
     return f'course_{instance.course.id}/{filename}'
+
+
+def course_submission_directory_path(instance, filename):
+    return f'user_{instance.assignment.course.id}/{filename}_{instance.user.id}'
 
 
 class MemberFeatures(models.Model):
@@ -171,3 +177,26 @@ class CourseInPersonExam(models.Model):
     grade = models.DecimalField(max_digits=4, decimal_places=2)
     exam_date = models.DateTimeField()
     created_on = models.DateField(auto_now_add=True)
+
+
+class Grade(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_grade = models.PositiveIntegerField(default=100)
+    scored_grade = models.PositiveIntegerField(default=0)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = fields.GenericForeignKey('content_type', 'object_id')
+    updated_on = models.DateField(auto_now=True)
+
+
+class AssignmentSubmission(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    assignment = models.ForeignKey(CourseAssignment, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=course_submission_directory_path, blank=False)
+
+
+class ChapterViews(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    chapter = models.ForeignKey(CourseChapter, on_delete=models.CASCADE)
+    view_status = models.BooleanField(default=False)

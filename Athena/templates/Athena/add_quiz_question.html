@@ -1,0 +1,61 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/add_quiz_question.css' %}"/>
+{% endblock stylesheets %}
+
+{% block page %}
+    <div class="parent-container">
+        <div class="quiz_questions_container light">
+            {% for question in quiz_questions %}
+                <div class="quiz_q_content">
+                    <div class="quiz_q_content">
+                        <span>{{ forloop.counter }}</span>
+                        <p>{{ question.question }}</p>
+                    </div>
+                    <form method="get">
+                        <input type="hidden" value="{{ question.id }}" name="q_no">
+                        <button class="content-buttons light" type="submit">Edit</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="quiz_questions_container m-r">
+            <form method="post">
+                {% csrf_token %}
+                {{ quiz_content_form.course }}
+                {{ quiz_content_form.quiz }}
+                {{ quiz_content_form.id }}
+                <p class="labels">Question: </p>
+                {{ quiz_content_form.question }}
+                <p class="labels">Option 1: </p>
+                {{ quiz_content_form.options_1 }}
+                <p class="labels">Option 2: </p>
+                {{ quiz_content_form.options_2 }}
+                <p class="labels">Option 3: </p>
+                {{ quiz_content_form.options_3 }}
+                <p class="labels">Option 4: </p>
+                {{ quiz_content_form.options_4 }}
+                <div class="inline_label">
+                    <p class="labels">Answers: </p>
+                    {{ quiz_content_form.answers }}
+                </div>
+                <div class="button-line">
+                    <button type="submit" class="content-buttons">Submit Question</button>
+                    <p class="labels">Update Question: </p>
+                    {{ quiz_content_form.type }}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{ msg }}
+{% endblock %}
+{% block extrascripts %}
+    <script>
+        {% if quiz_questions %}
+
+        {% endif %}
+    </script>
+    <script src="{% static 'Athena/js/add_quiz_question.js' %}"></script>
+{% endblock %}
