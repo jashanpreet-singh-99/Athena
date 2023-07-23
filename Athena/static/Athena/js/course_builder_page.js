@@ -230,6 +230,47 @@ nextButtons.forEach((button) => {
   button.addEventListener('click', (event) => {
     event.stopPropagation();
     event.preventDefault();
+
+     if (currentIndex==2)
+    {
+     // let cur= new Date(document.getElementById('startDate').value)
+     //  document.write(cur.getDay())
+      for(i=0; i<arr.length;i++){
+      if(selectedDayInput.value === arr[i])
+      {
+        count=i;
+                 // document.write(count)
+                 //         document.write(selectedDayInput.value)
+                 // document.write(arr[i])
+        break;}
+      else if(selectedDayInput.value === "Non-Repeating")
+      {
+             count=-1
+        break;
+      }
+      }
+        const  d=checkIfDayInDateRange(count,document.getElementById('startDate').value,document.getElementById('endDate').value)
+          // document.write(d)
+         if(d<2 && d>0)
+       {
+
+         navigateRight();
+        }
+         // else if(d===-1)
+         // {
+         //   alert("-1")
+         // }
+        else{
+          alert("Range Doesnt Match......!!!!!!!!!!!!!!!!!!!!")
+
+    //      document.write(count)
+    //                alert("Range Match..!!!!")
+
+
+        }
+      // document.write(count)
+
+    }
     navigateRight();
   });
 });
@@ -380,10 +421,31 @@ function handleImageSelection(event) {
     // Perform operations with the selected file (e.g., display preview, upload, etc.)
     console.log('Selected image file:', file);
     const reader = new FileReader();
-    reader.onload = function() {
+    reader.onload = function () {
       course_banner_img.src = reader.result;
       course_banner_img_f.src = reader.result;
     }
     reader.readAsDataURL(file);
   }
+}
+  function checkIfDayInDateRange(dayOfWeek, startDate, endDate){
+   let occ=0
+  // document.write(startDate)
+  //   document.write(endDate)
+
+  const current = new Date(startDate);
+  const end = new Date(endDate);
+if(dayOfWeek>0) {
+  while (current <= end) {
+
+    if (current.getDay() === dayOfWeek) {
+      occ++;
+    }
+    current.setDate(current.getDate() + 1);
+  }
+}
+else{
+  occ=-1
+}
+  return occ;
 }
