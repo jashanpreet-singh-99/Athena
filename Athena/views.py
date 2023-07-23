@@ -488,18 +488,48 @@ class EnrollCourse(views.View):
 
 
 class CourseSearchPage(views.View):
+    template_name = 'Athena/course_search_page.html'
 
     @method_decorator(login_required(login_url='login_page'))
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm()
+        courses = Course.objects.all()
+        context['form'] = form
+        context['courses'] = courses
+        return render(request, self.template_name, context)
 
     @method_decorator(login_required(login_url='login_page'))
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            description = form.cleaned_data.get('description')
+            start_date = form.cleaned_data.get('start_date')
+            end_date = form.cleaned_data.get('end_date')
+            categories = form.cleaned_data.get('categories')
+            rating = form.cleaned_data.get('rating')
+
+            # Filter courses based on the search criteria
+            courses = Course.objects.filter(
+                course_title__icontains=title,
+                course_desc__icontains=description,
+                course_start_date__gte=start_date,
+                course_end_date__lte=end_date,
+                categories__icontains=categories,
+                course_rating__gte=rating if rating is not None else 0,
+            )
+        else:
+            # If the form is not valid, display all courses
+            courses = Course.objects.all()
+
+        context['form'] = form
+        context['courses'] = courses
+
+        return render(request, self.template_name, context)
 
 
 class CourseAuthor(views.View):

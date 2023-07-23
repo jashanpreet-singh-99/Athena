@@ -11,7 +11,6 @@ from .models import *
 
 
 class UserInfoSettingsForm(forms.ModelForm):
-
     class Meta:
         model = User
         fields = ['first_name', 'last_name']
@@ -45,7 +44,6 @@ class UserInfoSettingsForm(forms.ModelForm):
 
 
 class UserProfileForm(forms.ModelForm):
-
     class Meta:
         model = UserProfiles
         fields = ['user', 'img']
@@ -139,8 +137,8 @@ class CourseCategoriesForm(forms.Form):
         self.fields['categories_c'].widget.attrs['id'] = 'categories-c'
         self.fields['categories_c'].widget.attrs['class'] = 'input_item'
 
-class EnrollmentForm(forms.ModelForm):
 
+class EnrollmentForm(forms.ModelForm):
     class Meta:
         model = Enrollment
         fields = '__all__'
@@ -153,7 +151,6 @@ class EnrollmentForm(forms.ModelForm):
 
 
 class CourseChapterForm(forms.ModelForm):
-
     class Meta:
         model = CourseChapter
         fields = ['course', 'title', 'visibility', 'files', 'is_streaming', 'video_file']
@@ -326,7 +323,6 @@ class QuizContentForm(forms.ModelForm):
 
 
 class SubmitForm(forms.ModelForm):
-
     class Meta:
         model = AssignmentSubmission
         fields = '__all__'
@@ -349,3 +345,11 @@ class ExamGradeForm(forms.Form):
     grade.widget.attrs['class'] = 'input-fields small marg-r gradeField'
     grade.widget.attrs['readonly'] = 'readonly'
 
+
+class CourseSearchForm(forms.Form):
+    title = forms.CharField(required=False)
+    description = forms.CharField(required=False)
+    # start_date = forms.DateField(required=False)
+    # end_date = forms.DateField(required=False)
+    categories = forms.CharField(required=False)
+    rating = forms.DecimalField(required=False, max_digits=2, decimal_places=1)
