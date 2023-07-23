@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Athena</title>
     <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/base_style.css' %}"/>
-    <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/athena-logo.png' %}"/>
     {% block stylesheets %} {% endblock stylesheets %}
     <!-- #ffffff light semi-light #c9d9f0 Dark #070708 -->
 </head>
@@ -16,7 +16,7 @@
     <div class="nav-bar">
         <div class="logo-head">
 
-            <img width="40" height="40" src="{% static "Athena/media/Athena-logo.png" %}" alt="Logo"/>
+            <img width="40" height="40" src="{% static "Athena/media/athena-logo.png" %}" alt="Logo"/>
         </div>
         <ul class="nav-links">
             <li>
@@ -103,6 +103,12 @@
 </div>
 <script src="{% static 'Athena/js/nav_bar.js' %}"></script>
 <script src="{% static 'Athena/js/erro_box.js' %}"></script>
+<script>
+    let err_msg = '';
+    {% if err_msg %}
+        err_msg = '{{ err_msg|escapejs }}';
+    {% endif %}
+</script>
 {% block extrascripts %}
 
 {% endblock %}

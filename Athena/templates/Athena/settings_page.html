@@ -191,10 +191,6 @@
         {% for members in membership_list %}
             memberships['{{ members.id|escapejs }}'] = '{{ members.type|escapejs }}';
         {% endfor %}
-        let err_msg = '';
-        {% if err_msg %}
-            err_msg = '{{ err_msg|escapejs }}';
-        {% endif %}
     </script>
     <script src="{% static 'Athena/js/settings_page.js' %}"></script>
 {% endblock %}

@@ -91,21 +91,24 @@ class Schedule(views.View):
         day_of_week_name = calendar.day_name[day_of_week]
         print(date, day_of_week_name)
 
+        courses_for_user = Course.objects.filter(enrollment__user__id=request.user.id)
+
         # Class dates
         class_event = Course.objects.filter(
             course_day=day_of_week_name,
             course_start_date__lte=date,
-            course_end_date__gte=date
+            course_end_date__gte=date,
+            id__in=courses_for_user
         )
         print(class_event)
         context['class_events'] = class_event
 
         # Assignment Deadline
-        ass_events = CourseAssignment.objects.filter(deadline__date=date)
+        ass_events = CourseAssignment.objects.filter(course__in=courses_for_user, deadline__date=date)
         context['ass_events'] = ass_events
 
         # In-person exam
-        exam_events = CourseInPersonExam.objects.filter(exam_date__date=date)
+        exam_events = CourseInPersonExam.objects.filter(course__in=courses_for_user, exam_date__date=date)
         context['exam_events'] = exam_events
 
         return render(request, 'Athena/schedule_page.html', context)
@@ -127,21 +130,25 @@ class Schedule(views.View):
         # )
         # context['events'] = events
 
+        courses_for_user = Course.objects.filter(enrollment__user__id=request.user.id)
+        print('Enrolled: ', courses_for_user)
+
         # Class dates
         class_event = Course.objects.filter(
             course_day=day_of_week_name,
             course_start_date__lte=date,
-            course_end_date__gte=date
+            course_end_date__gte=date,
+            id__in=courses_for_user
         )
         print(class_event)
         context['class_events'] = class_event
 
         # Assignment Deadline
-        ass_events = CourseAssignment.objects.filter(deadline__date=date)
+        ass_events = CourseAssignment.objects.filter(course__in=courses_for_user, deadline__date=date)
         context['ass_events'] = ass_events
 
         # In-person exam
-        exam_events = CourseInPersonExam.objects.filter(exam_date__date=date)
+        exam_events = CourseInPersonExam.objects.filter(course__in=courses_for_user, exam_date__date=date)
         context['exam_events'] = exam_events
 
         return render(request, 'Athena/schedule_page.html', context)
@@ -208,9 +215,6 @@ class CourseBuilder(views.View):
         context['form'] = form
 
         c_form = CourseCategoriesForm()
-        c_form.fields['categories_c'].widget.attrs['id'] = 'categories-c'
-        c_form.fields['categories_c'].widget.attrs['class'] = 'input_item'
-
         context['c_form'] = c_form
 
         load_profile(context, request)
@@ -226,17 +230,18 @@ class CourseBuilder(views.View):
         request.POST['course_rating'] = 0
         print(request.POST)
         form = CourseCreationForm(request.POST, request.FILES)
+        c_form = CourseCategoriesForm()
+        context['c_form'] = c_form
+        context['form'] = form
         if form.is_valid():
             form.save()
             msg = '%s \n Course creation has been successfully' % (form.cleaned_data['course_title'])
             error = False
         else:
-            msg = 'Error while validating Course Information.'
-            error = True
-            context['error_msg'] = form.errors.as_data()
+            context['err_msg'] = error_msg_to_string(form)
+            return render(request, 'Athena/course_builder_page.html', context)
         context['msg'] = msg
         context['error'] = error
-        context['form'] = form
         return render(request, 'Athena/course_build_completed.html', context)
 
 

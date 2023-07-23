@@ -76,11 +76,25 @@ class UserMembershipForm(forms.ModelForm):
 
 class CourseCreationForm(forms.ModelForm):
     course_desc = forms.Textarea()
-    course_banner = forms.ImageField(required=False)
+    course_day = forms.CharField(initial='Non-Repeating')
 
     class Meta:
         model = Course
         fields = '__all__'
+
+    def clean_course_title(self):
+        course_title = self.cleaned_data['course_title']
+        if not course_title.isalnum():
+            raise forms.ValidationError('Course title should contain only alphabets or numbers.')
+        return course_title
+
+    def clean(self):
+        cleaned_data = super().clean()
+        course_start_date = cleaned_data.get('course_start_date')
+        course_end_date = cleaned_data.get('course_end_date')
+        if course_start_date and course_end_date and course_start_date >= course_end_date:
+            raise forms.ValidationError('Course start date must be earlier than the course end date.')
+        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -120,6 +134,10 @@ class CourseCreationForm(forms.ModelForm):
 class CourseCategoriesForm(forms.Form):
     categories_c = forms.ModelChoiceField(queryset=CourseCategories.objects.all(), required=False)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['categories_c'].widget.attrs['id'] = 'categories-c'
+        self.fields['categories_c'].widget.attrs['class'] = 'input_item'
 
 class EnrollmentForm(forms.ModelForm):
 
