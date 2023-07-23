@@ -304,12 +304,25 @@ class QuizContentForm(forms.ModelForm):
         # Set custom styles and attributes for the widgets
         self.fields['course'].widget.attrs['style'] = 'display: none'
         self.fields['quiz'].widget.attrs['style'] = 'display: none'
+        self.fields['id'].widget.attrs['style'] = 'display: none'
+        self.fields['type'].widget.attrs['class'] = 'checkbox'
         self.fields['question'].widget.attrs['id'] = 'question-input'
+        self.fields['question'].widget.attrs['class'] = 'input-q'
+
         self.fields['options_1'].widget.attrs['id'] = 'option1-input'
+        self.fields['options_1'].widget.attrs['class'] = 'input-q'
+
         self.fields['options_2'].widget.attrs['id'] = 'option2-input'
+        self.fields['options_2'].widget.attrs['class'] = 'input-q'
+
         self.fields['options_3'].widget.attrs['id'] = 'option3-input'
+        self.fields['options_3'].widget.attrs['class'] = 'input-q'
+
         self.fields['options_4'].widget.attrs['id'] = 'option4-input'
+        self.fields['options_4'].widget.attrs['class'] = 'input-q'
+
         self.fields['answers'].widget.attrs['id'] = 'answers-input'
+        self.fields['answers'].widget.attrs['class'] = 'input-q'
 
 
 class SubmitForm(forms.ModelForm):

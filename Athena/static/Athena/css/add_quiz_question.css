@@ -1,0 +1,134 @@
+.parent-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    padding-left: 40px;
+    gap: 32px;
+}
+
+.quiz_questions_container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.quiz_questions_container.light {
+    background-color: #eeeeee;
+    border-radius: 24px;
+    padding: 24px;
+}
+
+.quiz_questions_container.m-r{
+    margin-right: 30px;
+}
+
+.quiz_q_content span {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #070708;
+    background-color: #070708;
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 8px;
+}
+
+.quiz_q_content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+
+.content-buttons {
+    padding: 16px 32px;
+    border-radius: 24px;
+    margin: 8px;
+    border: none;
+    font-size: medium;
+    color: #ffffff;
+    background-color: #070708;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content-buttons.large {
+    font-size: medium;
+    width: 120px;
+}
+
+.content-buttons.light {
+    background-color: white;
+    color: #070708;
+}
+
+.content-buttons:hover {
+    background-color: #c9d9f0;
+    color: #070708;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.content-buttons.light:hover {
+    background-color: #eeeeee;
+}
+
+.content-buttons:active {
+    background-color: #6f94c6;
+    color: #070708;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.labels {
+    width: 200px;
+    font-size: medium;
+    font-weight: normal;
+    padding: 12px 32px;
+    background-color: #c9d9f0;
+    border-radius: 12px;
+    margin: 8px 0;
+}
+
+.inline_label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 32px;
+}
+
+.input-q {
+    width: 100%;
+    height: 30px;
+    padding: 20px 32px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    border-radius: 16px;
+    border: 1px solid #c9d9f0;
+    background-color: #eeeeee;
+    color: #070708;
+    font-size: medium;
+    text-align: start;
+}
+
+.button-line {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #070708;
+  margin-left: 8px;
+  transform : scale(1.4);
+}
+
+.checkbox :checked {
+    background-color: #6f94c6;
+}

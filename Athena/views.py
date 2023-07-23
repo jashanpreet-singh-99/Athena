@@ -915,11 +915,11 @@ class AddQuizQuestion(views.View):
     @method_decorator(login_required(login_url='login_page'))
     def get(self, request, quiz_id):
         print(request.GET)
-        context = {'title': 'Add Question'}
-        quiz_questions = QuizContent.objects.filter(quiz__id = quiz_id)
+        context = {'title': 'Quiz Question'}
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
         context['quiz_questions'] = quiz_questions
 
-        quiz = Quiz.objects.get(id = quiz_id)
+        quiz = Quiz.objects.get(id=quiz_id)
         if 'q_no' in request.GET.keys():
             q_data = QuizContent.objects.get(id=request.GET['q_no'])
             quiz_content_form = QuizContentForm(instance=q_data)
@@ -934,7 +934,7 @@ class AddQuizQuestion(views.View):
     @method_decorator(login_required(login_url='login_page'))
     def post(self, request, quiz_id):
         print(request.POST)
-        context = {'title': 'Add Question'}
+        context = {'title': 'Quiz Question'}
         quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
         context['quiz_questions'] = quiz_questions
 
@@ -956,7 +956,7 @@ class AddQuizQuestion(views.View):
             context['quiz_content_form'] = quiz_content_form
 
         else:
-            context['msg'] = 'Error: '+str(quiz_content_form.errors)
+            context['err_msg'] = error_msg_to_string(quiz_content_form)
             context['quiz_content_form'] = quiz_content_form
 
         return render(request, 'Athena/add_quiz_question.html', context)
