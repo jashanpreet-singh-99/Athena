@@ -383,8 +383,8 @@ let timer;
 let countdown;
 const timerDisplay = document.getElementById("time-display");
 function startTimer(duration) {
-  // duration = duration * 60;
-  duration = duration - 20;
+  duration = duration * 60;
+  // duration = duration - 20;
 
   let minutes, seconds;
 

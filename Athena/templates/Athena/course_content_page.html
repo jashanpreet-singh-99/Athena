@@ -100,9 +100,16 @@
                     <p id="quiz_total_q"></p>
                     <p> Questions</p>
                 </div>
-                <button id="retake-quiz" class="content-buttons" onclick="retakeQuiz()">
-                    Retake
-                </button>
+                {% if request.user.membership.id > 1 %}
+                    <button id="retake-quiz" class="content-buttons" onclick="retakeQuiz()">
+                        Retake
+                    </button>
+                {% else %}
+                    <p class="upgrade_btn">Upgrade to Lesser or Higher account, for Unlimited Quiz retakes.</p>
+                    <button class="content-buttons" onclick="window.location.href ='{% url 'settings_page' %}'">
+                        Upgrade
+                    </button>
+                {% endif %}
             </div>
         </div>
         <div class="chapter-content">

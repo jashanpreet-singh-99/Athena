@@ -290,51 +290,64 @@
                     </form>
                 </div>
             </div>
-            <div class="content-p-container">
-                <div class="content-header">
-                    <h2>In-Person Exam:</h2>
-                    <div>
-                        <button class="expand-button content-buttons light content-buttons-120" id="exam-expand-btn">
-                            Expand
-                        </button>
+
+                <div class="content-p-container">
+                    <div class="content-header">
+                        <h2>In-Person Exam:</h2>
+                        <div>
+                            <button class="expand-button content-buttons light content-buttons-120" id="exam-expand-btn">
+                                Expand
+                            </button>
+                        </div>
                     </div>
-                </div>
-                <div id="content-container" class="content-container">
-                    {% for exam in exams %}
-                        <div class="chapter-view-container exam-v-container">
-                            <div class="chapter-info-container">
-                                    <span>{{ forloop.counter }}</span>
-                                    <p class="ch-title-info">{{ exam.title }}</p>
-                            </div>
-                            <div class="chapter-info-container">
-                                <p class="ch-title-info">{{ exam.exam_date|date:"M d, Y" }}</p>
-                                <button class="content-buttons light no-mrg">Edit</button>
-                                <button class="icon-buttons" id="ex-delete-btn">
-                                    <img width="32" height="32" src="https://img.icons8.com/ios/28/delete-forever--v1.png" alt="delete"/>
-                                </button>
-                            </div>
-                        </div>
-                    {%  endfor %}
-                    <form method="post" action="{% url 'create_course_exam' %}">
-                        {% csrf_token %}
-                        <h3>Exam Title: </h3>
-                        {{ e_form.course }}
-                        {{ e_form.title }}
-                        <div class="instruction_container">
-                            <h4>Exam Grading for Cumulative Score: </h4>
-                            {{ e_form.grade }}
-                        </div>
-                        <h4>Exam Date: </h4>
-                                <div class="quiz_i_t_info">
-                                    {{ e_form.exam_date }}
-                                    <button id="open-exam-dialog" class="date-button">
-                                        <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
+
+                    <div id="content-container" class="content-container">
+                    {% if request.user.membership.id > 3 %}
+                        {% for exam in exams %}
+                            <div class="chapter-view-container exam-v-container">
+                                <div class="chapter-info-container">
+                                        <span>{{ forloop.counter }}</span>
+                                        <p class="ch-title-info">{{ exam.title }}</p>
+                                </div>
+                                <div class="chapter-info-container">
+                                    <p class="ch-title-info">{{ exam.exam_date|date:"M d, Y" }}</p>
+                                    <button class="content-buttons light no-mrg">Edit</button>
+                                    <button class="icon-buttons" id="ex-delete-btn">
+                                        <img width="32" height="32" src="https://img.icons8.com/ios/28/delete-forever--v1.png" alt="delete"/>
                                     </button>
                                 </div>
-                        <button class="content-buttons" type="submit">Add Exam</button>
-                    </form>
+                            </div>
+                        {%  endfor %}
+                        <form method="post" action="{% url 'create_course_exam' %}">
+                            {% csrf_token %}
+                            <h3>Exam Title: </h3>
+                            {{ e_form.course }}
+                            {{ e_form.title }}
+                            <div class="instruction_container">
+                                <h4>Exam Grading for Cumulative Score: </h4>
+                                {{ e_form.grade }}
+                            </div>
+                            <h4>Exam Date: </h4>
+                                    <div class="quiz_i_t_info">
+                                        {{ e_form.exam_date }}
+                                        <button id="open-exam-dialog" class="date-button">
+                                            <img width="28" height="28" src="https://img.icons8.com/ffffff/pulsar-line/48/thursday.png" alt="date"/>
+                                        </button>
+                                    </div>
+                            <button class="content-buttons" type="submit">Add Exam</button>
+                        </form>
+                    {% else %}
+                    <div class="upgrade_container">
+                        <p class="upgrade_btn">In-Person exams are only available in Greater Membership, Please upgrade to Greater account.</p>
+                        <button class="content-buttons" onclick="window.location.href ='{% url 'settings_page' %}'">
+                            Upgrade
+                        </button>
+                    </div>
+                {% endif %}
+                    </div>
+
                 </div>
-            </div>
+
             <div id="date-dialog" style="display: none;">
                 <div id="header">
                     <button id="prev-month" class="date-b rotate">
@@ -436,6 +449,7 @@
             {% endfor %}
         </div>
         <div id="tab4" class="tab-content">
+        {% if request.user.membership.id > 3 %}
             <div class="exam_container">
                 <form method="get" id="dummy-exam-grade-form">
                     <input type="hidden" name="exam_get_id" id="exam_get_id_input">
@@ -475,6 +489,14 @@
             {% else %}
                 <p>Select exam to update grades for.</p>
             {% endif %}
+        {% else %}
+            <div class="upgrade_container">
+                <p class="upgrade_btn">Grade management is only available in Greater Membership, Please upgrade to Greater account.</p>
+                <button class="content-buttons" onclick="window.location.href ='{% url 'settings_page' %}'">
+                    Upgrade
+                </button>
+            </div>
+        {% endif %}
         </div>
     </div>
 {% endblock %}

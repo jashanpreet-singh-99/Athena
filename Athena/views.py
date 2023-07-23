@@ -1,9 +1,6 @@
 import calendar
 import random
-import re
 import string
-from datetime import datetime
-from django.db.models import Q
 
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse

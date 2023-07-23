@@ -422,3 +422,12 @@ input[type="file"]::after {
     display: flex;
     flex-direction: column;
 }
+
+.upgrade_btn {
+    margin: 16px 0;
+    color: #070708;
+    font-size: medium;
+    background-color: #c9d9f0;
+    padding: 16px;
+    border-radius: 12px;
+}
