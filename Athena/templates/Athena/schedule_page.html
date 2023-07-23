@@ -27,12 +27,50 @@
         </div>
         <div class="event_section">
             <h2 class="title_h2">Scheduled Events</h2>
-            <p>No events yet.</p>
+            <div class="divider"></div>
+            {% if class_events|length == 0 and ass_events|length == 0 and exam_events|length == 0 %}
+                <p>No events yet.</p>
+            {% endif %}
+            <form method="post" id="date_send_form">
+                {% csrf_token %}
+                <input type="hidden" name="date" id="date-input">
+            </form>
+            {% for event in class_events %}
+                <div class="e-container">
+                    <span class="span">C</span>
+                    <h3>{{ event.course_title }}</h3>
+                </div>
+            {% endfor %}
+            {% for event in ass_events %}
+                <div class="e-container">
+                    <span class="span ass_span">A</span>
+                    <h3>{{ event.title }}</h3>
+                </div>
+            {% endfor %}
+            {% for event in exam_events %}
+                <div class="e-container">
+                    <span class="span exam_span">E</span>
+                    <h3>{{ event.title }}</h3>
+                </div>
+            {% endfor %}
         </div>
     </div>
 
 
 {% endblock %}
 {% block extrascripts %}
-      <script src="{% static 'Athena/js/schedule_page.js' %}"></script>
+    <script>
+        var currentDate = new Date();
+        {% if d_date %}
+            var dateString = '{{ d_date }}';
+            const parts = dateString.split('-');
+            const month = parseInt(parts[0], 10);
+            const day = parseInt(parts[1], 10);
+            const year = parseInt(parts[2], 10);
+
+            currentDate = new Date(year, month - 1, day);
+            console.log(currentDate);
+        {% endif %}
+    </script>
+    <script src="{% static 'Athena/js/schedule_page.js' %}"></script>
 {% endblock %}

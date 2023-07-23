@@ -1,9 +1,9 @@
 const COOKIES_author_tab_number = 'author-tab-number';
 const COOKIES_author_tab_name = 'author-tab-name';
-const COOKIES_chapter_expanded = 'author_chapter_expanded'
-const COOKIES_quiz_expanded = 'author_quiz_expanded'
-const COOKIES_assignment_expanded = 'author_assignment_expanded'
-const COOKIES_exam_expanded = 'author_exam_expanded'
+const COOKIES_chapter_expanded = 'author_chapter_expanded';
+const COOKIES_quiz_expanded = 'author_quiz_expanded';
+const COOKIES_assignment_expanded = 'author_assignment_expanded';
+const COOKIES_exam_expanded = 'author_exam_expanded';
 
 const COOKIES_auth_containers = [COOKIES_chapter_expanded, COOKIES_quiz_expanded, COOKIES_assignment_expanded, COOKIES_exam_expanded];
 
@@ -72,7 +72,7 @@ function applyCookies() {
     // Scroll page to last known
     console.log('Page Scroll request:', page_scroll_y);
     basePageContainer.scrollTop = parseInt(page_scroll_y);
-
+    updateGradesStudents();
 }
 
 window.addEventListener("load", applyCookies);
@@ -126,7 +126,6 @@ function createButtons() {
       catContainer.appendChild(rowDiv);
     }
     rowDiv.appendChild(button);
-
   }
 }
 
@@ -224,7 +223,7 @@ qHiddenBtn.addEventListener('click', (event) => {
 const negMBtn = document.getElementById('n-allowed-button');
 const normalMBtn = document.getElementById('n-not-allowed-button');
 const nMarkingBox = document.getElementById('quiz-negative-marking');
-const nGradeValue = document.getElementById('negative_grade')
+const nGradeValue = document.getElementById('negative_grade');
 negMBtn.addEventListener('click', (event) => {
     event.stopPropagation();
     event.preventDefault();
@@ -240,7 +239,7 @@ normalMBtn.addEventListener('click', (event) => {
     normalMBtn.classList.add("sel");
     negMBtn.classList.remove("sel");
     nMarkingBox.checked = false;
-    nGradeValue.hidden = true
+    nGradeValue.hidden = true;
 });
 
 const chapterContainers = document.querySelectorAll('.chapter-v-container');
@@ -304,11 +303,12 @@ chapterContainers.forEach((container, index) => {
 
 const quizContainers = document.querySelectorAll('.quiz-v-container');
 quizContainers.forEach((container, index) => {
+    console.log('Quiz container');
   const visibleButton = container.querySelector('#qq-visible-button');
   const hiddenButton = container.querySelector('#qq-hidden-button');
   const removeBtn = container.querySelector('#q-delete-btn');
 
-  if (quizzes[index]['visibility'] === 'True') {
+  if (quizzes.length > index && quizzes[index]['visibility'] === 'True') {
       visibleButton.classList.add('sel');
       hiddenButton.classList.remove('sel');
   } else {
@@ -316,9 +316,7 @@ quizContainers.forEach((container, index) => {
       visibleButton.classList.remove('sel');
   }
   visibleButton.addEventListener('click', () => {
-    // Add the "sel" class to the visible button
     visibleButton.classList.add('sel');
-    // Remove the "sel" class from the hidden button
     hiddenButton.classList.remove('sel');
     visForm.action = change_vis_url;
     console.log('Vis: q-' + index);
@@ -331,9 +329,7 @@ quizContainers.forEach((container, index) => {
   });
 
   hiddenButton.addEventListener('click', () => {
-    // Add the "sel" class to the hidden button
     hiddenButton.classList.add('sel');
-    // Remove the "sel" class from the visible button
     visibleButton.classList.remove('sel');
     visForm.action = change_vis_url;
     console.log('Hid: q-' + index);
@@ -516,9 +512,7 @@ assContainers.forEach((container, index) => {
       visibleButton.classList.remove('sel');
   }
   visibleButton.addEventListener('click', () => {
-    // Add the "sel" class to the visible button
     visibleButton.classList.add('sel');
-    // Remove the "sel" class from the hidden button
     hiddenButton.classList.remove('sel');
     visForm.action = change_vis_url;
     console.log('Vis: q-' + index);
@@ -531,9 +525,7 @@ assContainers.forEach((container, index) => {
   });
 
   hiddenButton.addEventListener('click', () => {
-    // Add the "sel" class to the hidden button
     hiddenButton.classList.add('sel');
-    // Remove the "sel" class from the visible button
     visibleButton.classList.remove('sel');
     visForm.action = change_vis_url;
     console.log('Hid: q-' + index);
@@ -568,3 +560,46 @@ examContainers.forEach((container, index) => {
     visForm.submit();
   });
 });
+
+const examCatButtons = document.querySelectorAll('.exam-cat-btn');
+const examGetIDInput = document.getElementById('exam_get_id_input');
+const dummyExamGetFrom = document.getElementById('dummy-exam-grade-form');
+function toggleButtonClass(clickedButton) {
+    examCatButtons.forEach((button) => {
+        if (button === clickedButton) {
+            button.classList.remove('light');
+            examGetIDInput.value = button.dataset.examId
+        } else {
+            button.classList.add('light');
+        }
+    });
+}
+examCatButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        toggleButtonClass(button);
+        dummyExamGetFrom.submit();
+    });
+});
+
+const gradeField = document.querySelector('#scored_exam_grade_input');
+const editSaveButton = document.getElementById('editSaveButton');
+const gradeForm = document.getElementById('updateGradeForm');
+
+editSaveButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    if (editSaveButton.textContent === 'Edit') {
+        gradeField.readOnly = false;
+        editSaveButton.textContent = 'Save';
+    } else if (editSaveButton.textContent === 'Save') {
+        gradeForm.submit();
+    }
+});
+
+function updateGradesStudents() {
+    const gradeField = document.querySelectorAll('.gradeField');
+    scored_grades_list.forEach((score, index) => {
+        if (index < gradeField.length) {
+            gradeField[index].value = score;
+        }
+    });
+}

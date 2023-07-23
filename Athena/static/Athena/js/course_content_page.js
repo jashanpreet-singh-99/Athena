@@ -9,10 +9,17 @@ const chapterTitle = document.getElementById('chapter_title');
 
 const quizBottomBar = document.getElementById('quiz-time-container');
 const chapterExtra = document.getElementById('chapter-extra-container');
+const assignmentExtra = document.getElementById('assignment-extra-container');
+
+const dummyFileType = document.getElementById('dummy-file-type');
+const dummyObjectID = document.getElementById('dummy-object-id');
+const assPrevSubContainer = document.getElementById('prev-submission');
 
 const MODE_CH = 1;
 const MODE_Q = 2;
 const MODE_A = 3;
+
+let current_chapter_index = 0;
 
 function changePDF(newUrl, container) {
   var pdfPages = document.querySelectorAll("#content-frame canvas");
@@ -67,6 +74,8 @@ function switchContentModes(mode, index = -1) {
     chapterExtra.style.display = 'none';
     quizContainer.style.display = "none";
     quizBottomBar.style.display = "none";
+    assignmentExtra.style.display = "none";
+    assPrevSubContainer.style.display = "none";
     console.log(mode, index);
     chapterButtons.forEach(b => {
     b.classList.remove("sel");
@@ -96,6 +105,7 @@ function switchContentModes(mode, index = -1) {
         case MODE_A:
             nonVideoContent.style.display = "flex";
             chapterExtra.style.display = 'flex';
+            assignmentExtra.style.display = 'flex';
             break;
     }
 }
@@ -113,6 +123,10 @@ chapterButtons.forEach((button, index) => {
     button.classList.add("sel");
     chapterTitle.textContent = chapters[index]['title'];
     console.log(chapters[index]);
+    dummyFileType.value = 'Chapter';
+    dummyObjectID.value = chapters[index]['id'];
+    sendChapterViewed(chapters[index]['id']);
+    current_chapter_index = index;
   });
 });
 
@@ -126,7 +140,6 @@ const quizTitle = document.getElementById('quiz_title');
 const quizTime = document.getElementById('quiz_time');
 const quizNMarking = document.getElementById('quiz_negative_marking');
 const quizInstructions = document.getElementById('quiz-instructions');
-const quizStartButton = document.getElementById('start-quiz');
 let selected_quiz_id = 0
 
 quizButtons.forEach((button, index) => {
@@ -148,7 +161,11 @@ quizButtons.forEach((button, index) => {
 });
 
 const assignmentButtons = document.querySelectorAll('.assignment-view-container');
+const assignmentIDInput = document.getElementById('assignment-submission-id');
+const assignmentInstructions = document.getElementById('assignment-instructions');
 
+const assPrevSubFile = document.getElementById('p-s-file-name');
+const assPrevSubFileInput = document.getElementById('submission_id');
 assignmentButtons.forEach((button, index) => {
   button.addEventListener('click', () => {
     switchContentModes(MODE_A, index);
@@ -158,6 +175,17 @@ assignmentButtons.forEach((button, index) => {
     button.classList.add("sel");
     chapterTitle.textContent = assignments[index]['title'];
     console.log(assignments[index]);
+    assignmentIDInput.value = assignments[index]['id']
+    assignmentInstructions.innerText = assignments[index]['instructions']
+    dummyFileType.value = 'Assignment'
+    dummyObjectID.value = assignments[index]['id']
+    submissions.forEach((sub) => {
+        if (sub['assignment_id'] === assignments[index]['id']) {
+            assPrevSubContainer.style.display = "flex";
+            assPrevSubFileInput.value = sub['id']
+            assPrevSubFile.innerText = sub['file_name']
+        }
+    });
   });
 });
 
@@ -293,7 +321,10 @@ overlay_video.addEventListener('click', () => {
 });
 
 previous_btn.addEventListener('click', () => {
-
+    if (current_chapter_index > 0) {
+        current_chapter_index = current_chapter_index - 1
+        chapterButtons[current_chapter_index].click()
+    }
 });
 
 rewind_btn.addEventListener('click', () => {
@@ -311,7 +342,10 @@ play_pause_btn.addEventListener('click', () => {
 });
 
 next_btn.addEventListener('click', () => {
-
+    if (current_chapter_index < chapterButtons.length - 1) {
+        current_chapter_index = current_chapter_index + 1
+        chapterButtons[current_chapter_index].click()
+    }
 });
 
 seek_bar.addEventListener('input', () => {
@@ -405,4 +439,62 @@ function renderQuestionProgress() {
 
       questionContainer.appendChild(questionDiv);
     }
+}
+
+const ratingWidget = document.querySelector('.rating-widget');
+const stars = ratingWidget.querySelectorAll('.star');
+const ratingIntput = document.getElementById('rating_input');
+const ratingForm = document.getElementById('rating_form');
+
+stars.forEach((star, index) => {
+  const rating = (course_rating < (index + 1)) ? ((course_rating > index) ? ((course_rating - index) * 100) : '0') : '100';
+  const gradientPercentage = rating + '%, ' + rating + '%';
+  star.style.backgroundImage = 'linear-gradient(to right, #f7c927 0%, #f7c927 ' + gradientPercentage + ', #888 ' + gradientPercentage + ', #888 100%)';
+
+  star.addEventListener('click', () => {
+      ratingForm.submit();
+  });
+});
+
+ratingWidget.addEventListener('mouseover', (event) => {
+  const hoveredStar = event.target;
+  const indexH = parseInt(hoveredStar.dataset.index, 10);
+  if (isNaN(indexH)) {
+      return;
+  }
+  console.log('Called hover: ' + indexH);
+  stars.forEach((star, index) => {
+    if (index < indexH) {
+      star.dataset.rating = 100;
+    } else {
+        star.dataset.rating = 0;
+    }
+    const gradientPercentage = star.dataset.rating + '%, ' + star.dataset.rating + '%';
+    star.style.backgroundImage = 'linear-gradient(to right, #f7c927 0%, #f7c927 ' + gradientPercentage + ', #888 ' + gradientPercentage + ', #888 100%)';
+  });
+  ratingIntput.value = 5 * indexH /5;
+});
+
+//
+// Chapter views
+//
+function sendChapterViewed(chNo) {
+  var xhr = new XMLHttpRequest();
+
+  var data = '?chapter_id=' + encodeURIComponent(chNo);
+  xhr.open('GET', chapter_view_url + data);
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+  xhr.onload = function() {
+    console.log(xhr.status);
+      if (xhr.status === 200) {
+          var response = JSON.parse(xhr.responseText);
+          console.log('Chapter Viewed', response.msg);
+        } else {
+            console.log('AJAX request failed');
+        }
+  };
+  xhr.onerror = function() {
+      console.log('AJAX: request Error:');
+  }
+  xhr.send();
 }

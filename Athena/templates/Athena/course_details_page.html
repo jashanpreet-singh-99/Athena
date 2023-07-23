@@ -43,7 +43,7 @@
             <button class="tab" onclick="openTab(event, 'tab1')">Content Details</button>
             <button class="tab" onclick="openTab(event, 'tab2')">Class Details</button>
             <button class="tab" onclick="openTab(event, 'tab3')">Schedule</button>
-            <button class="tab" onclick="openTab(event, 'tab4')">Related Courses</button>
+            <button class="tab" onclick="openTab(event, 'tab4')">Course Grades</button>
         </div>
         <div id="tab1" class="tab-content">
             <div class="course-content-dates">
@@ -98,7 +98,44 @@
             <h3 class="cat-title">Class Weekly Schedule: </h3>
             <p>{{ course.course_day }}</p>
         </div>
-        <div id="tab4" class="tab-content">No related courses found</div>
+        <div id="tab4" class="tab-content">
+            {% if e_obj %}
+                <div class="view_container">
+                    <div class="view_content_container">
+                        {% if g_q_data|length > 0 %}
+                            <h4>Quizzes</h4>
+                            {% for quiz in g_q_data %}
+                                <div class="chapter-view-container">
+                                    <div class="chapter-info-container">
+                                        <span>{{ forloop.counter }}</span>
+                                        <p class="ch-title-info">{{ quiz.content_object.title }}</p>
+                                    </div>
+                                    <button class="content-buttons light no-mrg">{{ quiz.scored_grade }} / {{ quiz.total_grade }}</button>
+                                </div>
+                            {% endfor %}
+                        {%  endif %}
+                    </div>
+                    <div class="view_content_container">
+                        {% if g_e_data|length > 0 %}
+                            <h4>Exam</h4>
+                            {% for exam in g_e_data %}
+                                <div class="chapter-view-container">
+                                    <div class="chapter-info-container">
+                                        <span>{{ forloop.counter }}</span>
+                                        <p class="ch-title-info">{{ exam.content_object.title }}</p>
+                                    </div>
+                                    <button class="content-buttons light no-mrg">{{ exam.scored_grade }} / {{ exam.total_grade }}</button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="empty_container">
+                    <p>Enroll into the course to see Grades.</p>
+                </div>
+            {% endif %}
+        </div>
     </div>
 
 {% endblock %}

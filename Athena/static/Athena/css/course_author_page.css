@@ -222,12 +222,28 @@
     background-color: #ffffff;
 }
 
+.content-buttons.g-light {
+    color: #070708;
+    background-color: #eeeeee;
+    box-shadow: none;
+}
+
 .content-buttons.light:hover {
     color: #070708;
     background-color: #eeeeee;
 }
 
+.content-buttons.g-light:hover {
+
+}
+
 .content-buttons.light.no-mrg {
+    margin: 0;
+    font-size: small;
+    padding: 14px 32px;
+}
+
+.content-buttons.g-light.no-mrg {
     margin: 0;
     font-size: small;
     padding: 14px 32px;
@@ -326,6 +342,7 @@
 .input-fields.small {
     width: 100px;
 }
+
 
 .input-fields.medium {
     width: 200px;
@@ -534,7 +551,38 @@ input[type="file"]::after {
   background-color: lightblue;
 }
 
+.icon-buttons.s-sel:hover {
+    background-color: #070708;
+}
 
+.icon-buttons.s-sel:active {
+    background-color: #6f94c6;
+}
 
+.view_container {
+    display: flex;
+    flex-direction: row;
+    gap: 8px 32px;
+}
+
+.view_content_container {
+    width: 45%;
+    margin: 0 16px;
+}
+
+.view_content_container h4 {
+    margin: 8px 0;
+}
+
+.exam_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.marg-r {
+    margin-right: 8px;
+}
 
 

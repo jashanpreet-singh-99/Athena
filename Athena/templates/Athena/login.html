@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
     <head>
         {% load static %}
@@ -8,7 +9,8 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Anton&family=Pacifico&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/login_style.css' %}"/>
-        <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/Athena-logo.png' %}"/>
+        <link rel="shortcut icon" type="image/png" href="{% static 'Athena/media/athena-logo.png' %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/signup.css' %}"/>
     </head>
     <body style="background-image: url('{% static "Athena/media/login-bg.svg" %}'); background-size: cover;">
         <div class="login-container">
@@ -29,10 +31,29 @@
                   </label>
                   <div class="center-btn">
                     <input type="submit" value="Log in" class="submit-button">
+                    <button class="signup-button" id="signup-btn">Sign up</button>
+{#                    <a href="/signup" class="signup-button">Sign Up</a>#}
                   </div>
                 </form>
             </div>
-            <a href="#">Forgot password?</a>
+            <a href="{% url 'reset_password' %}">Forgot password?</a>
         </div>
+        <div id="callContainer" class="hidden">
+                <div class="callContent">
+                    <p id="err_msg_value">Call in Progress...</p>
+                    <button id="closeCallButton" class="close-call-button">
+                        <img height="24" width="24" src="https://img.icons8.com/ios/50/delete-sign--v1.png" alt="close_btn">
+                    </button>
+                </div>
+        </div>
+        <script>
+            let signup_url = '{% url 'signup_page' %}'
+            let err_msg = '';
+            {% if err_msg %}
+                err_msg = '{{ err_msg|escapejs }}';
+            {% endif %}
+        </script>
+        <script src="{% static 'Athena/js/erro_box.js' %}"></script>
+        <script src="{% static 'Athena/js/login.js' %}"></script>
     </body>
 </html>

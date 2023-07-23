@@ -147,7 +147,7 @@
                 <div class="content-header">
                     <h2>Quiz:</h2>
                     <div>
-                        <button class="expand-button content-buttons light content-buttons-120">Expand</button>
+                        <button class="expand-button content-buttons light content-buttons-120" id="quiz-expand-btn">Expand</button>
                     </div>
                 </div>
                 <div id="content-container" class="content-container">
@@ -163,6 +163,7 @@
                                     <button id="qq-hidden-button" class="toggle-btn light">Hidden</button>
                                 </div>
                                 <button class="content-buttons light no-mrg">Edit</button>
+                                <a href="{% url 'add_quiz_question' quiz.id %}"><button class="content-buttons light no-mrg">Add question</button></a>
                                 <button class="icon-buttons" id="q-delete-btn">
                                     <img width="32" height="32" src="https://img.icons8.com/ios/28/delete-forever--v1.png" alt="delete"/>
                                 </button>
@@ -233,8 +234,8 @@
                             </div>
                             <div class="chapter-info-container">
                                 <div class="toggle-div">
-                                    <button id="aa-visible-button" class="toggle-btn light sel">Visible</button>
-                                    <button id="aa-hidden-button" class="toggle-btn light">Hidden</button>
+                                    <button id="aa-visible-button" class="toggle-btn light sel" type="button">Visible</button>
+                                    <button id="aa-hidden-button" class="toggle-btn light" type="button">Hidden</button>
                                 </div>
                                 <button class="content-buttons light no-mrg">Edit</button>
                                 <button class="icon-buttons" id="ass-delete-btn">
@@ -251,8 +252,8 @@
                             {{ a_form.title }}
                             {{ a_form.visibility }}
                             <div class="toggle-div">
-                                <button id="a-visible-button" class="toggle-btn sel">Visible</button>
-                                <button id="a-hidden-button" class="toggle-btn ">Hidden</button>
+                                <button id="a-visible-button" class="toggle-btn sel" type="button">Visible</button>
+                                <button id="a-hidden-button" class="toggle-btn" type="button">Hidden</button>
                             </div>
                             {{ a_form.plagiarism_check }}
                             <div class="toggle-div x-large">
@@ -348,14 +349,133 @@
             </div>
         </div>
         <div id="tab3" class="tab-content">
+        {% if hide_std_stat %}
+            <h2>Student Status</h2>
+            <div class="view_container">
+                <div class="view_content_container">
+                    <h4>Chapters</h4>
+                    {% for chapter in chapters %}
+                        <div class="chapter-view-container">
+                            <div class="chapter-info-container">
+                                <span>{{ forloop.counter }}</span>
+                                <p class="ch-title-info">{{ chapter.title }}</p>
+                            </div>
+                            {% if chapter.id in chapter_views %}
+                                <button class="content-buttons light no-mrg">Viewed</button>
+                            {% else %}
+                                <button class="content-buttons g-light no-mrg">Received</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="view_content_container">
+                    {% if g_q_data|length > 0 %}
+                        <h4>Quizzes</h4>
+                        {% for quiz in g_q_data %}
+                            <div class="chapter-view-container">
+                                <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ quiz.content_object.title }}</p>
+                                </div>
+                                <button class="content-buttons light no-mrg">{{ quiz.scored_grade }} / {{ quiz.total_grade }}</button>
+                            </div>
+                        {% endfor %}
+                    {%  endif %}
+                </div>
+            </div>
+            <div class="view_container">
+                <div class="view_content_container">
+                    <h4>Assignment</h4>
+                    {% for assignment in assignments %}
+                        <div class="chapter-view-container">
+                            <div class="chapter-info-container">
+                                <span>{{ forloop.counter }}</span>
+                                <p class="ch-title-info">{{ assignment.title }}</p>
+                            </div>
+                            {% if assignment.id in assignment_sub %}
+                                <button class="content-buttons light no-mrg">Submitted</button>
+                            {% else %}
+                                <button class="content-buttons g-light no-mrg">Received</button>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="view_content_container">
+                    {% if g_e_data|length > 0 %}
+                        <h4>Exam</h4>
+                        {% for exam in g_e_data %}
+                            <div class="chapter-view-container">
+                                <div class="chapter-info-container">
+                                    <span>{{ forloop.counter }}</span>
+                                    <p class="ch-title-info">{{ exam.content_object.title }}</p>
+                                </div>
+                                <button class="content-buttons light no-mrg">{{ exam.scored_grade }} / {{ exam.total_grade }}</button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+            <h2>Enrolled Students</h2>
             {% for students in e_info %}
-                <div>
-                    <p>{{ students.user.first_name }} {{ students.user.last_name }}</p>
-                    <p>{{ students.user.email }}</p>
+                <div class="chapter-view-container">
+                    <div class="chapter-info-container">
+                        <span>{{ forloop.counter }}</span>
+                        <p class="ch-title-info">{{ students.user.first_name }} {{ students.user.last_name }}</p>
+                    </div>
+                    <div class="chapter-info-container">
+                        <p class="ch-title-info">{{ students.user.email }}</p>
+                        <form method="get">
+                            <input type="hidden" name="student_id" value="{{ students.user.id }}">
+                            <button class="icon-buttons s-sel">
+                                <img width="36" height="36" src="https://img.icons8.com/fluency/48/grades.png"  alt="delete"/>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             {% endfor %}
         </div>
-        <div id="tab4" class="tab-content"></div>
+        <div id="tab4" class="tab-content">
+            <div class="exam_container">
+                <form method="get" id="dummy-exam-grade-form">
+                    <input type="hidden" name="exam_get_id" id="exam_get_id_input">
+                </form>
+                {% for exam in exams %}
+                    {% if  exam_get_id|add:"0" == exam.id %}
+                        <button class="content-buttons exam-cat-btn" data-exam-id="{{ exam.id }}">{{ exam.title }}</button>
+                    {% else %}
+                        <button class="content-buttons light exam-cat-btn" data-exam-id="{{ exam.id }}">{{ exam.title }}</button>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% if exam_get_id %}
+                <h2>Enrolled Students</h2>
+                {% for students in e_info %}
+                    <div class="chapter-view-container">
+                        <div class="chapter-info-container">
+                            <span>{{ forloop.counter }}</span>
+                            <p class="ch-title-info">{{ students.user.first_name }} {{ students.user.last_name }}</p>
+                        </div>
+                        <div class="chapter-info-container">
+                            <p class="ch-title-info">{{ students.user.email }}</p>
+                            <form id="updateGradeForm" class="updateGradeForm" method="post" action="{% url 'update_exam_grades' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="course" value="{{ course.id }}">
+                                <input type="hidden" name="user_id" value="{{ students.user.id }}">
+                                <input type="hidden" name="exam_id" value="{{ exam_get_id }}">
+                                <label class="marg-r">Grade:</label>
+                                {{ exam_grade_form.grade }}
+                                <label > / </label>
+                                <label id="total_marks_label" class="marg-r">{{ exam_get_total }}</label>
+                                <button id="editSaveButton"  class="content-buttons light no-mrg">Edit</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>Select exam to update grades for.</p>
+            {% endif %}
+        </div>
     </div>
 {% endblock %}
 
@@ -394,6 +514,12 @@
             e['title'] = '{{ ex.title|escapejs }}';
             exams.push(e);
         {% endfor %}
+        let scored_grades_list = [];
+            {% for gr in students_scored_grades %}
+                var gr = '{{ gr|escapejs }}';
+                scored_grades_list.push(gr);
+            {% endfor %}
+
         let delete_url = "{% url 'delete_course_content' %}";
         let change_vis_url = "{% url 'change_chapter_visibility' %}";
         let page_scroll_y = '{{ page_scroll }}';

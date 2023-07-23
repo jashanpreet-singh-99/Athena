@@ -230,74 +230,7 @@ nextButtons.forEach((button) => {
   button.addEventListener('click', (event) => {
     event.stopPropagation();
     event.preventDefault();
-
- let days = validateDates(event)
-    // let span = document.getElementById('error')
-    // span.style.visibility = 'inline'
-    let count=0;
-        const  arr=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-
-    if (days < 0 && currentIndex==0 ) {
-
- // const spanElement = document.createElement("span");
- //  spanElement.textContent = "Invalid Dates"
- //      spanElement.classList.add('errorMessage')
- //      error.appendChild(spanElement)
-      alert("Invalid Dates!!! Please Select Appropriate Dates.")
-
-      // let span=document.getElementById('error')
-      // span.style.display = 'inline-block'
-    }
-    else if(selectedCategories.size===0 && currentIndex==1 )
-    {
-      alert("Please select any categories which is most related to the course!!!!")
-    }
-
-
-    else if (currentIndex==2)
-    {
-     // let cur= new Date(document.getElementById('startDate').value)
-     //  document.write(cur.getDay())
-      for(i=0; i<arr.length;i++){
-      if(selectedDayInput.value === arr[i])
-      {
-        count=i;
-                 // document.write(count)
-                 //         document.write(selectedDayInput.value)
-                 // document.write(arr[i])
-        break;}
-      else if(selectedDayInput.value === "Non-Repeating")
-      {
-             count=-1
-        break;
-      }
-      }
-        const  d=checkIfDayInDateRange(count,document.getElementById('startDate').value,document.getElementById('endDate').value)
-          // document.write(d)
-         if(d>=2 || d<0)
-       {
-                          navigateRight();
-
-        }
-         // else if(d===-1)
-         // {
-         //   alert("-1")
-         // }
-        else{
-           alert(selectedDayInput.value+" is not repeated in given range of dates!!!!!")
-
-
-    //      document.write(count)
-    //                alert("Range Match..!!!!")
-
-
-        }
-      // document.write(count)
-
-    }
-     else{
     navigateRight();
-     }
   });
 });
 

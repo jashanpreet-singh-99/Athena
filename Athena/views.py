@@ -1,12 +1,29 @@
-from django.shortcuts import render, redirect
+import calendar
+import random
+import re
+import string
+from datetime import datetime
+from django.db.models import Q
+
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django import views
 from django.contrib.auth import get_user_model, authenticate, login, logout
 from .forms import *
 from .models import *
 from django.http import JsonResponse
+from django.http import FileResponse
+from django.contrib import messages
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 
 from datetime import datetime
+from urllib.parse import urlencode
+
+# Cookies const
+
+# Session id const
+S_SETTINGS_E = 'settings_err_msg'
 
 
 def load_profile(context, request):
@@ -21,9 +38,18 @@ def load_profile(context, request):
     return context
 
 
+def error_msg_to_string(form):
+    errors = []
+    for field, error_list in form.errors.items():
+        for error in error_list:
+            errors.append(f"{field}: {error}")
+    return str('\n'.join(errors))
+
+
 # Create your views here.
 class Students(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Student Mng'}
         load_profile(context, request)
@@ -32,6 +58,7 @@ class Students(views.View):
 
 class Courses(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Courses'}
         load_profile(context, request)
@@ -54,14 +81,82 @@ class Courses(views.View):
 
 class Schedule(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Schedule'}
         load_profile(context, request)
+
+        date = datetime.now().date()
+        day_of_week = date.weekday()
+        day_of_week_name = calendar.day_name[day_of_week]
+        print(date, day_of_week_name)
+
+        courses_for_user = Course.objects.filter(enrollment__user__id=request.user.id)
+
+        # Class dates
+        class_event = Course.objects.filter(
+            course_day=day_of_week_name,
+            course_start_date__lte=date,
+            course_end_date__gte=date,
+            id__in=courses_for_user
+        )
+        print(class_event)
+        context['class_events'] = class_event
+
+        # Assignment Deadline
+        ass_events = CourseAssignment.objects.filter(course__in=courses_for_user, deadline__date=date)
+        context['ass_events'] = ass_events
+
+        # In-person exam
+        exam_events = CourseInPersonExam.objects.filter(course__in=courses_for_user, exam_date__date=date)
+        context['exam_events'] = exam_events
+
+        return render(request, 'Athena/schedule_page.html', context)
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        context = {'title': 'Schedule', 'd_date': request.POST['date']}
+        load_profile(context, request)
+        date = datetime.strptime(request.POST['date'], "%m-%d-%Y").date()
+        day_of_week = date.weekday()
+        day_of_week_name = calendar.day_name[day_of_week]
+        print(request.POST, date, day_of_week_name)
+
+        # events = CourseInPersonExam.objects.filter(
+        #     Q(exam_date=date) |
+        #     Q(course__courseassignment__deadline__date=date) |
+        #     Q(course__course_day=day_of_week_name) &
+        #     Q(course__course_start_date__lte=date, course__course_end_date__gte=date)
+        # )
+        # context['events'] = events
+
+        courses_for_user = Course.objects.filter(enrollment__user__id=request.user.id)
+        print('Enrolled: ', courses_for_user)
+
+        # Class dates
+        class_event = Course.objects.filter(
+            course_day=day_of_week_name,
+            course_start_date__lte=date,
+            course_end_date__gte=date,
+            id__in=courses_for_user
+        )
+        print(class_event)
+        context['class_events'] = class_event
+
+        # Assignment Deadline
+        ass_events = CourseAssignment.objects.filter(course__in=courses_for_user, deadline__date=date)
+        context['ass_events'] = ass_events
+
+        # In-person exam
+        exam_events = CourseInPersonExam.objects.filter(course__in=courses_for_user, exam_date__date=date)
+        context['exam_events'] = exam_events
+
         return render(request, 'Athena/schedule_page.html', context)
 
 
 class Settings(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         user = request.user
         initial_data = {'user': user}
@@ -74,11 +169,6 @@ class Settings(views.View):
         # User Profile Form
         form = UserProfileForm(initial=initial_data)
 
-        # to manage image selection using custom button
-        form.fields['user'].widget.attrs['style'] = 'display: none;'
-        form.fields['img'].widget.attrs['id'] = 'image-input'
-        form.fields['img'].widget.attrs['style'] = 'display: none;'
-
         context = {'title': 'Settings', 'form': form}
         # load profile image if present
         load_profile(context, request)
@@ -86,23 +176,12 @@ class Settings(views.View):
         # User info Form
         u_form = UserInfoSettingsForm(initial=initial_data_u)
 
-        u_form.fields['first_name'].widget.attrs['id'] = 'firstname'
-        u_form.fields['first_name'].widget.attrs['class'] = 'read-only'
-        u_form.fields['first_name'].widget.attrs['readonly'] = 'readonly'
-
-        u_form.fields['last_name'].widget.attrs['id'] = 'lastname'
-        u_form.fields['last_name'].widget.attrs['class'] = 'read-only'
-        u_form.fields['last_name'].widget.attrs['readonly'] = 'readonly'
-
         context['u_form'] = u_form
 
         # Membership Form
         m_form = UserMembershipForm(initial=initial_data_m)
 
         m_form.fields['membership'].widget.attrs['id'] = 'membership'
-        m_form.fields['membership'].widget.attrs['class'] = 'read-only'
-        m_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
-        m_form.fields['membership'].widget.attrs['style'] = 'display: none;'
 
         context['m_form'] = m_form
 
@@ -117,64 +196,31 @@ class Settings(views.View):
         mm_form = UserMembershipForm(initial=initial_data_m)
 
         mm_form.fields['membership'].widget.attrs['id'] = 'membership-buy-selection'
-        mm_form.fields['membership'].widget.attrs['class'] = 'read-only'
-        mm_form.fields['membership'].widget.attrs['readonly'] = 'readonly'
-        mm_form.fields['membership'].widget.attrs['style'] = 'display: none;'
 
         context['mm_form'] = mm_form
 
+        context['err_msg'] = request.session.get(S_SETTINGS_E, '')
+        request.session[S_SETTINGS_E] = ''
+        print('Settings : ', context['err_msg'])
         return render(request, 'Athena/settings_page.html', context)
 
 
 class CourseBuilder(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         context = {'title': 'Course Builder'}
 
         form = CourseCreationForm()
-
-        form.fields['course_title'].widget.attrs['id'] = 'courseTitle'
-        form.fields['course_title'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_desc'].widget.attrs['id'] = 'courseDesc'
-        form.fields['course_desc'].widget.attrs['class'] = 'input_text courseDec'
-
-        form.fields['course_start_date'].widget.attrs['id'] = 'startDate'
-        form.fields['course_start_date'].widget.attrs['class'] = 'input_text'
-        form.fields['course_start_date'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['course_end_date'].widget.attrs['id'] = 'endDate'
-        form.fields['course_end_date'].widget.attrs['class'] = 'input_text'
-        form.fields['course_end_date'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['categories'].widget.attrs['id'] = 'categories'
-        form.fields['categories'].widget.attrs['class'] = 'input_item'
-        form.fields['categories'].widget.attrs['style'] = 'display: none;'
-
-        form.fields['course_type'].widget.attrs['id'] = 'courseType'
-        form.fields['course_type'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_difficulty'].widget.attrs['id'] = 'courseDiff'
-        form.fields['course_difficulty'].widget.attrs['class'] = 'input_text'
-
-        form.fields['course_day'].widget.attrs['id'] = 'courseDay'
-        form.fields['course_day'].widget.attrs['class'] = 'input_text'
-        form.fields['course_day'].widget.attrs['readonly'] = 'readonly'
-
-        form.fields['course_banner'].widget.attrs['id'] = 'image-input'
-        form.fields['course_banner'].widget.attrs['style'] = 'display: none;'
-
         context['form'] = form
 
         c_form = CourseCategoriesForm()
-        c_form.fields['categories_c'].widget.attrs['id'] = 'categories-c'
-        c_form.fields['categories_c'].widget.attrs['class'] = 'input_item'
-
         context['c_form'] = c_form
 
         load_profile(context, request)
         return render(request, 'Athena/course_builder_page.html', context)
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         context = {'title': 'Course Builder'}
         print(request.POST)
@@ -184,17 +230,18 @@ class CourseBuilder(views.View):
         request.POST['course_rating'] = 0
         print(request.POST)
         form = CourseCreationForm(request.POST, request.FILES)
+        c_form = CourseCategoriesForm()
+        context['c_form'] = c_form
+        context['form'] = form
         if form.is_valid():
-            form.save()
+            # form.save()
             msg = '%s \n Course creation has been successfully' % (form.cleaned_data['course_title'])
             error = False
         else:
-            msg = 'Error while validating Course Information.'
-            error = True
-            context['error_msg'] = form.errors.as_data()
+            context['err_msg'] = error_msg_to_string(form)
+            return render(request, 'Athena/course_builder_page.html', context)
         context['msg'] = msg
         context['error'] = error
-        context['form'] = form
         return render(request, 'Athena/course_build_completed.html', context)
 
 
@@ -205,6 +252,7 @@ class Login(views.View):
         return render(request, 'Athena/login.html', context)
 
     def post(self, request):
+        context = {'title': 'Login'}
         email = request.POST['email']
         password = request.POST['password']
         print("Login :", email, password)
@@ -213,7 +261,8 @@ class Login(views.View):
             user_e = User.objects.get(email__exact=email)
         except User.DoesNotExist as e:
             print('New user, redirect to signin page')
-            return redirect('signup_page')
+            context['err_msg'] = 'No Such, email password combination found!'
+            return render(request, 'Athena/login.html', context)
         else:
             print(user_e.username)
             user = authenticate(request, username=user_e.username, password=password)
@@ -228,6 +277,7 @@ class Login(views.View):
 
 class Logout(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         logout(request)
         return redirect('login_page')
@@ -243,26 +293,78 @@ class Signup(views.View):
         email = request.POST['email']
         password = request.POST['password']
         v_password = request.POST['v_password']
+
+        validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
+        if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
+            return render(request, 'Athena/signup.html',
+                          context={'err_msg': 'Invalid character found in first or last name!'})
+        username = (first_name + last_name)
+        c = 0
+        while User.objects.filter(username=username).exists():
+            username += str(c)
+        if User.objects.filter(email=email).exists():
+            return render(request, 'Athena/signup.html', context={'err_msg': 'Email already registered!'})
         '''
         User name checks are pending
-        check for invalid char in first and lasy name
+        check for invalid char in first and last name
         send signal if incorrect password
         verify the username and email is unique in the system, handle if error thrown
         '''
+        NUser = get_user_model()
         if password != v_password:
-            return render(request, 'Athena/signup.html', context={'Error': 'Password Verification'})
-        User = get_user_model()
-        user = User.objects.create_user(username=(first_name + last_name), email=email, password=password,
-                                        first_name=first_name, last_name=last_name)
+            return render(request, 'Athena/signup.html', context={'err_msg': 'Password Verification failed!'})
+        user = NUser.objects.create_user(username=username, email=email, password=password,
+                                         first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
-            return redirect('home_page')
+            return redirect('course_page')
         else:
             return render(request, 'Athena/signup.html')
 
 
+def confirm_password(request):
+    if request.method == 'POST':
+        # Get the new generated password from the user's session (you can use a database instead)
+        new_password = request.session.get('new_password')
+
+        # Get the user's entered password from the form
+        entered_password = request.POST.get('new_password')
+
+        # Compare the entered password with the generated password
+        if new_password == entered_password:
+            # redirect back to the login page
+            return redirect('login_page')
+        else:
+            # If passwords don't match, display an error message
+            error_message = "Passwords do not match. Please try again."
+            return render(request, 'Athena/confirm_password.html', {'error_message': error_message})
+
+    return render(request, 'Athena/confirm_password.html')
+
+
+def generate_random_password(length=10):
+    # Generate a random password of the specified length
+    characters = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(random.choice(characters) for _ in range(length))
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        # Generate a new random password
+        new_password = generate_random_password()
+
+        # Store the new password in the user's session (you can use a database instead)
+        request.session['new_password'] = new_password
+
+        # Redirect to the password confirmation page
+        return redirect('confirm_password')
+
+    return render(request, 'Athena/confirm_password.html')
+
+
 class UploadProfile(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         try:
@@ -275,11 +377,14 @@ class UploadProfile(views.View):
             form.save()
         else:
             print('Invalid Form Data:', request.POST)
+            err_msg = error_msg_to_string(form)
+            request.session[S_SETTINGS_E] = err_msg
         return redirect('settings_page')
 
 
 class UpdateUserName(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -287,13 +392,17 @@ class UpdateUserName(views.View):
         if form.is_valid():
             print('Valid form : ', request.POST)
             form.save()
+            request.session[S_SETTINGS_E] = ''
         else:
             print('InValid form : ', request.POST)
+            err_msg = error_msg_to_string(form)
+            request.session[S_SETTINGS_E] = err_msg
         return redirect('settings_page')
 
 
 class UpdateMembership(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -310,6 +419,7 @@ class UpdateMembership(views.View):
 
 class CancelMembership(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         user = request.user
         old_user_data = User.objects.get(username=user.username)
@@ -325,6 +435,7 @@ class CancelMembership(views.View):
 
 class CourseDetails(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
@@ -340,8 +451,16 @@ class CourseDetails(views.View):
         # Current User course details
         try:
             e_obj = Enrollment.objects.get(user=request.user, course=course)
+            g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=request.user)
+            context['g_q_data'] = g_q_data
+
+            g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                                            user=request.user)
+            context['g_e_data'] = g_e_data
         except Enrollment.DoesNotExist:
             e_obj = None
+            context['g_q_data'] = None
+            context['g_e_data'] = None
         context['e_obj'] = e_obj
 
         # All enrollment details
@@ -353,10 +472,6 @@ class CourseDetails(views.View):
             'course': course
         }
         e_form = EnrollmentForm(initial=e_data)
-
-        e_form.fields['user'].widget.attrs['style'] = 'display: none;'
-        e_form.fields['course'].widget.attrs['style'] = 'display: none;'
-
         context['e_form'] = e_form
 
         return render(request, 'Athena/course_details_page.html', context)
@@ -364,6 +479,7 @@ class CourseDetails(views.View):
 
 class EnrollCourse(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         context = {}
         e_form = EnrollmentForm(request.POST)
@@ -374,82 +490,24 @@ class EnrollCourse(views.View):
             return redirect('course_page')
 
 
-# class CourseSearchPage(views.View):
-#
-#     def get(self, request):
-#         context = {'title': 'Find Course'}
-#         load_profile(context, request)
-#         return render(request, 'Athena/course_search_page.html', context)
-#
-#     def post(self, request):
-#         context = {'title': 'Find Course'}
-#         load_profile(context, request)
-#         return render(request, 'Athena/course_search_page.html', context)
-
-
 class CourseSearchPage(views.View):
-    template_name = 'Athena/course_search_page.html'
 
-    def get(self, request, *args, **kwargs):
+    @method_decorator(login_required(login_url='login_page'))
+    def get(self, request):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        form = CourseSearchForm()
-        courses = Course.objects.all()
-        context['form'] = form
-        context['courses'] = courses
-        return render(request, self.template_name, context)
+        return render(request, 'Athena/course_search_page.html', context)
 
-    def post(self, request, *args, **kwargs):
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        form = CourseSearchForm(request.POST)
-        if form.is_valid():
-            title = form.cleaned_data.get('title')
-            description = form.cleaned_data.get('description')
-            start_date = form.cleaned_data.get('start_date')
-            end_date = form.cleaned_data.get('end_date')
-            categories = form.cleaned_data.get('categories')
-            rating = form.cleaned_data.get('rating')
-
-            # Prepare the filter kwargs based on the provided form data
-            filter_kwargs = {}
-            if title:
-                filter_kwargs['course_title__icontains'] = title
-            if description:
-                filter_kwargs['course_desc__icontains'] = description
-            if start_date:
-                filter_kwargs['course_start_date__gte'] = start_date
-            if end_date:
-                filter_kwargs['course_end_date__lte'] = end_date
-            if categories:
-                filter_kwargs['categories__icontains'] = categories
-            if rating is not None:
-                filter_kwargs['course_rating__gte'] = rating
-
-            # Filter courses based on the search criteria
-            courses = Course.objects.filter(**filter_kwargs)
-            #
-            # # Filter courses based on the search criteria
-            # courses = Course.objects.filter(
-            #     course_title__icontains=title,
-            #     course_desc__icontains=description,
-            #     course_start_date__gte=start_date,
-            #     course_end_date__lte=end_date,
-            #     categories__icontains=categories,
-            #     course_rating__gte=rating if rating is not None else 0,
-            # )
-        else:
-            # If the form is not valid, display all courses
-            courses = Course.objects.all()
-
-        context['form'] = form
-        context['courses'] = courses
-
-        return render(request, self.template_name, context)
+        return render(request, 'Athena/course_search_page.html', context)
 
 
 class CourseAuthor(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
@@ -466,26 +524,6 @@ class CourseAuthor(views.View):
         #
         c_data = {'course': course}
         chapter_form = CourseChapterForm(initial=c_data)
-
-        chapter_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        chapter_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        chapter_form.fields['visibility'].widget.attrs['id'] = 'chapter-visibility'
-        chapter_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        chapter_form.fields['files'].widget.attrs['id'] = 'files-to-upload'
-        chapter_form.fields['files'].widget.attrs['style'] = 'display: none;'
-        chapter_form.fields['files'].widget.attrs['type'] = 'file'
-        chapter_form.fields['files'].widget.attrs['accept'] = '.pdf'
-
-        chapter_form.fields['is_streaming'].widget.attrs['id'] = 'is_streaming_check'
-        chapter_form.fields['is_streaming'].widget.attrs['style'] = 'display: none;'
-
-        chapter_form.fields['video_file'].widget.attrs['id'] = 'video_file_block'
-        chapter_form.fields['video_file'].widget.attrs['class'] = 'video-file-block'
-        chapter_form.fields['video_file'].widget.attrs['type'] = 'file'
-        chapter_form.fields['video_file'].widget.attrs['accept'] = '.mp4'
-
         context['c_form'] = chapter_form
 
         chapters = CourseChapter.objects.filter(course=course)
@@ -496,32 +534,6 @@ class CourseAuthor(views.View):
         #
         q_data = {'course': course}
         quiz_form = CourseQuizForm(initial=q_data)
-
-        quiz_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        quiz_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        quiz_form.fields['visibility'].widget.attrs['id'] = 'quiz-visibility'
-        quiz_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        quiz_form.fields['negative_marking'].widget.attrs['id'] = 'quiz-negative-marking'
-        quiz_form.fields['negative_marking'].widget.attrs['style'] = 'display: none;'
-        quiz_form.fields['negative_grade'].widget.attrs['id'] = 'negative_grade'
-        quiz_form.fields['negative_grade'].widget.attrs['class'] = 'input-fields small chapter-title-f'
-        quiz_form.fields['negative_grade'].widget.attrs['hidden'] = 'hidden'
-
-        quiz_form.fields['time'].widget.attrs['id'] = 'quiz_time'
-        quiz_form.fields['time'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
-        quiz_form.fields['instructions'].widget.attrs['class'] = 'input-text'
-
-        quiz_form.fields['files'].widget.attrs['id'] = 'video_file_block'
-        quiz_form.fields['files'].widget.attrs['class'] = 'video-file-block'
-        quiz_form.fields['files'].widget.attrs['type'] = 'file'
-        quiz_form.fields['files'].widget.attrs['accept'] = '.txt'
-
-        quiz_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-        quiz_form.fields['each_mark'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['q_form'] = quiz_form
         quizzes = Quiz.objects.filter(course=course)
         context['quizzes'] = quizzes
@@ -531,27 +543,6 @@ class CourseAuthor(views.View):
         #
         a_data = {'course': course}
         ass_form = CourseAssignmentForm(initial=a_data)
-
-        ass_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        ass_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        ass_form.fields['deadline'].widget.attrs['id'] = 'deadline-input'
-        ass_form.fields['deadline'].widget.attrs['class'] = 'input-fields chapter-title-f'
-        ass_form.fields['deadline'].widget.attrs['readonly'] = 'readonly'
-
-        ass_form.fields['visibility'].widget.attrs['id'] = 'ass-visibility'
-        ass_form.fields['visibility'].widget.attrs['style'] = 'display: none;'
-
-        ass_form.fields['plagiarism_check'].widget.attrs['id'] = 'plagiarism_check'
-        ass_form.fields['plagiarism_check'].widget.attrs['style'] = 'display: none;'
-
-        ass_form.fields['instructions'].widget.attrs['class'] = 'input-text'
-        ass_form.fields['file'].widget.attrs['class'] = 'video-file-block'
-        ass_form.fields['file'].widget.attrs['type'] = 'file'
-        ass_form.fields['file'].widget.attrs['accept'] = '.pdf'
-
-        ass_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['a_form'] = ass_form
         assignments = CourseAssignment.objects.filter(course=course)
         context['assignments'] = assignments
@@ -561,19 +552,72 @@ class CourseAuthor(views.View):
         #
         e_data = {'course': course}
         exam_form = CourseInPersonExamForm(initial=e_data)
-
-        exam_form.fields['course'].widget.attrs['style'] = 'display: none;'
-        exam_form.fields['title'].widget.attrs['class'] = 'input-fields large chapter-title-f'
-
-        exam_form.fields['exam_date'].widget.attrs['id'] = 'exam_date-input'
-        exam_form.fields['exam_date'].widget.attrs['class'] = 'input-fields chapter-title-f'
-        exam_form.fields['exam_date'].widget.attrs['readonly'] = 'readonly'
-
-        exam_form.fields['grade'].widget.attrs['class'] = 'input-fields medium chapter-title-f'
-
         context['e_form'] = exam_form
         exams = CourseInPersonExam.objects.filter(course=course)
         context['exams'] = exams
+
+        #
+        # Exam Grade Info
+        #
+        exam_grade_form = ExamGradeForm()
+        context['exam_grade_form'] = exam_grade_form
+
+        #
+        # Grade Info
+        #
+        if 'student_id' in request.GET.keys():
+            context['hide_std_stat'] = True
+            try:
+                student = User.objects.get(id=request.GET['student_id'])
+                g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=student)
+                context['g_q_data'] = g_q_data
+
+                g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), user=student)
+                context['g_e_data'] = g_e_data
+
+                #
+                # Chapter Views
+                #
+                chapter_views_status = []
+                for chapter in chapters:
+                    chapter_view = ChapterViews.objects.filter(user=student, chapter=chapter).first()
+                    if chapter_view:
+                        chapter_views_status.append(chapter.id)
+                context['chapter_views'] = chapter_views_status
+                print(chapter_views_status)
+
+                #
+                # Assignment Submission status
+                #
+                assignment_sub_status = []
+                for assignment in assignments:
+                    assignment_sub = AssignmentSubmission.objects.filter(user=student, assignment=assignment).first()
+                    if assignment_sub:
+                        assignment_sub_status.append(assignment.id)
+                context['assignment_sub'] = assignment_sub_status
+                print(assignment_sub_status)
+            except User.DoesNotExist:
+                print('User not found.')
+                context['hide_std_stat'] = False
+        else:
+            context['hide_std_stat'] = False
+
+        if 'exam_get_id' in request.GET.keys():
+            context['exam_get_id'] = request.GET['exam_get_id']
+            exam_f = CourseInPersonExam.objects.get(id=request.GET['exam_get_id'])
+            context['exam_get_total'] = exam_f.grade
+
+            present_grades = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), object_id=exam_f.id)
+            students_grades = {}
+            for exg in present_grades:
+                students_grades[exg.user.id] = exg.scored_grade
+            gg_exam_grade = []
+            for std in enrollment_info:
+                if std.user.id in students_grades.keys():
+                    gg_exam_grade.append(students_grades.get(std.user.id))
+                else:
+                    gg_exam_grade.append(0)
+            context['students_scored_grades'] = gg_exam_grade
 
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
@@ -583,6 +627,7 @@ class CourseAuthor(views.View):
 
 class CreateCourseChapter(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         chapter_form = CourseChapterForm(request.POST, request.FILES)
@@ -597,9 +642,13 @@ class CreateCourseChapter(views.View):
 
 class CourseContentView(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request, course_id):
         context = {'title': 'Course Content'}
         load_profile(context, request)
+
+        course = Course.objects.get(id=course_id)
+        context['course'] = course
 
         chapters = CourseChapter.objects.filter(course__id=course_id, visibility=True)
         context['chapters'] = chapters
@@ -609,6 +658,19 @@ class CourseContentView(views.View):
 
         assignments = CourseAssignment.objects.filter(course_id=course_id, visibility=True)
         context['assignments'] = assignments
+
+        r_data = {'course': course}
+        rating_form = RatingForm(initial=r_data)
+        context['rating_form'] = rating_form
+
+        # Assignment Submission
+        a_s_data = {'user': request.user}
+        submit_form = SubmitForm(initial=a_s_data)
+        context['submit_form'] = submit_form
+
+        # Submissions
+        submissions = AssignmentSubmission.objects.filter(user=request.user, assignment__course=course)
+        context['submissions'] = submissions
 
         return render(request, 'Athena/course_content_page.html', context)
 
@@ -627,6 +689,7 @@ XXX
 
 class CreateQuiz(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         quiz_form = CourseQuizForm(request.POST, request.FILES)
         if quiz_form.is_valid():
@@ -651,7 +714,7 @@ class CreateQuiz(views.View):
                 option_4 = temp[0].strip()
                 t_answer = temp[-1].strip()
                 index_o = t_answer.find('O')
-                answer = int(t_answer[index_o + 1:index_o + 2])
+                answer = int(t_answer[index_o+1:index_o+2])
                 print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
                 QuizContent.objects.create(
                     course=quiz_form.cleaned_data['course'],
@@ -671,6 +734,7 @@ class CreateQuiz(views.View):
 
 class GetQuizQuestion(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         print(request.GET)
         q_no = int(request.GET['question_no'])
@@ -686,10 +750,10 @@ class GetQuizQuestion(views.View):
         # update previous_question submission
         if q_no > 0 and prev_selection > 0:
             print('Submit Last answer')
-            p_questions = all_questions[q_no - 1]
+            p_questions = all_questions[q_no-1]
             try:
-                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id,
-                                                          question=p_questions)
+
+                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
                 check.submission = prev_selection
             except StudentQuizSubmission.DoesNotExist:
                 StudentQuizSubmission.objects.create(
@@ -733,12 +797,28 @@ class GetQuizQuestion(views.View):
             context['answered'] = len(answered_q)
             context['score'] = round(score, 2)
             context['total_score'] = round(total * quiz.each_mark, 2)
+            # save score to models
+            scored = (context['score'] / context['total_score']) * quiz.grade
+            try:
+                prev_grade = Grade.objects.get(content_type=ContentType.objects.get_for_model(quiz), object_id=quiz.id, user=request.user)
+                prev_grade.total_grade = quiz.grade
+                prev_grade.scored_grade = 0 if scored < 0 else scored
+                prev_grade.save()
+            except Grade.DoesNotExist:
+                Grade.objects.create(
+                    user=request.user,
+                    total_grade=quiz.grade,
+                    scored_grade=0 if scored < 0 else scored,
+                    content_type=ContentType.objects.get_for_model(quiz),
+                    object_id=quiz.id
+                )
             print(context)
             return JsonResponse(context)
 
 
 class ChangeCourseChapterVisibility(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         if request.POST['mode'] == 'Chapter':
@@ -765,6 +845,7 @@ class ChangeCourseChapterVisibility(views.View):
 
 class RemoveCourseContent(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         if request.POST['mode'] == 'Chapter':
@@ -789,6 +870,7 @@ class RemoveCourseContent(views.View):
 
 class CreateCourseAssignment(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         a_form = CourseAssignmentForm(request.POST, request.FILES)
@@ -802,6 +884,7 @@ class CreateCourseAssignment(views.View):
 
 class CreateInPersonExam(views.View):
 
+    @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
         print(request.POST)
         e_form = CourseInPersonExamForm(request.POST)
@@ -811,3 +894,175 @@ class CreateInPersonExam(views.View):
         else:
             print('Invalid Assignment Form')
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
+
+
+class UpdateCourseRating(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        course = Course.objects.get(id=request.POST['course'])
+        add_rating = request.POST['rating']
+        enrollment_info = Enrollment.objects.filter(course=course)
+        if len(enrollment_info) > 0:
+            avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating))/len(enrollment_info)
+            if avg > 5:
+                avg = 5
+            course.course_rating = avg
+            course.save()
+
+        return redirect(reverse('course_content', args=[request.POST['course']]))
+
+
+class AddQuizQuestion(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def get(self, request, quiz_id):
+        print(request.GET)
+        context = {'title': 'Add Question'}
+        quiz_questions = QuizContent.objects.filter(quiz__id = quiz_id)
+        context['quiz_questions'] = quiz_questions
+
+        quiz = Quiz.objects.get(id = quiz_id)
+        if 'q_no' in request.GET.keys():
+            q_data = QuizContent.objects.get(id=request.GET['q_no'])
+            quiz_content_form = QuizContentForm(instance=q_data)
+        else:
+            q_data = {'course': quiz.course, 'quiz': quiz}
+            quiz_content_form = QuizContentForm(initial=q_data)
+
+        context['quiz_content_form'] = quiz_content_form
+
+        return render(request, 'Athena/add_quiz_question.html', context)
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request, quiz_id):
+        print(request.POST)
+        context = {'title': 'Add Question'}
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
+        context['quiz_questions'] = quiz_questions
+
+        quiz = Quiz.objects.get(id=quiz_id)
+        q_data = {'course': quiz.course, 'quiz': quiz}
+
+        quiz_content_form = QuizContentForm(request.POST)
+
+        if quiz_content_form.is_valid():
+            if quiz_content_form.cleaned_data['type']:
+                quiz_content_form.save()
+            else:
+                quiz_question = QuizContent.objects.get(id=quiz_content_form.cleaned_data['id'])
+                quiz_content_form = QuizContentForm(request.POST, instance=quiz_question)
+                quiz_content_form.save()
+
+            quiz_content_form = QuizContentForm(initial=q_data)
+
+            context['quiz_content_form'] = quiz_content_form
+
+        else:
+            context['msg'] = 'Error: '+str(quiz_content_form.errors)
+            context['quiz_content_form'] = quiz_content_form
+
+        return render(request, 'Athena/add_quiz_question.html', context)
+
+
+class DownloadFile(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        print(request.POST)
+        if request.POST['file_type'] == 'Chapter':
+            model = CourseChapter.objects.get(id=request.POST['object_id'])
+            if model.is_streaming:
+                file_name = f'{model.title.replace(" ", "_")}.{model.video_file.name.split("/")[-1].split(".")[-1]}'
+                file_path = model.video_file.path
+            else:
+                file_name = f'{model.title.replace(" ", "_")}.{model.files.name.split("/")[-1].split(".")[-1]}'
+                file_path = model.files.path
+            print(file_path, file_name)
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+        elif request.POST['file_type'] == 'Assignment':
+            model = CourseAssignment.objects.get(id=request.POST['object_id'])
+            file_name = f'{model.title.replace(" ", "_")}.{model.file.name.split("/")[-1].split(".")[-1]}'
+            file_path = model.file.path
+            print(file_path, file_name)
+            response = FileResponse(open(file_path, 'rb'))
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+
+            return response
+        else:
+            return redirect(reverse('course_content', args=[request.POST['course']]))
+
+
+class SubmitAssignment(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        print(request.POST)
+        assignment = get_object_or_404(CourseAssignment, pk=request.POST['assignment'])
+        course_c = assignment.course
+        # check previous submissions
+        try:
+            p_submission = AssignmentSubmission.objects.get(user=request.POST['user'], assignment=assignment)
+            s_form = SubmitForm(request.POST, request.FILES, instance=p_submission)
+            print('Using Previous record')
+        except AssignmentSubmission.DoesNotExist:
+            print('No Previous submissions to override.')
+            s_form = SubmitForm(request.POST, request.FILES)
+        print(s_form.fields)
+        if s_form.is_valid():
+            s_form.save()
+        else:
+            # find this message in messages var in template
+            missing_fields = [field for field in s_form.errors]
+            error_msg = f'Submission failed. The following fields are missing or contain errors: {", ".join(missing_fields)}.'
+            messages.error(request, 'Submission failed.' + error_msg)
+        return redirect(reverse('course_content', args=[course_c.id]))
+
+
+class ChapterViewed(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def get(self, request):
+        print(request.GET)
+        chapter = CourseChapter.objects.get(id=request.GET['chapter_id'])
+        try:
+            chapter_v = ChapterViews.objects.get(user=request.user, chapter=chapter)
+            chapter_v.view_status = True
+            chapter_v.save()
+        except ChapterViews.DoesNotExist:
+            ChapterViews.objects.create(
+                user=request.user,
+                chapter=chapter,
+                view_status=True
+            )
+        return JsonResponse({'msg': 'success'})
+
+
+class UpdateExamGrades(views.View):
+
+    @method_decorator(login_required(login_url='login_page'))
+    def post(self, request):
+        print(request.POST)
+        query_params = urlencode({'exam_get_id': request.POST['exam_id']})
+        exam = get_object_or_404(CourseInPersonExam, pk=request.POST['exam_id'])
+        if int(request.POST['grade']) > exam.grade:
+            return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)
+        try:
+            prev_grade = Grade.objects.get(
+                user__id=request.POST['user_id'],
+                content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                object_id=request.POST['exam_id']
+            )
+            prev_grade.scored_grade = request.POST['grade']
+            prev_grade.save()
+        except Grade.DoesNotExist:
+            Grade.objects.create(
+                user_id=request.POST['user_id'],
+                content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                object_id=request.POST['exam_id'],
+                total_grade=exam.grade,
+                scored_grade=request.POST['grade']
+            )
+        return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)

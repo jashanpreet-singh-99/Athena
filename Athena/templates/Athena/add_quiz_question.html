@@ -1,0 +1,38 @@
+{% extends 'Athena/base.html' %}
+{% load static %}
+{% block stylesheets %}
+        <link rel="stylesheet" type="text/css" href="{% static 'Athena/css/add_quiz_question.css' %}"/>
+{% endblock stylesheets %}
+
+{% block page %}
+    {% for question in quiz_questions %}
+        <p> {{ forloop.counter }}. {{ question.question }}</p>
+{#        <a href="{% url 'add_quiz_question' quiz_id=quiz.id q_number=question.id %}"><button data-index="{{ question.id }}"> Edit </button></a>#}
+    <form method="get">
+        <input type="hidden" value="{{ question.id }}" name="q_no">
+        <button type="submit">Edit</button>
+    </form>
+    {% endfor %}
+    <form method="post">
+        {% csrf_token %}
+        {{ quiz_content_form.course }}
+        {{ quiz_content_form.quiz }}
+        {{ quiz_content_form.id }}
+        <p>New Question</p>
+        {{ quiz_content_form.type }}
+        <p>Question: </p>
+        {{ quiz_content_form.question }}
+        <p>Option 1: </p>
+        {{ quiz_content_form.options_1 }}
+        <p>Option 2: </p>
+        {{ quiz_content_form.options_2 }}
+        <p>Option 3: </p>
+        {{ quiz_content_form.options_3 }}
+        <p>Option 4: </p>
+        {{ quiz_content_form.options_4 }}
+        <p>Answers: </p>
+        {{ quiz_content_form.answers }}
+        <button type="submit">Save</button>
+    </form>
+    {{ msg }}
+{% endblock %}
