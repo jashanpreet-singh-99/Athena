@@ -73,6 +73,7 @@ body {
         display: flex;
         justify-content: center;
         align-items: center;
+        gap: 24px;
     }
 
     .login-card input[type="submit"] {
@@ -81,7 +82,7 @@ body {
       border-radius: 24px;
       background-color: #ffffff;
       color: #373741;
-      border: none;
+      border: 2px solid #ffffff;
       cursor: pointer;
         text-transform: uppercase;
         font-size: medium;
@@ -90,6 +91,7 @@ body {
     .login-card input[type="submit"]:hover{
         color: #ffffff;
         background-color: #222126;
+        border: 2px solid #222126;
     }
 
     .login-container a {
@@ -100,4 +102,21 @@ body {
         text-transform: uppercase;
         margin-top: 20px;
         font-size: small;
+    }
+
+    .signup-button {
+      padding: 14px 40px;
+      margin-top: 10px;
+      border-radius: 24px;
+      background-color: transparent;
+      color: white;
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      text-transform: uppercase;
+      font-size: medium;
+    }
+
+    .signup-button:hover {
+      background-color: #ffffff;
+      color: #373741;
     }

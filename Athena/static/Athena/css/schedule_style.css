@@ -110,7 +110,7 @@
 .event_section {
     width: 50%;
     padding: 16px 60px;
-    height: 100px;
+    overflow-y: auto;
 }
 
 .title_h2 {

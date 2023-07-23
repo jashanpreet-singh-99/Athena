@@ -1,5 +1,6 @@
 import calendar
 import random
+import re
 import string
 from datetime import datetime
 from django.db.models import Q
@@ -269,17 +270,27 @@ class Signup(views.View):
         email = request.POST['email']
         password = request.POST['password']
         v_password = request.POST['v_password']
+
+        validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
+        if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
+            return render(request, 'Athena/signup.html',
+                          context={'Error': 'Invalid character found in first or last name'})
+        username = (first_name + last_name).lower()
+        if User.objects.filter(username=username).exists():
+            return render(request, 'Athena/signup.html', context={'Error': 'Username already exists'})
+        if User.objects.filter(email=email).exists():
+            return render(request, 'Athena/signup.html', context={'Error': 'Email already registered'})
         '''
         User name checks are pending
-        check for invalid char in first and lasy name
+        check for invalid char in first and last name
         send signal if incorrect password
         verify the username and email is unique in the system, handle if error thrown
         '''
+        NUser = get_user_model()
         if password != v_password:
             return render(request, 'Athena/signup.html', context={'Error': 'Password Verification'})
-        User = get_user_model()
-        user = User.objects.create_user(username=(first_name+last_name), email=email, password=password,
-                                        first_name=first_name, last_name=last_name)
+        user = NUser.objects.create_user(username=(first_name+last_name), email=email, password=password,
+                                         first_name=first_name, last_name=last_name)
         if user is not None:
             login(request, user)
             return redirect('course_page')
