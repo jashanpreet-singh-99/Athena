@@ -136,7 +136,7 @@ class CourseChapterForm(forms.ModelForm):
         self.fields['visibility'].widget.attrs['style'] = 'display: none;'
 
         self.fields['files'].widget.attrs['id'] = 'files-to-upload'
-        self.fields['files'].widget.attrs['style'] = 'display: none;'
+        self.fields['files'].widget.attrs['class'] = 'video-file-block'
         self.fields['files'].widget.attrs['type'] = 'file'
         self.fields['files'].widget.attrs['accept'] = '.pdf'
 

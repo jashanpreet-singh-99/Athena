@@ -388,6 +388,7 @@ class CourseAuthor(views.View):
         # Grade Info
         #
         if 'student_id' in request.GET.keys():
+            context['hide_std_stat'] = True
             try:
                 student = User.objects.get(id=request.GET['student_id'])
                 g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=student)
@@ -395,8 +396,33 @@ class CourseAuthor(views.View):
 
                 g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), user=student)
                 context['g_e_data'] = g_e_data
+
+                #
+                # Chapter Views
+                #
+                chapter_views_status = []
+                for chapter in chapters:
+                    chapter_view = ChapterViews.objects.filter(user=student, chapter=chapter).first()
+                    if chapter_view:
+                        chapter_views_status.append(chapter.id)
+                context['chapter_views'] = chapter_views_status
+                print(chapter_views_status)
+
+                #
+                # Assignment Submission status
+                #
+                assignment_sub_status = []
+                for assignment in assignments:
+                    assignment_sub = AssignmentSubmission.objects.filter(user=student, assignment=assignment).first()
+                    if assignment_sub:
+                        assignment_sub_status.append(assignment.id)
+                context['assignment_sub'] = assignment_sub_status
+                print(assignment_sub_status)
             except User.DoesNotExist:
                 print('User not found.')
+                context['hide_std_stat'] = False
+        else:
+            context['hide_std_stat'] = False
 
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll

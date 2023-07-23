@@ -349,6 +349,7 @@
             </div>
         </div>
         <div id="tab3" class="tab-content">
+        {% if hide_std_stat %}
             <h2>Student Status</h2>
             <div class="view_container">
                 <div class="view_content_container">
@@ -359,7 +360,11 @@
                                 <span>{{ forloop.counter }}</span>
                                 <p class="ch-title-info">{{ chapter.title }}</p>
                             </div>
-                            <button class="content-buttons light no-mrg">Received</button>
+                            {% if chapter.id in chapter_views %}
+                                <button class="content-buttons light no-mrg">Viewed</button>
+                            {% else %}
+                                <button class="content-buttons g-light no-mrg">Received</button>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
@@ -387,7 +392,11 @@
                                 <span>{{ forloop.counter }}</span>
                                 <p class="ch-title-info">{{ assignment.title }}</p>
                             </div>
-                            <button class="content-buttons light no-mrg">Submitted</button>
+                            {% if assignment.id in assignment_sub %}
+                                <button class="content-buttons light no-mrg">Submitted</button>
+                            {% else %}
+                                <button class="content-buttons g-light no-mrg">Received</button>
+                            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
@@ -406,6 +415,7 @@
                     {% endif %}
                 </div>
             </div>
+        {% endif %}
             <h2>Enrolled Students</h2>
             {% for students in e_info %}
                 <div class="chapter-view-container quiz-v-container">

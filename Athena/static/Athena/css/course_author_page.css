@@ -222,12 +222,28 @@
     background-color: #ffffff;
 }
 
+.content-buttons.g-light {
+    color: #070708;
+    background-color: #eeeeee;
+    box-shadow: none;
+}
+
 .content-buttons.light:hover {
     color: #070708;
     background-color: #eeeeee;
 }
 
+.content-buttons.g-light:hover {
+
+}
+
 .content-buttons.light.no-mrg {
+    margin: 0;
+    font-size: small;
+    padding: 14px 32px;
+}
+
+.content-buttons.g-light.no-mrg {
     margin: 0;
     font-size: small;
     padding: 14px 32px;
