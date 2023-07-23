@@ -34,7 +34,9 @@ urlpatterns = [
     path('course/add_question/<int:quiz_id>', views.AddQuizQuestion.as_view(), name='add_quiz_question'),
     path('course/content/downlaod', views.DownloadFile.as_view(), name='download_file'),
     path('course/content/assignment/submit', views.SubmitAssignment.as_view(), name='submit_assignment'),
-path('course/content/chapter/viewed', views.ChapterViewed.as_view(), name='chapter_view_status'),
+    path('course/content/chapter/viewed', views.ChapterViewed.as_view(), name='chapter_view_status'),
+    path('course/content/exam/grade', views.UpdateExamGrades.as_view(), name='update_exam_grades'),
+
 
 ]
 

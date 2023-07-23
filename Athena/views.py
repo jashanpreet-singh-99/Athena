@@ -9,7 +9,7 @@ from django.http import FileResponse
 from django.contrib import messages
 
 from datetime import datetime
-
+from urllib.parse import urlencode
 
 def load_profile(context, request):
     user = request.user
@@ -291,8 +291,16 @@ class CourseDetails(views.View):
         # Current User course details
         try:
             e_obj = Enrollment.objects.get(user=request.user, course=course)
+            g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=request.user)
+            context['g_q_data'] = g_q_data
+
+            g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                                            user=request.user)
+            context['g_e_data'] = g_e_data
         except Enrollment.DoesNotExist:
             e_obj = None
+            context['g_q_data'] = None
+            context['g_e_data'] = None
         context['e_obj'] = e_obj
 
         # All enrollment details
@@ -385,6 +393,12 @@ class CourseAuthor(views.View):
         context['exams'] = exams
 
         #
+        # Exam Grade Info
+        #
+        exam_grade_form = ExamGradeForm()
+        context['exam_grade_form'] = exam_grade_form
+
+        #
         # Grade Info
         #
         if 'student_id' in request.GET.keys():
@@ -423,6 +437,23 @@ class CourseAuthor(views.View):
                 context['hide_std_stat'] = False
         else:
             context['hide_std_stat'] = False
+
+        if 'exam_get_id' in request.GET.keys():
+            context['exam_get_id'] = request.GET['exam_get_id']
+            exam_f = CourseInPersonExam.objects.get(id=request.GET['exam_get_id'])
+            context['exam_get_total'] = exam_f.grade
+
+            present_grades = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), object_id=exam_f.id)
+            students_grades = {}
+            for exg in present_grades:
+                students_grades[exg.user.id] = exg.scored_grade
+            gg_exam_grade = []
+            for std in enrollment_info:
+                if std.user.id in students_grades.keys():
+                    gg_exam_grade.append(students_grades.get(std.user.id))
+                else:
+                    gg_exam_grade.append(0)
+            context['students_scored_grades'] = gg_exam_grade
 
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
@@ -828,3 +859,30 @@ class ChapterViewed(views.View):
                 view_status=True
             )
         return JsonResponse({'msg': 'success'})
+
+
+class UpdateExamGrades(views.View):
+
+    def post(self, request):
+        print(request.POST)
+        query_params = urlencode({'exam_get_id': request.POST['exam_id']})
+        exam = get_object_or_404(CourseInPersonExam, pk=request.POST['exam_id'])
+        if int(request.POST['grade']) > exam.grade:
+            return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)
+        try:
+            prev_grade = Grade.objects.get(
+                user__id=request.POST['user_id'],
+                content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                object_id=request.POST['exam_id']
+            )
+            prev_grade.scored_grade = request.POST['grade']
+            prev_grade.save()
+        except Grade.DoesNotExist:
+            Grade.objects.create(
+                user_id=request.POST['user_id'],
+                content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                object_id=request.POST['exam_id'],
+                total_grade=exam.grade,
+                scored_grade=request.POST['grade']
+            )
+        return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)

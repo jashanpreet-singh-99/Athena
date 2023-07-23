@@ -294,3 +294,13 @@ class SubmitForm(forms.ModelForm):
         self.fields['file'].widget.attrs['class'] = 'submission-file-block'
         self.fields['file'].widget.attrs['type'] = 'file'
         self.fields['file'].widget.attrs['accept'] = '.txt'
+
+
+class ExamGradeForm(forms.Form):
+    user = forms.ModelChoiceField(queryset=User.objects.all())
+    grade = forms.DecimalField(widget=forms.TextInput)
+
+    grade.widget.attrs['id'] = 'scored_exam_grade_input'
+    grade.widget.attrs['class'] = 'input-fields small marg-r gradeField'
+    grade.widget.attrs['readonly'] = 'readonly'
+

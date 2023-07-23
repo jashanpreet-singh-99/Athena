@@ -343,6 +343,7 @@
     width: 100px;
 }
 
+
 .input-fields.medium {
     width: 200px;
 }
@@ -573,7 +574,15 @@ input[type="file"]::after {
     margin: 8px 0;
 }
 
+.exam_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+}
 
-
+.marg-r {
+    margin-right: 8px;
+}
 
 
