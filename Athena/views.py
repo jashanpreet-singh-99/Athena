@@ -291,8 +291,7 @@ class Signup(views.View):
         password = request.POST['password']
         v_password = request.POST['v_password']
 
-        validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
-        if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
+        if not (re.match('^[a-zA-Z0-9_]+$',first_name) and re.match('^[a-zA-Z0-9_]+$',last_name)):
             return render(request, 'Athena/signup.html',
                           context={'err_msg': 'Invalid character found in first or last name!'})
         username = (first_name + last_name)
@@ -321,7 +320,7 @@ class Signup(views.View):
 
 def confirm_password(request):
     if request.method == 'POST':
-        # Get the new generated password from the user's session (you can use a database instead)
+        # Get the new generated password from the user's session
         new_password = request.session.get('new_password')
 
         # Get the user's entered password from the form
@@ -347,13 +346,21 @@ def generate_random_password(length=10):
 
 def reset_password(request):
     if request.method == 'POST':
-        # Generate a new random password
-        new_password = generate_random_password()
+        email = request.POST['email']
+        password_new = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
+        print(email, password_new, confirm_new_password)
 
-        # Store the new password in the user's session (you can use a database instead)
-        request.session['new_password'] = new_password
+        existingUser = User.objects.filter(email=email)
+        if not existingUser.exists():
+            return render(request, 'Athena/confirm_password.html')
+        # TODO: Validation, If Email id user does not exists. If New pass and confirm new pass does not match
+        # If false then redirect it to reset password page with the error message and
+        # show the error message to the user, copy and paste from sign up page
+        # and check how to save the new password.
 
-        # Redirect to the password confirmation page
+        request.session['new_password'] = password_new
+
         return redirect('confirm_password')
 
     return render(request, 'Athena/confirm_password.html')
@@ -569,7 +576,8 @@ class CourseAuthor(views.View):
                 g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=student)
                 context['g_q_data'] = g_q_data
 
-                g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), user=student)
+                g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                                                user=student)
                 context['g_e_data'] = g_e_data
 
                 #
@@ -604,7 +612,8 @@ class CourseAuthor(views.View):
             exam_f = CourseInPersonExam.objects.get(id=request.GET['exam_get_id'])
             context['exam_get_total'] = exam_f.grade
 
-            present_grades = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), object_id=exam_f.id)
+            present_grades = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                                                  object_id=exam_f.id)
             students_grades = {}
             for exg in present_grades:
                 students_grades[exg.user.id] = exg.scored_grade
@@ -711,7 +720,7 @@ class CreateQuiz(views.View):
                 option_4 = temp[0].strip()
                 t_answer = temp[-1].strip()
                 index_o = t_answer.find('O')
-                answer = int(t_answer[index_o+1:index_o+2])
+                answer = int(t_answer[index_o + 1:index_o + 2])
                 print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
                 QuizContent.objects.create(
                     course=quiz_form.cleaned_data['course'],
@@ -747,10 +756,11 @@ class GetQuizQuestion(views.View):
         # update previous_question submission
         if q_no > 0 and prev_selection > 0:
             print('Submit Last answer')
-            p_questions = all_questions[q_no-1]
+            p_questions = all_questions[q_no - 1]
             try:
 
-                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id, question=p_questions)
+                check = StudentQuizSubmission.objects.get(quiz__id=quiz.id, user__id=request.user.id,
+                                                          question=p_questions)
                 check.submission = prev_selection
             except StudentQuizSubmission.DoesNotExist:
                 StudentQuizSubmission.objects.create(
@@ -797,7 +807,8 @@ class GetQuizQuestion(views.View):
             # save score to models
             scored = (context['score'] / context['total_score']) * quiz.grade
             try:
-                prev_grade = Grade.objects.get(content_type=ContentType.objects.get_for_model(quiz), object_id=quiz.id, user=request.user)
+                prev_grade = Grade.objects.get(content_type=ContentType.objects.get_for_model(quiz), object_id=quiz.id,
+                                               user=request.user)
                 prev_grade.total_grade = quiz.grade
                 prev_grade.scored_grade = 0 if scored < 0 else scored
                 prev_grade.save()
@@ -901,7 +912,7 @@ class UpdateCourseRating(views.View):
         add_rating = request.POST['rating']
         enrollment_info = Enrollment.objects.filter(course=course)
         if len(enrollment_info) > 0:
-            avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating))/len(enrollment_info)
+            avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating)) / len(enrollment_info)
             if avg > 5:
                 avg = 5
             course.course_rating = avg
@@ -916,10 +927,10 @@ class AddQuizQuestion(views.View):
     def get(self, request, quiz_id):
         print(request.GET)
         context = {'title': 'Add Question'}
-        quiz_questions = QuizContent.objects.filter(quiz__id = quiz_id)
+        quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
         context['quiz_questions'] = quiz_questions
 
-        quiz = Quiz.objects.get(id = quiz_id)
+        quiz = Quiz.objects.get(id=quiz_id)
         if 'q_no' in request.GET.keys():
             q_data = QuizContent.objects.get(id=request.GET['q_no'])
             quiz_content_form = QuizContentForm(instance=q_data)
@@ -956,7 +967,7 @@ class AddQuizQuestion(views.View):
             context['quiz_content_form'] = quiz_content_form
 
         else:
-            context['msg'] = 'Error: '+str(quiz_content_form.errors)
+            context['msg'] = 'Error: ' + str(quiz_content_form.errors)
             context['quiz_content_form'] = quiz_content_form
 
         return render(request, 'Athena/add_quiz_question.html', context)
