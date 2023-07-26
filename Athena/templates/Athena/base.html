@@ -52,10 +52,15 @@
     <div class="section">
         <div class="title-bar">
             <h1 class="page-title">{{ title }}</h1>
-            <div class="search-box">
-                <img width="30" height="30" src="https://img.icons8.com/070708/ios/50/search--v1.png" alt="search"/>
-                <input class="search-f" type="text" name="search-box" placeholder="Search">
-            </div>
+            <form id="search_form" method="post" action="{% url 'course_search_page' %}">
+                <div class="search-box">
+                    {% csrf_token %}
+                    <button class="no_decorations">
+                        <img width="30" height="30" src="https://img.icons8.com/070708/ios/50/search--v1.png" alt="search"/>
+                    </button>
+                    <input class="search-f" type="text" name="search" placeholder="Search" onkeydown="handleKeyPress(event)">
+                </div>
+            </form>
             <div class="nav-border dark">
                 <a href="{% url 'schedule_page' %}"><img width="48" height="48" src="https://img.icons8.com/070708/external-creatype-outline-colourcreatype/64/external-alarm-essential-ui-v2-creatype-outline-colourcreatype-2.png" alt="notifications"/></a>
             </div>

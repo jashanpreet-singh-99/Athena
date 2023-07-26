@@ -477,11 +477,12 @@
                                 <input type="hidden" name="course" value="{{ course.id }}">
                                 <input type="hidden" name="user_id" value="{{ students.user.id }}">
                                 <input type="hidden" name="exam_id" value="{{ exam_get_id }}">
+                                <input id="scroll-input-g" class="scroll-input-g" type="hidden" name="page_scroll" value="0">
                                 <label class="marg-r">Grade:</label>
                                 {{ exam_grade_form.grade }}
                                 <label > / </label>
                                 <label id="total_marks_label" class="marg-r">{{ exam_get_total }}</label>
-                                <button id="editSaveButton"  class="content-buttons light no-mrg">Edit</button>
+                                <button id="editSaveButtond"  class="content-buttons light no-mrg editSaveButton">Edit</button>
                             </form>
                         </div>
                     </div>

@@ -100,6 +100,8 @@ function openTab(evt, tabName, index) {
   // Show the selected tab content and mark the button as active
   document.getElementById(tabName).classList.add("show");
   evt.currentTarget.classList.add("active");
+  setCookie(COOKIES_author_tab_name, tabName);
+  setCookie(COOKIES_author_tab_number, index);
 }
 
 function createButtons() {
@@ -581,25 +583,36 @@ examCatButtons.forEach((button) => {
     });
 });
 
-const gradeField = document.querySelector('#scored_exam_grade_input');
-const editSaveButton = document.getElementById('editSaveButton');
-const gradeForm = document.getElementById('updateGradeForm');
+const gradeField = document.querySelectorAll('.gradeField');
+const editSaveButtons = document.querySelectorAll('.editSaveButton');
+const gradeForm = document.querySelectorAll('.updateGradeForm');
+const dummyScrollGrades = document.querySelectorAll('.scroll-input-g');
 
-editSaveButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    if (editSaveButton.textContent === 'Edit') {
-        gradeField.readOnly = false;
-        editSaveButton.textContent = 'Save';
-    } else if (editSaveButton.textContent === 'Save') {
-        gradeForm.submit();
-    }
-});
+
 
 function updateGradesStudents() {
-    const gradeField = document.querySelectorAll('.gradeField');
     scored_grades_list.forEach((score, index) => {
         if (index < gradeField.length) {
             gradeField[index].value = score;
         }
     });
 }
+
+editSaveButtons.forEach((btn, index) => {
+    btn.addEventListener('click', (event) => {
+        event.preventDefault(); // Disable the default form submission action
+        if (btn.textContent === 'Edit') {
+            gradeField.forEach((field) => {
+                field.removeAttribute('readonly'); // Make all fields editable
+            });
+            btn.textContent = 'Save'; // Change the button text to 'Save'
+        } else if (btn.textContent === 'Save') {
+            gradeField.forEach((field) => {
+                field.setAttribute('readonly', 'readonly'); // Make all fields read-only
+            });
+            dummyScrollGrades[index].value = basePageContainer.scrollTop;
+            gradeForm[index].submit();
+            console.log('Page Scroll:' + dummyScrollGrades[index].value);// Submit the form
+        }
+    });
+});

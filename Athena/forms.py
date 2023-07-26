@@ -139,6 +139,7 @@ class CourseCategoriesForm(forms.Form):
         self.fields['categories_c'].widget.attrs['id'] = 'categories-c'
         self.fields['categories_c'].widget.attrs['class'] = 'input_item'
 
+
 class EnrollmentForm(forms.ModelForm):
 
     class Meta:
@@ -348,4 +349,30 @@ class ExamGradeForm(forms.Form):
     grade.widget.attrs['id'] = 'scored_exam_grade_input'
     grade.widget.attrs['class'] = 'input-fields small marg-r gradeField'
     grade.widget.attrs['readonly'] = 'readonly'
+
+    def clean_grade(self):
+        grade = self.cleaned_data.get('grade')
+        user = self.cleaned_data.get('user')
+
+        if user and grade is not None:
+            grade_obj = Grade.objects.get_or_create(user=user)[0]
+            if grade > grade_obj.total_grade:
+                raise forms.ValidationError("Grade cannot exceed the total grade for this user.")
+
+        return grade
+
+
+class CourseSearchForm(forms.Form):
+    search = forms.CharField(required=False)
+    # start_date = forms.DateField(required=False)
+    # end_date = forms.DateField(required=False)
+    categories = forms.CharField(required=False)
+    rating = forms.DecimalField(required=False, max_digits=2, decimal_places=1)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['search'].widget.attrs['class'] = 'input_text'
+        self.fields['categories'].widget.attrs['class'] = 'input_text'
+        self.fields['rating'].widget.attrs['class'] = 'input_text small'
 

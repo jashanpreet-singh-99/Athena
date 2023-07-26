@@ -15,4 +15,14 @@ document.addEventListener('DOMContentLoaded', function() {
       menu.style.display = 'none';
     });
 
+    function handleKeyPress(event) {
+        event = event || window.event;
+        const keyCode = event.keyCode || event.which;
+
+        if (keyCode === 13) {
+            event.preventDefault();
+            document.getElementById("search_form").submit();
+        }
+    }
 });
+

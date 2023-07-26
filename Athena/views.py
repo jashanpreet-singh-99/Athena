@@ -13,6 +13,7 @@ from django.http import FileResponse
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 from datetime import datetime
 from urllib.parse import urlencode
@@ -21,6 +22,7 @@ from urllib.parse import urlencode
 
 # Session id const
 S_SETTINGS_E = 'settings_err_msg'
+S_AUTHOR_E = 'author_err_msg'
 
 
 def load_profile(context, request):
@@ -488,18 +490,45 @@ class EnrollCourse(views.View):
 
 
 class CourseSearchPage(views.View):
+    template_name = 'Athena/course_search_page.html'
 
     @method_decorator(login_required(login_url='login_page'))
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm()
+        courses = Course.objects.all()
+        context['form'] = form
+        context['courses'] = courses
+        return render(request, self.template_name, context)
 
     @method_decorator(login_required(login_url='login_page'))
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         context = {'title': 'Find Course'}
         load_profile(context, request)
-        return render(request, 'Athena/course_search_page.html', context)
+        form = CourseSearchForm(request.POST)
+        print(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data.get('search')
+            categories = form.cleaned_data.get('categories')
+            rating = form.cleaned_data.get('rating')
+
+            # Filter courses based on the search criteria
+            courses = Course.objects.filter(
+                 Q(course_title__icontains=search.strip()) |
+                 Q(course_desc__icontains=search.strip()) &
+                 Q(categories__contains=categories) &
+                 Q(course_rating__gte=rating if rating is not None else 0)
+            )
+        else:
+            # If the form is not valid, display all courses
+            courses = Course.objects.all()
+            context['err_msg'] = error_msg_to_string(form)
+
+        context['form'] = form
+        context['courses'] = courses
+
+        return render(request, self.template_name, context)
 
 
 class CourseAuthor(views.View):
@@ -616,6 +645,10 @@ class CourseAuthor(views.View):
                     gg_exam_grade.append(0)
             context['students_scored_grades'] = gg_exam_grade
 
+        context['err_msg'] = request.session.get(S_AUTHOR_E, '')
+        request.session[S_AUTHOR_E] = ''
+        print('Settings : ', context['err_msg'])
+
         page_scroll = request.session.get('page_scroll', 0)
         context['page_scroll'] = page_scroll
         print('Page Scroll:', page_scroll)
@@ -693,7 +726,6 @@ class CreateQuiz(views.View):
             quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
             print(len(quiz_info))
             quiz = quiz_form.save()
-
             for line in quiz_info.split('XXX\n'):
                 if line == '':
                     continue
@@ -733,6 +765,8 @@ class GetQuizQuestion(views.View):
 
     @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
+        context = {'title': 'Course Content'}
+        load_profile(context, request)
         print(request.GET)
         q_no = int(request.GET['question_no'])
         prev_selection = int(request.GET['prev_selection'])
@@ -817,6 +851,8 @@ class ChangeCourseChapterVisibility(views.View):
 
     @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
+        context = {'title': 'Course Content'}
+        load_profile(context, request)
         print(request.POST)
         if request.POST['mode'] == 'Chapter':
             chapter = CourseChapter.objects.get(id=request.POST['id'])
@@ -1045,6 +1081,8 @@ class UpdateExamGrades(views.View):
         query_params = urlencode({'exam_get_id': request.POST['exam_id']})
         exam = get_object_or_404(CourseInPersonExam, pk=request.POST['exam_id'])
         if int(request.POST['grade']) > exam.grade:
+            err_msg = "Grade can't be Greater than the max grade."
+            request.session[S_AUTHOR_E] = err_msg
             return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)
         try:
             prev_grade = Grade.objects.get(
@@ -1062,4 +1100,5 @@ class UpdateExamGrades(views.View):
                 total_grade=exam.grade,
                 scored_grade=request.POST['grade']
             )
+        request.session['page_scroll'] = int(request.POST['page_scroll'])
         return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)

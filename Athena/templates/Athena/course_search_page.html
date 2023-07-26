@@ -10,13 +10,39 @@
 {% endblock %}
 
 {% block page %}
-    <div class="title_1_container">
-        <h2 class="title_h2">Filter</h2>
-        <button class="secondary-btn">
-            Filter
-        </button>
+        <form method="post" class="search_form">
+            {% csrf_token %}
+            <div class="label_container">
+                <div class="label_container" style="margin-bottom: 15px;">
+                    <p class="labels marg-l">Search: </p>
+                    {{ form.search }}
+                </div>
+                <div class="label_container" style="margin-bottom: 15px;">
+                    <p class="labels marg-l">Categories: </p>
+                    {{ form.categories }}
+                </div>
+                <div class="label_container" style="margin-bottom: 15px;">
+                    <p class="labels marg-l">Rating: </p>
+                    {{ form.rating }}
+                </div>
+            </div>
+            <button type="submit" class="primary-btn">
+                Filter
+            </button>
+        </form>
+    <div id="course-container" class="course-container">
+        {% for course in courses %}
+            <div class="course-view t-b-margin">
+              <div class="course-card">
+                <a href="{% url 'course_details_page' course.id %}">
+                  <img class="course_logo" src="{{ course.course_banner.url }}" alt="Course Logo">
+                </a>
+              </div>
+              <h3>{{ course.course_title }}</h3>
+              <p>By: {{ course.author.first_name }} {{ course.author.last_name }}</p>
+            </div>
+        {% endfor %}
     </div>
-
 {% endblock %}
 
 {% block extrascripts %}
