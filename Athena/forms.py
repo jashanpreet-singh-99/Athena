@@ -192,6 +192,24 @@ class CourseQuizForm(forms.ModelForm):
         model = Quiz
         fields = '__all__'
 
+    def clean_each_mark(self):
+        each_mark = self.cleaned_data['each_mark']
+        if each_mark <= 0:
+            raise forms.ValidationError("Each mark should be greater than 0.")
+        return each_mark
+
+    def clean_grade(self):
+        grade = self.cleaned_data['grade']
+        if grade <= 0:
+            raise forms.ValidationError("Grade should be greater than 0.")
+        return grade
+
+    def clean_time(self):
+        time = self.cleaned_data['time']
+        if time < 3:
+            raise forms.ValidationError("Time cannot be less than 3.")
+        return time
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -228,6 +246,12 @@ class CourseAssignmentForm(forms.ModelForm):
         model = CourseAssignment
         fields = '__all__'
 
+    def clean_grade(self):
+        grade = self.cleaned_data['grade']
+        if grade <= 0:
+            raise forms.ValidationError("Grade should be greater than 0.")
+        return grade
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -258,6 +282,12 @@ class CourseInPersonExamForm(forms.ModelForm):
     class Meta:
         model = CourseInPersonExam
         fields = '__all__'
+
+    def clean_grade(self):
+        grade = self.cleaned_data['grade']
+        if grade <= 0:
+            raise forms.ValidationError("Grade should be greater than 0.")
+        return grade
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

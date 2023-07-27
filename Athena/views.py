@@ -293,8 +293,7 @@ class Signup(views.View):
         password = request.POST['password']
         v_password = request.POST['v_password']
 
-        validCharRegex = re.compile(r"^[^<>/{}[\]~`]*$")
-        if not (validCharRegex.match(first_name) and validCharRegex.match(last_name)):
+        if not (re.match('^[a-zA-Z0-9_]+$', first_name) and re.match('^[a-zA-Z0-9_]+$', last_name)):
             return render(request, 'Athena/signup.html',
                           context={'err_msg': 'Invalid character found in first or last name!'})
         username = (first_name + last_name)
@@ -336,7 +335,7 @@ def confirm_password(request):
         else:
             # If passwords don't match, display an error message
             error_message = "Passwords do not match. Please try again."
-            return render(request, 'Athena/confirm_password.html', {'error_message': error_message})
+            return render(request, 'Athena/confirm_password.html', {'err_msg': error_message})
 
     return render(request, 'Athena/confirm_password.html')
 
@@ -349,11 +348,16 @@ def generate_random_password(length=10):
 
 def reset_password(request):
     if request.method == 'POST':
-        # Generate a new random password
-        new_password = generate_random_password()
+        email = request.POST['email']
+        password_new = request.POST['new_password']
+        confirm_new_password = request.POST['confirm_new_password']
+        print(email, password_new, confirm_new_password)
 
-        # Store the new password in the user's session (you can use a database instead)
-        request.session['new_password'] = new_password
+        existingUser = User.objects.filter(email=email)
+        if not existingUser.exists():
+            return render(request, 'Athena/confirm_password.html')
+
+        request.session['new_password'] = password_new
 
         # Redirect to the password confirmation page
         return redirect('confirm_password')
@@ -438,23 +442,37 @@ class CourseDetails(views.View):
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
-        course = Course.objects.get(id=course_id)
+        try:
+            course = Course.objects.get(id=course_id)
+            context['course'] = course
+        except Course.DoesNotExist:
+            redirect('course_page')
+
+        try:
+            author_profile = UserProfiles.objects.get(user=course.author)
+            context['author_profile'] = author_profile.img
+        except UserProfiles.DoesNotExist:
+            print('Unable to get Profile.')
 
         if course.author == request.user:
             return redirect(reverse('course_author_page', args=[course_id]))
 
-        author_profile = UserProfiles.objects.get(user=course.author)
-        context['course'] = course
-        context['author_profile'] = author_profile.img
-
         # Current User course details
         try:
             e_obj = Enrollment.objects.get(user=request.user, course=course)
-            g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=request.user)
+            g_q_data = Grade.objects.filter(
+                content_type=ContentType.objects.get_for_model(Quiz),
+                user=request.user,
+                object_id__in=Quiz.objects.filter(course_id=course_id).values_list('id', flat=True)
+            )
+            print(g_q_data)
             context['g_q_data'] = g_q_data
 
-            g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam),
-                                            user=request.user)
+            g_e_data = Grade.objects.filter(
+                content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                user=request.user,
+                object_id__in=CourseInPersonExam.objects.filter(course_id=course_id).values_list('id', flat=True)
+            )
             context['g_e_data'] = g_e_data
         except Enrollment.DoesNotExist:
             e_obj = None
@@ -537,10 +555,16 @@ class CourseAuthor(views.View):
     def get(self, request, course_id):
         context = {'title': 'Course Details'}
         load_profile(context, request)
-        course = Course.objects.get(id=course_id)
-        author_profile = UserProfiles.objects.get(user=course.author)
-        context['course'] = course
-        context['author_profile'] = author_profile.img
+        try:
+            course = Course.objects.get(id=course_id)
+            context['course'] = course
+        except Course.DoesNotExist:
+            redirect('course_page')
+        try:
+            author_profile = UserProfiles.objects.get(user=course.author)
+            context['author_profile'] = author_profile.img
+        except UserProfiles.DoesNotExist:
+            print('Unable to get Profile.')
 
         enrollment_info = Enrollment.objects.filter(course=course)
         context['e_info'] = enrollment_info
@@ -595,10 +619,18 @@ class CourseAuthor(views.View):
             context['hide_std_stat'] = True
             try:
                 student = User.objects.get(id=request.GET['student_id'])
-                g_q_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(Quiz), user=student)
+                g_q_data = Grade.objects.filter(
+                    content_type=ContentType.objects.get_for_model(Quiz),
+                    user=student,
+                    object_id__in=Quiz.objects.filter(course_id=course_id).values_list('id', flat=True)
+                )
                 context['g_q_data'] = g_q_data
 
-                g_e_data = Grade.objects.filter(content_type=ContentType.objects.get_for_model(CourseInPersonExam), user=student)
+                g_e_data = Grade.objects.filter(
+                    content_type=ContentType.objects.get_for_model(CourseInPersonExam),
+                    user=student,
+                    object_id__in=CourseInPersonExam.objects.filter(course_id=course_id).values_list('id', flat=True)
+                )
                 context['g_e_data'] = g_e_data
 
                 #
@@ -723,40 +755,47 @@ class CreateQuiz(views.View):
     def post(self, request):
         quiz_form = CourseQuizForm(request.POST, request.FILES)
         if quiz_form.is_valid():
-            quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
-            print(len(quiz_info))
-            quiz = quiz_form.save()
-            for line in quiz_info.split('XXX\n'):
-                if line == '':
-                    continue
-                if line.startswith('\n'):
-                    line = line[1:]
-                temp = line.split('\nO1:')
-                question = temp[0][2:].strip()
-                temp = temp[-1].split('\nO2:')
-                option_1 = temp[0].strip()
-                temp = temp[-1].split('\nO3:')
-                option_2 = temp[0].strip()
-                temp = temp[-1].split('\nO4:')
-                option_3 = temp[0].strip()
-                temp = temp[-1].split('\nA:')
-                option_4 = temp[0].strip()
-                t_answer = temp[-1].strip()
-                index_o = t_answer.find('O')
-                answer = int(t_answer[index_o+1:index_o+2])
-                print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
-                QuizContent.objects.create(
-                    course=quiz_form.cleaned_data['course'],
-                    quiz=quiz,
-                    question=question,
-                    options_1=option_1,
-                    options_2=option_2,
-                    options_3=option_3,
-                    options_4=option_4,
-                    answers=answer
-                )
-            return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
+            try:
+                quiz_info = quiz_form.cleaned_data['files'].file.read().decode('utf-8')
+                print(len(quiz_info))
+                quiz = quiz_form.save()
+                for line in quiz_info.split('XXX\n'):
+                    if line == '':
+                        continue
+                    if line.startswith('\n'):
+                        line = line[1:]
+                    temp = line.split('\nO1:')
+                    question = temp[0][2:].strip()
+                    temp = temp[-1].split('\nO2:')
+                    option_1 = temp[0].strip()
+                    temp = temp[-1].split('\nO3:')
+                    option_2 = temp[0].strip()
+                    temp = temp[-1].split('\nO4:')
+                    option_3 = temp[0].strip()
+                    temp = temp[-1].split('\nA:')
+                    option_4 = temp[0].strip()
+                    t_answer = temp[-1].strip()
+                    index_o = t_answer.find('O')
+                    answer = int(t_answer[index_o+1:index_o+2])
+                    print(question, option_1, option_2, option_3, option_4, answer, sep='\n')
+                    QuizContent.objects.create(
+                        course=quiz_form.cleaned_data['course'],
+                        quiz=quiz,
+                        question=question,
+                        options_1=option_1,
+                        options_2=option_2,
+                        options_3=option_3,
+                        options_4=option_4,
+                        answers=answer
+                    )
+            except Exception as e:
+                err_msg = str(e)
+                request.session[S_AUTHOR_E] = err_msg
+            finally:
+                return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
         else:
+            err_msg = error_msg_to_string(quiz_form)
+            request.session[S_AUTHOR_E] = err_msg
             print('Form not valid:', quiz_form.errors)
             return redirect(reverse('course_author_page', args=[quiz_form.data['course']]))
 
@@ -911,7 +950,8 @@ class CreateCourseAssignment(views.View):
             a_form.save()
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
         else:
-            print('Invalid Assignment Form')
+            err_msg = error_msg_to_string(a_form)
+            request.session[S_AUTHOR_E] = err_msg
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
 
 
@@ -925,7 +965,8 @@ class CreateInPersonExam(views.View):
             e_form.save()
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
         else:
-            print('Invalid Assignment Form')
+            err_msg = error_msg_to_string(e_form)
+            request.session[S_AUTHOR_E] = err_msg
             return redirect(reverse('course_author_page', args=[request.POST['course']]))
 
 
@@ -933,17 +974,20 @@ class UpdateCourseRating(views.View):
 
     @method_decorator(login_required(login_url='login_page'))
     def post(self, request):
-        course = Course.objects.get(id=request.POST['course'])
-        add_rating = request.POST['rating']
-        enrollment_info = Enrollment.objects.filter(course=course)
-        if len(enrollment_info) > 0:
-            avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating))/len(enrollment_info)
-            if avg > 5:
-                avg = 5
-            course.course_rating = avg
-            course.save()
-
-        return redirect(reverse('course_content', args=[request.POST['course']]))
+        try:
+            course = Course.objects.get(id=request.POST['course'])
+            add_rating = request.POST['rating']
+            enrollment_info = Enrollment.objects.filter(course=course)
+            if len(enrollment_info) > 0:
+                avg = ((len(enrollment_info) - 1) * course.course_rating + int(add_rating))/len(enrollment_info)
+                if avg > 5:
+                    avg = 5
+                course.course_rating = avg
+                course.save()
+        except Exception as e:
+            request.session[S_AUTHOR_E] = "Error: " + str(e)
+        finally:
+            return redirect(reverse('course_content', args=[request.POST['course']]))
 
 
 class AddQuizQuestion(views.View):
@@ -952,10 +996,15 @@ class AddQuizQuestion(views.View):
     def get(self, request, quiz_id):
         print(request.GET)
         context = {'title': 'Quiz Question'}
+        load_profile(context, request)
         quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
         context['quiz_questions'] = quiz_questions
 
-        quiz = Quiz.objects.get(id=quiz_id)
+        try:
+            quiz = Quiz.objects.get(id=quiz_id)
+        except Quiz.DoesNotExist:
+            context['err_msg'] = 'Quiz Id not valid'
+            return render(request, 'Athena/add_quiz_question.html', context)
         if 'q_no' in request.GET.keys():
             q_data = QuizContent.objects.get(id=request.GET['q_no'])
             quiz_content_form = QuizContentForm(instance=q_data)
@@ -971,6 +1020,7 @@ class AddQuizQuestion(views.View):
     def post(self, request, quiz_id):
         print(request.POST)
         context = {'title': 'Quiz Question'}
+        load_profile(context, request)
         quiz_questions = QuizContent.objects.filter(quiz__id=quiz_id)
         context['quiz_questions'] = quiz_questions
 
@@ -1059,8 +1109,8 @@ class ChapterViewed(views.View):
     @method_decorator(login_required(login_url='login_page'))
     def get(self, request):
         print(request.GET)
-        chapter = CourseChapter.objects.get(id=request.GET['chapter_id'])
         try:
+            chapter = CourseChapter.objects.get(id=request.GET['chapter_id'])
             chapter_v = ChapterViews.objects.get(user=request.user, chapter=chapter)
             chapter_v.view_status = True
             chapter_v.save()
@@ -1080,8 +1130,13 @@ class UpdateExamGrades(views.View):
         print(request.POST)
         query_params = urlencode({'exam_get_id': request.POST['exam_id']})
         exam = get_object_or_404(CourseInPersonExam, pk=request.POST['exam_id'])
-        if int(request.POST['grade']) > exam.grade:
-            err_msg = "Grade can't be Greater than the max grade."
+        try:
+            if int(request.POST['grade']) > exam.grade:
+                err_msg = "Grade can't be Greater than the max grade."
+                request.session[S_AUTHOR_E] = err_msg
+                return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)
+        except ValueError as e:
+            err_msg = "Error:" + str(e)
             request.session[S_AUTHOR_E] = err_msg
             return redirect(reverse('course_author_page', args=[request.POST['course']]) + '?' + query_params)
         try:

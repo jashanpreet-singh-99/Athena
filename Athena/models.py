@@ -134,7 +134,7 @@ class Quiz(models.Model):
     files = models.FileField(upload_to=course_directory_path, blank=True)
 
     def __str__(self):
-        return str(self.course.id) + '_' +self.title
+        return str(self.course.id) + '_' + self.title
 
 
 class QuizContent(models.Model):

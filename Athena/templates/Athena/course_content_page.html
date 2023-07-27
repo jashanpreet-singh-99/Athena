@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block page %}
+    {% if chapters or assignments or quizzes %}
     <div class="parent-content">
         <div id="video-content" class="video-content">
             <video id="video-box">
@@ -124,18 +125,30 @@
                         <p>{{ chapter.title }}</p>
                     </div>
                 {% endif %}
+            {% empty %}
+                <p> No chapter created. </p>
             {%  endfor %}
-            <h2>Quiz</h2>
+            {%  if quizzes|length > 0 %}
+                <h2>Quiz</h2>
+            {% endif %}
             {% for quiz in quizzes %}
                 <div class="view-container quiz-view-container">
                     <p>{{ quiz.title }}</p>
                 </div>
             {%  endfor %}
-            <h2>Assignments</h2>
+            {% if assignments|length > 0 %}
+                <h2>Assignments</h2>
+            {% endif %}
             {% for ass in assignments %}
+                {%  if ass.file %}
                 <div class="view-container assignment-view-container" data-pdf-url="{{ ass.file.url }}">
                     <p>{{ ass.title }}</p>
                 </div>
+                {% else %}
+                    <div class="view-container">
+                        <p> No File added to assignment.</p>
+                    </div>
+                {% endif %}
             {%  endfor %}
             <h2>Course Rating</h2>
             <div class="rating-widget">
@@ -196,6 +209,11 @@
             </div>
         </div>
     </div>
+    {% else %}
+        <div class="center_div">
+            <p>No content Added yet. Please try again later or contact the instructor.</p>
+        </div>
+    {% endif %}
 
 {% endblock %}
 

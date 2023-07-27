@@ -431,3 +431,11 @@ input[type="file"]::after {
     padding: 16px;
     border-radius: 12px;
 }
+
+.center_div {
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
