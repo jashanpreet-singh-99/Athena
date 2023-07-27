@@ -13,7 +13,7 @@ from django.http import FileResponse
 from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.hashers import make_password
 from datetime import datetime
 from urllib.parse import urlencode
 
@@ -328,8 +328,14 @@ def confirm_password(request):
 
         # Compare the entered password with the generated password
         if new_password == entered_password:
-            # redirect back to the login page
-            return redirect('login_page')
+            # Update the user's password with the new one
+            user = User.objects.get(email=request.POST['email'])
+            user.password = make_password(new_password)
+            user.save()
+
+            # Redirect back to the login page with a success message
+            success_message = "Password has been reset successfully. Please log in with your new password."
+            return render(request, 'Athena/login_page.html', {'success_message': success_message})
         else:
             # If passwords don't match, display an error message
             error_message = "Passwords do not match. Please try again."
@@ -345,6 +351,9 @@ def generate_random_password(length=10):
 
 
 def reset_password(request):
+    if request.method == 'GET':
+        return render(request, 'Athena/confirm_password.html')
+
     if request.method == 'POST':
         email = request.POST['email']
         password_new = request.POST['new_password']
@@ -353,17 +362,17 @@ def reset_password(request):
 
         existingUser = User.objects.filter(email=email)
         if not existingUser.exists():
-            return render(request, 'Athena/confirm_password.html')
-        # TODO: Validation, If Email id user does not exists. If New pass and confirm new pass does not match
-        # If false then redirect it to reset password page with the error message and
-        # show the error message to the user, copy and paste from sign up page
-        # and check how to save the new password.
+            return render(request, 'Athena/reset_password.html', {'error_message': "Email does not exist."})
 
-        request.session['new_password'] = password_new
+        if password_new != confirm_new_password:
+            return render(request, 'Athena/reset_password.html', {'error_message': "Passwords do not match."})
 
-        return redirect('confirm_password')
+        # Generate a new existingUser password and save it in the session
+        for userObj in existingUser:
+            userObj.password = make_password(password_new)
+            userObj.save()
 
-    return render(request, 'Athena/confirm_password.html')
+        return render(request, 'Athena/login.html')
 
 
 class UploadProfile(views.View):

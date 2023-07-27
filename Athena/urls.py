@@ -3,6 +3,7 @@ from Athena import views
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
 from django.conf import settings
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('', views.Courses.as_view(), name='home_page'),
